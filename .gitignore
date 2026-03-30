@@ -41,3 +41,39 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.py[cod]
+venv/
+env/
+.venv/
+
+# Environment variables (NEVER commit these)
+.env
+*.env
+
+# Data files (too large for GitHub)
+data/campus.db
+data/campus_iot_data.csv
+data/*.csv
+data/*.db
+
+# FAISS index (regenerate locally)
+faiss_index/
+data/faiss_index/
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
