@@ -38,16 +38,6 @@ NVIDIA NIM · LangChain · LangGraph · Streamlit · SQLite · FAISS
 - `main` — stable working code only
 - `feature/xxx` — each person works on their own branch
 
-| Person | Branch |
-|--------|--------|
-| Akhila | feature/docker-setup |
-| Tarun | feature/streamlit-ui |
-| Ansu | feature/nvidia-nim |
-| Jince | feature/langgraph-agent |
-| Harshitha | feature/synthetic-data |
-| Ben | feature/faiss-research |
-
-**Never push directly to main!**
 
 ## Supervisors
 Dr Di Wu & Phu Lai — Cisco-La Trobe Centre for AI & IoT
