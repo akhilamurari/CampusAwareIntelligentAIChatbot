@@ -33,11 +33,6 @@ NVIDIA NIM · LangChain · LangGraph · Streamlit · SQLite · FAISS
 
 5. Open browser at http://localhost:8501
 
-## Branching Strategy
-
-- `main` — stable working code only
-- `feature/xxx` — each person works on their own branch
-
 
 ## Supervisors
 Dr Di Wu & Phu Lai — Cisco-La Trobe Centre for AI & IoT
