@@ -1,48 +1,4 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
-node_modules/
-
-# Expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
-
-# Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-
-app-example
-
-# generated native folders
-/ios
-/android
-
-# Python
+# ── Python ──────────────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
@@ -52,28 +8,78 @@ __pycache__/
 venv/
 env/
 .venv/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Environment variables (NEVER commit these)
+# ── Environment Variables (NEVER commit these) ──
 .env
+.env.local
+.env.*.local
 *.env
 
-# Data files (too large for GitHub)
+# ── Data Files (too large / sensitive) ──────────
 data/campus.db
 data/campus_iot_data.csv
 data/*.csv
 data/*.db
+data/*.sqlite
+*.db
+*.sqlite3
 
-# FAISS index (regenerate locally)
+# ── FAISS Index (regenerate locally) ────────────
 faiss_index/
 data/faiss_index/
+*.faiss
+*.pkl
 
-# Jupyter notebooks checkpoints
+# ── Jupyter Notebooks ───────────────────────────
 .ipynb_checkpoints/
+*.ipynb
 
-# IDE
+# ── IDE ─────────────────────────────────────────
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# Logs
+# ── macOS ────────────────────────────────────────
+.DS_Store
+*.pem
+.AppleDouble
+.LSOverride
+
+# ── Logs ────────────────────────────────────────
 *.log
 logs/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# ── React Native / Expo (existing files) ────────
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.metro-health-check*
+.DS_Store
+app-example
+/ios
+/android
+*.tsbuildinfo
+
+# ── Docker ───────────────────────────────────────
+*.tar
+
+# ── Testing ──────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
