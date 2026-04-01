@@ -19,3 +19,8 @@ pypdf==4.1.0
 # --- UI & Testing ---
 streamlit==1.32.0
 pytest==8.1.0
+
+pandas
+numpy
+faker
+
