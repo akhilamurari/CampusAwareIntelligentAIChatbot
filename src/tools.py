@@ -1,35 +1,31 @@
 # tools.py
 from langchain_core.tools import tool
+from langchain_community.utilities.sql_database import SQLDatabase
 from pydantic import BaseModel, Field
+import os
+
+DB_PATH = os.getenv("SQLITE_DB_PATH", "data/campus.db")
+db = SQLDatabase.from_uri(f"sqlite:///{DB_PATH}", sample_rows_in_table_info=3)
 
 class SQLQuery(BaseModel):
     sql_query: str = Field(
         description=(
-            "The raw SQL SELECT query to execute. "
-            "CRITICAL: You MUST complete the entire query and ensure string literals are properly escaped in your JSON. "
-            "Example: SELECT temperature FROM room_telemetry WHERE room_id = 'PW-202';"
+            "A valid SQL SELECT query to execute against the campus SQLite database. "
+            "IMPORTANT: Use double-quotes for all string literals in WHERE clauses. "
+            'Example: SELECT temperature_c FROM room_telemetry WHERE room_id = "Lab-101"'
         )
     )
 
 @tool(args_schema=SQLQuery)
 def campus_db_tool(sql_query: str):
-    """Execute an SQL query to get room occupancy and sensor data from the Bundoora digital twin database."""
+    """Execute a SQL query to get room occupancy and sensor data from the Bundoora digital twin database."""
+    print(f"\n[Backend DB Log] Executing SQL: {repr(sql_query)}")
     
-    # In a real implementation, you would use SQLAlchemy or psycopg2 here:
-    # engine = create_engine("postgresql://user:pass@localhost/campus_db")
-    # df = pd.read_sql(sql_query, engine)
-    # return df.to_string()
-
-    # MOCK DB EXECUTION:
-    print(f"\n[Backend DB Log] Executing SQL: {sql_query}")
-    
-    if "PW-202" in sql_query.upper() or "PW202" in sql_query.upper():
-        mock_data = "room_id: PW-202 | temperature: 22.5 | co2_ppm: 450 | occupancy: 12"
-    else:
-        mock_data = "0 rows returned."
-
-    # We return both the SQL and the data so the LLM has context for its final response
-    return f"Execution successful.\nSQL Executed: {sql_query}\nResult Data: {mock_data}"
+    try:
+        result = db.run(sql_query)
+        return f"Execution successful.\nSQL Executed: {sql_query}\nResult Data: {result}"
+    except Exception as e:
+        return f"Execution failed.\nSQL Executed: {sql_query}\nError: {str(e)}"
 
 @tool
 def campus_rag_tool(query: str):

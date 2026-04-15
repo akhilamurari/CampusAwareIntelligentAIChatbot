@@ -8,17 +8,17 @@ langchain-nvidia-ai-endpoints>=0.1.0
 pydantic>=2.0.0
 
 # --- Environment ---
-python-dotenv==1.0.1
+python-dotenv>=1.0.1
 
 # --- RAG & Data Processing (For later phases) ---
 langchain-community>=0.2.0
-pandas==2.2.0
-faiss-cpu==1.9.0.post1
-pypdf==4.1.0
+pandas>=2.2.0
+faiss-cpu>=1.9.0
+pypdf>=4.1.0
 
 # --- UI & Testing ---
-streamlit==1.32.0
-pytest==8.1.0
+streamlit>=1.32.0
+pytest>=8.1.0
 
 pandas
 numpy
