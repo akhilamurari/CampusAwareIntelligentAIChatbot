@@ -1,12 +1,17 @@
-# tools.py
+# src/tools.py
+import os
+import sqlite3
 from langchain_core.tools import tool
 from langchain_community.utilities.sql_database import SQLDatabase
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
 from pydantic import BaseModel, Field
 import os
 
 DB_PATH = os.getenv("SQLITE_DB_PATH", "data/campus.db")
 db = SQLDatabase.from_uri(f"sqlite:///{DB_PATH}", sample_rows_in_table_info=3)
 
+# ─── DB Tool Schema ────────────────────────────────────
 class SQLQuery(BaseModel):
     sql_query: str = Field(
         description=(
@@ -16,6 +21,7 @@ class SQLQuery(BaseModel):
         )
     )
 
+# ─── IoT Database Tool ─────────────────────────────────
 @tool(args_schema=SQLQuery)
 def campus_db_tool(sql_query: str):
     """Execute a SQL query to get room occupancy and sensor data from the Bundoora digital twin database."""
@@ -27,7 +33,25 @@ def campus_db_tool(sql_query: str):
     except Exception as e:
         return f"Execution failed.\nSQL Executed: {sql_query}\nError: {str(e)}"
 
+# ─── RAG Tool ──────────────────────────────────────────
 @tool
 def campus_rag_tool(query: str):
-    """Search campus manuals for safety and comfort guidelines."""
-    return "Campus Comfort Policy: Rooms are considered 'stuffy' if CO2 exceeds 1000 ppm."
+    """Search campus PDF documents for information about campus facilities, policies and guidelines."""
+    
+    index_path = os.getenv("FAISS_INDEX_PATH", "data/campus_rag.index")
+    
+    if not os.path.exists(index_path):
+        return "RAG index not found. Please run ingest_pdfs.py first."
+    
+    try:
+        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        vector_db = FAISS.load_local(
+            index_path,
+            embeddings,
+            allow_dangerous_deserialization=True
+        )
+        docs = vector_db.similarity_search(query, k=3)
+        context = "\n---\n".join([doc.page_content for doc in docs])
+        return context
+    except Exception as e:
+        return f"RAG search error: {str(e)}"

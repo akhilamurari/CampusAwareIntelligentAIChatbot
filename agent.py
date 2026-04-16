@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+def run_agent(user_input):
+    graph.invoke(...)
+=======
 # agent.py
 import uuid
 from src.apps import graph
@@ -20,3 +24,4 @@ def run_agent(user_input: str) -> str:
             response = last_message.content
     
     return response
+>>>>>>> e0276af8f77df896b4a02c5678c1648c545f64b6
