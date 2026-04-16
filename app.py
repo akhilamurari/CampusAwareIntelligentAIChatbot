@@ -15,12 +15,12 @@ st.caption(
 with st.sidebar:
     st.header("💡 Try asking:")
     examples = [
-        "Which room had high CO2 yesterday?",
-        "Find me a cool quiet room to study in",
-        "How do I connect to eduroam WiFi?",
-        "What are the library opening hours?",
-        "Which rooms were occupied this morning?",
-    ]
+    "Which room had high CO2?",
+    "Find me a quiet room to study",
+    "What is the average temperature in the library?",
+    "How do I connect to eduroam WiFi?",
+    "Which rooms are currently occupied?",
+]
     for example in examples:
         if st.button(example, use_container_width=True):
             st.session_state["quick_q"] = example
