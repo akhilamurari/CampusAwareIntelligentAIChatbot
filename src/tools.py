@@ -2,43 +2,36 @@
 import os
 import sqlite3
 from langchain_core.tools import tool
+from langchain_community.utilities.sql_database import SQLDatabase
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from pydantic import BaseModel, Field
+import os
+
+DB_PATH = os.getenv("SQLITE_DB_PATH", "data/campus.db")
+db = SQLDatabase.from_uri(f"sqlite:///{DB_PATH}", sample_rows_in_table_info=3)
 
 # ─── DB Tool Schema ────────────────────────────────────
 class SQLQuery(BaseModel):
     sql_query: str = Field(
         description=(
-            "The raw SQL SELECT query to execute. "
-            "CRITICAL: You MUST complete the entire query and ensure string literals are properly escaped in your JSON. "
-            "Example: SELECT temperature FROM room_telemetry WHERE room_id = 'Library-L1';"
+            "A valid SQL SELECT query to execute against the campus SQLite database. "
+            "IMPORTANT: Use double-quotes for all string literals in WHERE clauses. "
+            'Example: SELECT temperature_c FROM room_telemetry WHERE room_id = "Lab-101"'
         )
     )
 
 # ─── IoT Database Tool ─────────────────────────────────
 @tool(args_schema=SQLQuery)
 def campus_db_tool(sql_query: str):
-    """Execute an SQL query to get room occupancy and sensor data from the Bundoora digital twin database."""
-    print(f"\n[Backend DB Log] Executing SQL: {sql_query}")
-    
-    db_path = os.getenv("SQLITE_DB_PATH", "data/campus.db")
+    """Execute a SQL query to get room occupancy and sensor data from the Bundoora digital twin database."""
+    print(f"\n[Backend DB Log] Executing SQL: {repr(sql_query)}")
     
     try:
-        conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute(sql_query)
-        rows = cursor.fetchall()
-        conn.close()
-        
-        if not rows:
-            return "No data found for this query."
-        
-        results = [dict(row) for row in rows]
-        return f"SQL Executed: {sql_query}\nResult Data: {results}"
+        result = db.run(sql_query)
+        return f"Execution successful.\nSQL Executed: {sql_query}\nResult Data: {result}"
     except Exception as e:
-        return f"Database error: {str(e)}"
+        return f"Execution failed.\nSQL Executed: {sql_query}\nError: {str(e)}"
 
 # ─── RAG Tool ──────────────────────────────────────────
 @tool
