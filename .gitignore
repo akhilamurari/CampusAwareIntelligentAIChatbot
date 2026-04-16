@@ -83,3 +83,6 @@ app-example
 .pytest_cache/
 .coverage
 htmlcov/
+
+data/campus.db
+data/iot_sensor_data.csv
