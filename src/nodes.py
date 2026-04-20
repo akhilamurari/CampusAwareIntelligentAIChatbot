@@ -1,14 +1,31 @@
 # nodes.py
 from dotenv import load_dotenv
-from langchain_nvidia_ai_endpoints import ChatNVIDIA
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage
 from .state import AgentState
 from .tools import campus_db_tool, campus_rag_tool
+import os
 
 load_dotenv()
 
-llm = ChatNVIDIA(
-    model="meta/llama-3.1-70b-instruct",
+# ── Sprint 4 (CF1CT-24 — Akhila): On-Premises NIM via OpenAI-compatible API ──
+NIM_MODE = os.getenv("NIM_MODE", "cloud")
+
+if NIM_MODE == "onprem":
+    base_url = os.getenv("NIM_BASE_URL_ONPREM", "http://localhost:8000/v1")
+    api_key = "not-required"
+    model = os.getenv("NIM_MODEL", "/data/shared/nobackup/Qwen2_5-VL-7B-Instruct")
+    print(f"🖥️  Agent using On-Premises NIM: {base_url}")
+else:
+    base_url = os.getenv("NIM_BASE_URL_CLOUD", "https://integrate.api.nvidia.com/v1")
+    api_key = os.getenv("NIM_API_KEY", os.getenv("NVIDIA_API_KEY", ""))
+    model = os.getenv("NIM_MODEL", "meta/llama-3.1-70b-instruct")
+    print(f"☁️  Agent using Cloud API: {base_url}")
+
+llm = ChatOpenAI(
+    model=model,
+    base_url=base_url,
+    api_key=api_key,
     temperature=0
 )
 
