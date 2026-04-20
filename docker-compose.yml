@@ -9,9 +9,13 @@ services:
     env_file:
       - .env
     environment:
-      - NIM_BASE_URL=${NIM_BASE_URL:-http://aiotcentre-03.latrobe.edu.au:8000/v1}
-      - NIM_MODEL=${NIM_MODEL:-meta/llama-3.1-8b-instruct}
-      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      # ── Sprint 4 (CF1CT-24 — Akhila): NIM Mode Switching ──
+      - NIM_MODE=${NIM_MODE:-cloud}
+      - NIM_API_KEY=${NIM_API_KEY}
+      - NIM_BASE_URL_CLOUD=${NIM_BASE_URL_CLOUD:-https://integrate.api.nvidia.com/v1}
+      - NIM_BASE_URL_ONPREM=${NIM_BASE_URL_ONPREM:-http://aiotcentre-03.latrobe.edu.au:8000/v1}
+      # ── Sprint 3 (CF1CT-22 — Ansu): Model Configuration ──
+      - NIM_MODEL=${NIM_MODEL:-meta/llama-3.1-70b-instruct}
       - SQLITE_DB_PATH=${SQLITE_DB_PATH:-/app/data/campus.db}
       - FAISS_INDEX_PATH=${FAISS_INDEX_PATH:-/app/data/campus_rag.index}
     depends_on:

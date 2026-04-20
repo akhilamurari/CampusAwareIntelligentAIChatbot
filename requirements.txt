@@ -24,3 +24,4 @@ pandas
 numpy
 faker
 
+langchain-huggingface
