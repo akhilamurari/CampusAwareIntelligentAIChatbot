@@ -18,9 +18,5 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run environment config tests
-        run: python -m pytest tests/test_agent.py::test_environment_config tests/test_agent.py::test_server_connectivity -v
-
-      - name: Run full tests (skip if no server)
-        run: python -m pytest tests/test_agent.py -v --ignore-glob="*nl2sql*"
-        continue-on-error: true
+      - name: Run CI tests
+        run: python -m pytest tests/test_ci.py -v
