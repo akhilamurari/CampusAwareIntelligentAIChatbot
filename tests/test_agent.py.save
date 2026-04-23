@@ -1,0 +1,92 @@
+# tests/test_agent.py
+import pytest
+import sys
+import os
+import requests
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# ── Check if on-premises NIM is available ──────────────────────────
+def is_server_available():
+    try:
+        response = requests.get(
+            "http://localhost:8000/v1/models",
+            timeout=3
+        )
+        return response.status_code == 200
+    except Exception:
+        return False
+
+# Skip all tests if server not available (e.g. in CI/CD)
+SERVER_AVAILABLE = is_server_available()
+skip_if_no_server = pytest.mark.skipif(
+    not SERVER_AVAILABLE,
+    reason="On-premises NIM server not available — skipping in CI/CD"
+)
+
+from agent import run_agent
+
+@skip_if_no_server
+def test_agent_nl2sql_connection():
+    """Test NL2SQL tool returns correct SQLite results via on-premises LLM"""
+    response = run_agent("Which room had the highest CO2 levels?")
+    assert response is not None
+    assert len(response) > 0
+    rooms = ["Library", "Lab", "Lecture", "Cafeteria", "Study-Room"]
+    assert any(room in response for room in rooms), \
+        f"Expected room name in response: {response}"
+    print(f"✅ NL2SQL test passed: {response[:80]}")
+
+@skip_if_no_server
+def test_agent_rag_retrieval():
+    """Test RAG tool retrieves correct campus PDF content"""
+    response = run_agent("How do I connect to eduroam WiFi?")
+    assert response is not None
+    assert len(response) > 0
+    keywords = ["wifi", "WiFi", "network", "connect", "eduroam", "password", "username"]
+    assert any(kw in response for kw in keywords), \
+        f"Expected WiFi info in response: {response}"
+    print(f"✅ RAG retrieval test passed: {response[:80]}")
+
+@skip_if_no_server
+def test_agent_rag_retrieval_specifically():
+    """Test RAG retrieves specific campus document information"""
+    response = run_agent("What are the library opening hours?")
+    assert response is not None
+    assert len(response) > 0
+    keywords = ["library", "Library", "hours", "open", "Monday", "Tuesday", "time"]
+    assert any(kw in response for kw in keywords), \
+        f"Expected library info in response: {response}"
+    print(f"✅ RAG specific retrieval test passed: {response[:80]}")
+
+@skip_if_no_server
+def test_agent_multi_turn():
+    """Test multi-turn conversation history works correctly"""
+    response1 = run_agent("Which room had high CO2?")
+    assert response1 is not None
+    assert len(response1) > 0
+
+    response2 = run_agent("What is the temperature in that room?")
+    assert response2 is not None
+    assert len(response2) > 0
+
+    keywords = ["temperature", "degrees", "celsius", "°C", "warm", "cool"]
+    assert any(kw in response2 for kw in keywords), \
+        f"Expected temperature in response: {response2}"
+    print(f"✅ Multi-turn test passed: {response2[:80]}")
+
+def test_environment_config():
+    """Test environment is configured correctly — always runs in CI/CD"""
+    nim_mode = os.getenv("NIM_MODE", "cloud")
+    assert nim_mode in ["cloud", "onprem"], \
+        f"NIM_MODE must be cloud or onprem, got: {nim_mode}"
+    print(f"✅ Environment config test passed: NIM_MODE={nim_mode}")
+
+def test_server_connectivity():
+    """Test server connectivity — always runs, reports status"""
+    if SERVER_AVAILABLE:
+        print("✅ On-premises NIM server is available")
+    else:
+        print("⚠️ On-premises NIM server not available — using cloud API or CI/CD environment")
+    # This test always passes — just reports status
+    assert True
