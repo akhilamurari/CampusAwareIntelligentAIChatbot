@@ -47,7 +47,7 @@ def assistant_node(state: AgentState):
         "7. NEVER ask the user if they want results — just run the query and answer directly.\n"
         "\n"
         "--- DOCUMENT RULES ---\n"
-        "When asked about WiFi, maps, courses, library, campus services:\n"
+        "When asked about WiFi, maps, courses, library, campus services, CRICOS codes, course handbooks, fees, parking, residence rules, safety, ICT program, subject codes, credit points, course coordinators:\n"
         "1. IMMEDIATELY call campus_rag_tool with the user question.\n"
         "2. Give a plain English answer based on the retrieved documents.\n"
         "3. NEVER ask the user if they want information — just search and answer directly.\n"
