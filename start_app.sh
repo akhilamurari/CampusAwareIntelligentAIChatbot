@@ -4,13 +4,24 @@ echo "🚀 Starting CampusAware AI..."
 echo "Step 1 — Pulling latest changes..."
 git pull origin main
 
-echo "Step 2 — Starting Streamlit..."
+echo "Step 2 — Activating venv..."
 source venv/bin/activate
+
+echo "Step 3 — Starting Streamlit..."
 streamlit run app.py &
 
-echo "Step 3 — Starting Ngrok..."
-sleep 3
-pkill ngrok
-ngrok http 8502
+echo "⏳ Waiting for Streamlit to start..."
+sleep 10
 
-echo "✅ Done! Share the ngrok URL with students!"
+echo "Step 4 — Starting Ngrok..."
+pkill ngrok 2>/dev/null
+ngrok http 8501 &
+
+echo "⏳ Waiting for Ngrok..."
+sleep 5
+
+echo "Step 5 — Opening browser..."
+/usr/bin/open "https://glorify-overcome-provoke.ngrok-free.dev"
+
+echo "✅ Done! Share this URL with students:"
+echo "🔗 https://glorify-overcome-provoke.ngrok-free.dev"
