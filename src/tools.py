@@ -36,8 +36,13 @@ def campus_db_tool(sql_query: str):
 # ─── RAG Tool ──────────────────────────────────────────
 @tool
 def campus_rag_tool(query: str):
-    """Search campus PDF documents for information about campus facilities, policies and guidelines."""
-    
+    """Search La Trobe University campus documents and official policies for information.
+    Use this for ANY question about: student rights, student charter, code of conduct,
+    admissions, assessment, campus access, facilities, parking, library, safety, emergency,
+    residence rules, ICT course, CRICOS, fees, graduate research, ethics, staff qualifications,
+    course design, desktop equipment, asset management, academic dress, student support services,
+    policies, rules, regulations, procedures, or any campus-specific information."""
+
     index_path = os.getenv("FAISS_INDEX_PATH", "data/campus_rag.index")
     
     if not os.path.exists(index_path):
@@ -50,7 +55,8 @@ def campus_rag_tool(query: str):
             embeddings,
             allow_dangerous_deserialization=True
         )
-        docs = vector_db.similarity_search(query, k=3)
+        # ── Sprint 5: Increased k from 3 to 5 for better policy coverage ──
+        docs = vector_db.similarity_search(query, k=5)
         context = "\n---\n".join([doc.page_content for doc in docs])
         return context
     except Exception as e:
