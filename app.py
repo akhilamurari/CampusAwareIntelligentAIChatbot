@@ -1,127 +1,239 @@
 # app.py
 import streamlit as st
 from agent import run_agent
-import time
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# ── Page config ────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Campus-Aware AI Agent",
+    page_title="CampusAware AI",
     page_icon="🎓",
     layout="centered"
 )
 
-st.title("🎓 Campus-Aware AI Agent")
-st.caption("Ask anything about La Trobe Bundoora campus")
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+* { font-family: 'Inter', sans-serif; }
+
+#MainMenu, footer, header { visibility: hidden; }
+
+/* User bubble — right, blue */
+.user-bubble-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin: 6px 0;
+}
+.user-bubble {
+    background: #1f6feb;
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 20px 20px 4px 20px;
+    max-width: 65%;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Bot bubble — left, light grey */
+.bot-bubble-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 8px;
+    margin: 6px 0;
+}
+.bot-avatar {
+    width: 32px;
+    height: 32px;
+    background: #1f6feb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+.bot-bubble {
+    background: #f0f2f6;
+    color: #1a1a1a;
+    padding: 10px 16px;
+    border-radius: 20px 20px 20px 4px;
+    max-width: 65%;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Sidebar buttons */
+[data-testid="stSidebar"] .stButton > button {
+    background: #f0f2f6 !important;
+    color: #1a1a1a !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    font-size: 0.82rem !important;
+    text-align: left !important;
+    padding: 8px 12px !important;
+    margin-bottom: 4px;
+    transition: all 0.15s;
+}
+[data-testid="stSidebar"] .stButton > button:hover {
+    background: #e8f0fe !important;
+    border-color: #1f6feb !important;
+    color: #1f6feb !important;
+}
+
+/* Fix red border on chat input — force blue everywhere */
+[data-testid="stChatInput"] > div {
+    border-color: #1f6feb !important;
+    box-shadow: none !important;
+}
+[data-testid="stChatInput"] > div:focus-within {
+    border-color: #1f6feb !important;
+    box-shadow: 0 0 0 2px #1f6feb33 !important;
+}
+[data-testid="stChatInput"] textarea {
+    outline: none !important;
+    box-shadow: none !important;
+    caret-color: #1f6feb !important;
+}
+[data-testid="stChatInput"] textarea:focus {
+    border-color: #1f6feb !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+button[data-testid="stChatInputSubmitButton"] {
+    color: #1f6feb !important;
+}
+button[data-testid="stChatInputSubmitButton"]:hover {
+    color: #1f6feb !important;
+    background: #e8f0fe !important;
+}
+button[data-testid="stChatInputSubmitButton"] svg {
+    fill: #1f6feb !important;
+    stroke: #1f6feb !important;
+}
+
+/* Header */
+.app-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.app-header h2 {
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin: 0;
+}
+.app-header p {
+    color: #6b7280;
+    font-size: 0.82rem;
+    margin: 4px 0 0 0;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ── Header ─────────────────────────────────────────────────────────
+st.markdown("""
+<div class="app-header">
+    <h2>🎓 CampusAware AI</h2>
+    <p>La Trobe Bundoora Campus Assistant</p>
+</div>
+""", unsafe_allow_html=True)
 
 # ── Sidebar ────────────────────────────────────────────────────────
 with st.sidebar:
-
-    # ── Connection Status (CF1CT-25 — Tarun) ──
     nim_mode = os.getenv("NIM_MODE", "cloud")
     if nim_mode == "onprem":
-        st.success("🖥️ On-Premises NIM (aiotcentre-03)")
+        st.success("On-Premises — aiotcentre-03")
     else:
-        st.info("☁️ NVIDIA Cloud API")
+        st.info("NVIDIA Cloud API")
 
     st.divider()
+    st.markdown("**Try asking:**")
 
-    st.header("💡 Try asking:")
     examples = [
         "Which room had high CO2?",
         "Find me a quiet room to study",
-        "What is the average temperature in the library?",
+        "What are my rights as a student?",
         "How do I connect to eduroam WiFi?",
+        "What is the Code of Conduct?",
+        "What are parking fees?",
         "Which rooms are currently occupied?",
-        "What is the noise level in the cafeteria?",
-        "Which room has the best air quality?",
+        "What do I wear to graduation?",
     ]
     for example in examples:
-        if st.button(example, use_container_width=True):
+        if st.button(example, use_container_width=True, key=f"ex_{example}"):
             st.session_state["quick_q"] = example
 
     st.divider()
-
-    if st.button("🗑️ Clear chat", use_container_width=True):
+    if st.button("Clear chat", use_container_width=True):
         st.session_state["messages"] = []
         st.rerun()
 
-    st.divider()
-
-    # ── Session stats ──
     if "messages" in st.session_state:
         total = len([m for m in st.session_state["messages"] if m["role"] == "user"])
-        st.caption(f"💬 Questions asked: {total}")
+        st.caption(f"Questions asked: {total}")
 
-# ── Initialise chat history ────────────────────────────────────────
+# ── Init ───────────────────────────────────────────────────────────
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# ── Handle quick question from sidebar ────────────────────────────
 if "quick_q" in st.session_state:
     prompt = st.session_state.pop("quick_q")
 else:
     prompt = None
 
-# ── Display chat history ───────────────────────────────────────────
+# ── Chat history ───────────────────────────────────────────────────
 for msg in st.session_state["messages"]:
-    with st.chat_message(msg["role"]):
-        st.write(msg["content"])
-        # Show timestamp if available
-        if "time" in msg:
-            st.caption(f"🕐 {msg['time']}")
-        # Show response time for assistant messages
-        if msg["role"] == "assistant" and "elapsed" in msg:
-            st.caption(f"⚡ Response time: {msg['elapsed']:.1f}s")
+    if msg["role"] == "user":
+        st.markdown(f"""
+        <div class="user-bubble-wrapper">
+            <div class="user-bubble">{msg["content"]}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        content = msg["content"].replace('\n', '<br>')
+        st.markdown(f"""
+        <div class="bot-bubble-wrapper">
+            <div class="bot-avatar">🎓</div>
+            <div class="bot-bubble">{content}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-# ── Chat input ─────────────────────────────────────────────────────
+# ── Input ──────────────────────────────────────────────────────────
 user_input = st.chat_input("Ask about the campus...") or prompt
 
 if user_input:
-    # Timestamp
-    now = time.strftime("%H:%M:%S")
+    st.markdown(f"""
+    <div class="user-bubble-wrapper">
+        <div class="user-bubble">{user_input}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.session_state["messages"].append({"role": "user", "content": user_input})
 
-    # Show user message
-    st.session_state["messages"].append({
-        "role": "user",
-        "content": user_input,
-        "time": now
-    })
-    with st.chat_message("user"):
-        st.write(user_input)
-        st.caption(f"🕐 {now}")
+    with st.spinner("Thinking..."):
+        try:
+            response = run_agent(user_input)
+        except Exception as e:
+            error_msg = str(e)
+            if "401" in error_msg:
+                response = "API key error — please check your NIM configuration."
+            elif "Connection" in error_msg:
+                response = "Connection error — please check the SSH tunnel is running."
+            elif "timeout" in error_msg.lower():
+                response = "Request timed out — server may be busy, please try again."
+            else:
+                response = f"Something went wrong: {error_msg}"
 
-    # Get agent response
-    with st.chat_message("assistant"):
-        with st.spinner("🤔 Thinking... querying campus data..."):
-            start = time.time()
-            try:
-                response = run_agent(user_input)
-                elapsed = time.time() - start
-                st.write(response)
-                st.caption(f"⚡ Response time: {elapsed:.1f}s")
-
-                st.session_state["messages"].append({
-                    "role": "assistant",
-                    "content": response,
-                    "elapsed": elapsed,
-                    "time": time.strftime("%H:%M:%S")
-                })
-
-            except Exception as e:
-                elapsed = time.time() - start
-                error_msg = str(e)
-
-                if "401" in error_msg:
-                    st.error("🔑 API key error — please check your NIM configuration")
-                elif "Connection" in error_msg:
-                    st.error("🔌 Connection error — please check SSH tunnel is running")
-                elif "timeout" in error_msg.lower():
-                    st.error("⏱️ Request timed out — server may be busy, please try again")
-                else:
-                    st.error(f"❌ Something went wrong: {error_msg}")
-
-                st.caption(f"⚡ Response time: {elapsed:.1f}s")
+    content = response.replace('\n', '<br>')
+    st.markdown(f"""
+    <div class="bot-bubble-wrapper">
+        <div class="bot-avatar">🎓</div>
+        <div class="bot-bubble">{content}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.session_state["messages"].append({"role": "assistant", "content": response})
+    st.rerun()
