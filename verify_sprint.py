@@ -14,12 +14,15 @@ test_queries = [
     "What is the total credit points required for the Master of ICT?",
     "What is the address of the Melbourne Bundoora campus?",
     "What app is used for parking payments at La Trobe?",
-    "Is there a free bus service like the Glider on campus?"
+    "Is there a free bus service like the Glider on campus?",
+    "What is the definition of Criterion-based assessment?",
+    "What is considered a privacy data breach at La Trobe?",
+    "What are the consequences of breaching the Code of Conduct?"
 ]
 
 # ... (imports and queries stay the same)
 
-print(f"{'#'*60}\nSPRINT 4 VALIDATION REPORT\n{'#'*60}")
+print(f"{'#'*60}\nSPRINT 5 VALIDATION REPORT\n{'#'*60}")
 
 for i, query in enumerate(test_queries, 1):
     print(f"\n[TEST {i}] {query.upper()}")

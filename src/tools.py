@@ -6,8 +6,8 @@ from langchain_community.utilities.sql_database import SQLDatabase
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from pydantic import BaseModel, Field
-import os
 
+# Ensure path is relative to the project root
 DB_PATH = os.getenv("SQLITE_DB_PATH", "data/campus.db")
 db = SQLDatabase.from_uri(f"sqlite:///{DB_PATH}", sample_rows_in_table_info=3)
 
@@ -38,6 +38,7 @@ def campus_db_tool(sql_query: str):
 def campus_rag_tool(query: str):
     """Search campus PDF documents for information about campus facilities, policies and guidelines."""
     
+    # Matches the path used in your ingest_pdfs.py
     index_path = os.getenv("FAISS_INDEX_PATH", "data/campus_rag.index")
     
     if not os.path.exists(index_path):
@@ -50,6 +51,7 @@ def campus_rag_tool(query: str):
             embeddings,
             allow_dangerous_deserialization=True
         )
+        # Retrieve top 3 relevant chunks
         docs = vector_db.similarity_search(query, k=3)
         context = "\n---\n".join([doc.page_content for doc in docs])
         return context

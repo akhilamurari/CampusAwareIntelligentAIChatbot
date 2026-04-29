@@ -8,7 +8,7 @@ import os
 
 load_dotenv()
 
-# ── Sprint 4 (CF1CT-24 — Akhila): On-Premises NIM via OpenAI-compatible API ──
+# ── Sprint 4: NIM Configuration ──
 NIM_MODE = os.getenv("NIM_MODE", "cloud")
 
 if NIM_MODE == "onprem":
@@ -32,7 +32,7 @@ llm = ChatOpenAI(
 def assistant_node(state: AgentState):
     messages = state["messages"]
 
-    # ── Sprint 4 (CF1CT-26 — Harshitha): Updated for expanded DB ──
+    # ── Sprint 5 Update: Included Policy Knowledge Expansion ──
     system_instructions = SystemMessage(content=(
         "You are the Cisco-La Trobe CampusAware AI, a digital twin assistant for the Bundoora campus.\n"
         "\n"
@@ -47,10 +47,13 @@ def assistant_node(state: AgentState):
         "7. NEVER ask the user if they want results — just run the query and answer directly.\n"
         "\n"
         "--- DOCUMENT RULES ---\n"
-        "When asked about WiFi, maps, courses, library, campus services:\n"
+        "When asked about WiFi, maps, courses, library, campus services, Assessment policies, "
+        "Privacy protocols, or the Student Code of Conduct:\n"
         "1. IMMEDIATELY call campus_rag_tool with the user question.\n"
-        "2. Give a plain English answer based on the retrieved documents.\n"
-        "3. NEVER ask the user if they want information — just search and answer directly.\n"
+        "2. Give a plain English answer based ONLY on the retrieved documents.\n"
+        "3. If a student asks about Criterion-based assessment or Privacy breaches, use the specific definitions "
+        "found in the local policies.\n"
+        "4. NEVER ask the user if they want information — just search and answer directly.\n"
         "\n"
         "--- CONVERSATIONAL RULES ---\n"
         "For greetings or general questions:\n"
