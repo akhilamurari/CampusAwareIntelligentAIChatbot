@@ -6,8 +6,8 @@ from langchain_community.utilities.sql_database import SQLDatabase
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from pydantic import BaseModel, Field
-import os
 
+# Ensure path is relative to the project root
 DB_PATH = os.getenv("SQLITE_DB_PATH", "data/campus.db")
 db = SQLDatabase.from_uri(f"sqlite:///{DB_PATH}", sample_rows_in_table_info=3)
 

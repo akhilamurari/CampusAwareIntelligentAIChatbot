@@ -8,7 +8,7 @@ import os
 
 load_dotenv()
 
-# ── Sprint 4 (CF1CT-24 — Akhila): On-Premises NIM via OpenAI-compatible API ──
+# ── Sprint 4: NIM Configuration ──
 NIM_MODE = os.getenv("NIM_MODE", "cloud")
 
 if NIM_MODE == "onprem":
