@@ -1,0 +1,15 @@
+La Trobe University Campus WiFi Guide
+
+EDUROAM WIFI CONNECTION
+To connect to eduroam WiFi at La Trobe Bundoora campus:
+1. Open your device WiFi settings
+2. Select eduroam from available networks
+3. Enter your La Trobe University username: studentID@students.latrobe.edu.au
+4. Enter your La Trobe University password
+5. Accept the security certificate if prompted
+6. You should now be connected to eduroam
+
+If you have connection issues contact IT Helpdesk: 03 9479 2222
+Or visit IT Services on campus for assistance.
+
+The eduroam network is available across all La Trobe campuses and at other universities worldwide.

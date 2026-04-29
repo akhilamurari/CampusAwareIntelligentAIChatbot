@@ -48,7 +48,7 @@ def assistant_node(state: AgentState):
         "--- DOCUMENT RULES ---\n"
         "The campus knowledge base contains these documents:\n"
         "\n"
-        "1. Melbourne Campus Map — building locations, room numbers, campus layout\n"
+        "1. Melbourne Campus Map — building locations, room numbers, campus layout, eduroam WiFi connection: open WiFi settings, select eduroam, enter username as studentID@students.latrobe.edu.au and La Trobe password, contact IT Helpdesk 03 9479 2222 for WiFi issues\n"
         "2. Library Opening Hours — library hours, PLA availability, Bundoora library schedule, face-to-face hours 10am-4pm\n"
         "3. La Trobe Student Safety Guide — emergency contacts, after hours helpline 1800 758 360, campus security 9479 2222, security escort 9479 2012, free call external 1800 800 613, personal safety, road safety, The Glider bus Mon-Fri 8:30am-9:30pm\n"
         "4. Rules of Residence 2026 — student residence rules, guest policies max 1 night per 4 weeks, disciplinary procedures\n"
