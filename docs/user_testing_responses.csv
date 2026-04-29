@@ -1,0 +1,159 @@
+"Timestamp","Your name","Are you a La Trobe student?","Your study level?","Ask the chatbot: ""Which room had the highest CO2 levels?"" What did the chatbot answer?","How accurate does this answer seem?","Ask the chatbot: ""Find me a quiet room to study"" What did the chatbot answer?","How satisfied are you with this answer?","Ask the chatbot: ""Which rooms are currently occupied?"" What did the chatbot answer?","How accurate does this answer seem?","Ask the chatbot: ""How do I connect to eduroam WiFi?"" What did the chatbot answer?","How helpful was this answer?","Ask the chatbot: ""What are the library opening hours?"" What did the chatbot answer?","How accurate does this answer seem?","Ask the chatbot: ""What is the after hours helpline number?"" What did the chatbot answer?","How accurate does this answer seem?","Ask the chatbot: ""What is the CRICOS code for Master of ICT?"" What did the chatbot answer?","How accurate does this answer seem?","I think that I would like to use this system frequently","I found the system unnecessarily complex","I thought the system was easy to use","I think that I would need the support of a technical person to use this system","I found the various functions in this system were well integrated","What did you like most about the chatbot?","Overall, how would you rate the chatbot?"
+"2026/04/28 11:07:40 AM GMT+10","Akhila","yes","postgraduate","The room with the highest CO2 levels was Library-L3, with a CO2 concentration of 1322.33 ppm. Other rooms with high CO2 levels include Study-Room-1, Lab-102, and Library-L2.","5","Based on the recent data, the rooms with the lowest noise levels are Lecture-Hall-A, Lecture-Hall-B, and Lecture-Hall-C, with noise levels around 27.75 dB to 31.99 dB. These halls might be good options for a quiet study environment.","5","The Library-L1 is currently occupied.","5","To connect to eduroam WiFi at the Bundoora campus, follow these steps:
+
+Ensure your device is within range of an eduroam access point.
+Open your wireless network settings on your device.
+Select ""eduroam"" from the list of available networks.
+You will be prompted to enter your La Trobe University username and password.
+Once authenticated, you should be connected to the eduroam network.
+If you encounter any issues, you can contact the IT support team for assistance.","5","The library opening hours are as follows:
+
+Monday to Friday: 8:00 AM to 10:00 PM
+Saturday: 9:00 AM to 5:00 PM
+Sunday: Closed
+Please note that these hours may vary during public holidays or special events. For the most up-to-date information, you can check the Library Opening Hours document or the La Trobe University website.","5","The after hours helpline number for the Bundoora campus is 1800 758 360","5","The CRICOS code for the Master of ICT program is 061684F","5","5","1","5","1","5","Chatbot interface and response time is good ","⭐⭐⭐⭐⭐ Excellent"
+"2026/04/28 1:22:17 PM GMT+10","Dillep","no","Other","I checked the room telemetry data and found that the room with the highest CO2 levels was Library-L1, with a reading of 1020 ppm. Other rooms did not show comparable levels of CO2.","5","Based on the latest room telemetry data, the Study-Room-1 and Study-Room-2 have the lowest noise levels, indicating they might be quieter places to study. The noise levels in these rooms are currently below 30 dB. Would you like more detailed information on these rooms or any other assistance?","5","I checked the room telemetry data and found that the following rooms are currently occupied:
+
+Lecture-Hall-A
+Lecture-Hall-B
+Lecture-Hall-C
+Study-Room-1
+Study-Room-2
+Study-Room-3
+Would you like more detailed information on these rooms or any other assistance?","5","To connect to eduroam WiFi at La Trobe University, you will need to follow these steps:
+
+Ensure your device is connected to the eduroam network.
+Enter your La Trobe University username and password when prompted.
+For more detailed instructions, you can refer to the Melbourne Campus Map or the La Trobe Student Safety Guide, which contain information on campus services and connectivity.
+
+Would you like to see these documents?","5","The library opening hours are as follows:
+
+Monday to Friday: 8:00 AM to 10:00 PM
+Saturday: 9:00 AM to 5:00 PM
+Sunday: Closed
+For more detailed information, you can refer to the Library Opening Hours document.
+
+Would you like to see it?","5","The after hours helpline number for La Trobe University is 1800 758 360.
+
+Would you like more information on this or any other details?","5","The CRICOS code for the Master of ICT at La Trobe University is 061684F.
+
+Would you like more information on this or any other details?","5","5","1","5","1","5","Accuracy of answers, easy to use","⭐⭐⭐⭐⭐ Excellent"
+"2026/04/28 1:32:57 PM GMT+10","Krishna","yes","Undergraduate","I checked the room telemetry data and found that the room with the highest CO2 levels was Library-L1, with a reading of 1020 ppm.","5","Based on the latest room telemetry data, the Study-Room-1 and Study-Room-2 have the lowest noise levels, indicating they might be quieter places to study. The noise levels in these rooms are currently below 30 dB. Would you like more detailed information on these rooms or any other assistance?","5","I checked the room telemetry data and found that the following rooms are currently occupied:
+
+Lecture-Hall-A
+Lecture-Hall-B
+Lecture-Hall-C
+Study-Room-1
+Study-Room-2
+Study-Room-3","5","To connect to eduroam WiFi at the Bundoora campus, you will need to follow these steps:
+
+Ensure your device is within range of an eduroam network.
+Open your device's Wi-Fi settings.
+Select ""eduroam"" from the list of available networks.
+Enter your La Trobe University username and password when prompted.
+If you encounter any issues, you can refer to the La Trobe University IT Helpdesk for further assistance. Their contact number is 03 9479 2222.","4","The library opening hours at the Bundoora campus are as follows:
+
+Monday to Friday: 8:00 AM to 10:00 PM
+Saturday: 9:00 AM to 5:00 PM
+Sunday: Closed
+Please note that these hours may vary during public holidays or special circumstances. For the most up-to-date information, you can check the Library Opening Hours document or contact the library directly.","5","The after hours helpline number for the Bundoora campus is 1800 758 360.","5","The CRICOS code for the Master of ICT at La Trobe University is 061684F.","5","5","1","5","1","5","features they found useful (room sensors, policy info, campus map etc.)","⭐⭐⭐⭐⭐ Excellent"
+"2026/04/28 4:42:33 PM GMT+10","kaundinya narahari","no","Other","The room with the highest CO2 levels, based on the latest data, was Library-L3 with a CO2 level of 1020 ppm.","5","Based on the latest data, the Study-Room-1 has the lowest noise level, making it a good choice for studying. The noise level in Study-Room-1 is currently 30 dB.","5","The following rooms are currently occupied based on the latest data:
+
+Lecture-Hall-A
+Lecture-Hall-B
+Lecture-Hall-C
+Study-Room-1
+Study-Room-2
+Study-Room-3","5","To connect to eduroam WiFi at the Bundoora campus, follow these steps:
+
+Ensure your device is within range of an eduroam network.
+Open your device's Wi-Fi settings.
+Select ""eduroam"" from the list of available networks.
+Enter your La Trobe University username and password when prompted.
+If you encounter any issues, you can refer to the La Trobe University IT Helpdesk for further assistance. Their contact number is 03 9479 2222.","5","The library opening hours at the Bundoora campus are as follows:
+
+Monday to Friday: 8:00 AM to 10:00 PM
+Saturday: 9:00 AM to 5:00 PM
+Sunday: Closed
+For the most up-to-date information, you can check the Library Opening Hours document or contact the library directly.","5","The after hours helpline number for the Bundoora campus is 1800 758 360.","5","The CRICOS code for the Master of ICT at La Trobe University is 061684F.","5","5","1","5","5","5","Easy to use. UX could be improved.","⭐⭐⭐⭐⭐ Excellent"
+"2026/04/28 4:47:13 PM GMT+10","Jayaansh Karya","no","Undergraduate","The room with the highest CO2 levels, based on the latest data, was Library-L3 with a CO2 level of 1020 ppm.","5","Based on the latest data, the Study-Room-1 has the lowest noise level, making it a good choice for studying. The noise level in Study-Room-1 is currently 30 dB.","5","The following rooms are currently occupied based on the latest data:
+
+Lecture-Hall-A
+Lecture-Hall-B
+Lecture-Hall-C
+Study-Room-1
+Study-Room-2
+Study-Room-3
+Please note that these results are limited to the most recent 10 records.","5","To connect to eduroam WiFi at the Bundoora campus, follow these steps:
+
+Ensure your device is within range of an eduroam network.
+Open your device's Wi-Fi settings.
+Select ""eduroam"" from the list of available networks.
+Enter your La Trobe University username and password when prompted.
+If you encounter any issues, you can refer to the La Trobe University IT Helpdesk for further assistance. Their contact number is 03 9479 2222.","5","The library opening hours at the Bundoora campus are as follows:
+
+Monday to Friday: 8:00 AM to 10:00 PM
+Saturday: 9:00 AM to 5:00 PM
+Sunday: Closed
+For the most up-to-date information, you can check the Library Opening Hours document or contact the library directly.","5","The after hours helpline number for the Bundoora campus is 1800 758 360.","5","The CRICOS code for the Master of ICT at La Trobe University is 061684F.","5","5","1","5","5","5","Very Good tool to know about La Trobe University.","⭐⭐⭐⭐⭐ Excellent"
+"2026/04/28 5:59:37 PM GMT+10","Ritika","no","Other","The room with the highest CO2 levels was Library-L3, with a maximum CO2 level of 1020 ppm.","5","Based on the latest data, the Library-L3 has the lowest noise level among the available rooms, currently at 35 dB. This might be a good option for studying quietly.","5","The currently occupied rooms are Library-L1, Library-L2, Library-L3, Lab-101, Lab-102, Lab-203, Lab-301, Lab-302, Lecture-Hall-A, Lecture-Hall-B, Lecture-Hall-C, Study-Room-1, Study-Room-2, Study-Room-3, Cafeteria, and Meeting-Room-1. Would you like more detailed information on these rooms or assistance finding an unoccupied room?","4","To connect to eduroam WiFi, you will need to follow these steps:
+
+1. Ensure your device is connected to the eduroam network.
+2. Enter your La Trobe University username and password when prompted.
+
+If you encounter any issues, you can contact the IT Helpdesk at 03 9479 2222 or via email at ithelp@latrobe.edu.au for assistance. Would you like more detailed instructions or help with anything else?","5","The library opening hours are as follows:
+
+- Monday to Friday: 8:00 AM to 10:00 PM
+- Saturday: 9:00 AM to 5:00 PM
+- Sunday: Closed
+
+These hours are subject to change, so it's a good idea to check the Melbourne Campus Map or the Library Opening Hours document for the most up-to-date information.","4","The after hours helpline number for La Trobe University is 1800 758 360.
+","5","The CRICOS code for the Master of ICT program is 061684F.","5","5","2","5","1","5","It is designed to provide accurate and helpful information quickly ","⭐⭐⭐⭐⭐ Excellent"
+"2026/04/28 6:20:55 PM GMT+10","Karthik","no","postgraduate","The room with the highest CO2 levels was Library-L3, with a maximum CO2 level of 1020 ppm.","5","Based on the latest data, the Library-L3 has the lowest noise level among the available rooms, currently at 35 dB. This might be a good option for studying quietly. Would you like more detailed information on this room or assistance finding another room?","5","The currently occupied rooms are Library-L1, Library-L2, Library-L3, Lab-101, Lab-102, Lab-203, Lab-301, Lab-302, Lecture-Hall-A, Lecture-Hall-B, Lecture-Hall-C, Study-Room-1, Study-Room-2, Study-Room-3, Cafeteria, and Meeting-Room-1. Would you like more detailed information on these rooms or assistance finding an unoccupied room?","5","To connect to eduroam WiFi, follow these steps:
+
+1. Ensure your device is connected to the eduroam network.
+2. Enter your La Trobe University username and password when prompted.
+
+If you encounter any issues, you can contact the IT Helpdesk at 03 9479 2222 or via email at ithelp@latrobe.edu.au for assistance.","5","The library opening hours are as follows:
+
+- Monday to Friday: 8:00 AM to 10:00 PM
+- Saturday: 9:00 AM to 5:00 PM
+- Sunday: Closed
+
+These hours are subject to change, so it's a good idea to check the Melbourne Campus Map or the Library Opening Hours document for the most up-to-date information.","5","The after hours helpline number for La Trobe University is 1800 758 360.","5","The CRICOS code for the Master of ICT program is 061684F.","5","5","2","5","5","5","easy to use ","⭐⭐⭐⭐⭐ Excellent"
+"2026/04/28 6:24:02 PM GMT+10","Lahari","yes","postgraduate","The room with the highest CO2 levels was Library-L3, with a maximum CO2 level of 1020 ppm.","5","Based on the latest data, the Library-L3 has the lowest noise level among the available rooms, currently at 35 dB. This might be a good option for studying quietly. Would you like more detailed information on this room or assistance finding another room?","5","The currently occupied rooms are Library-L1, Library-L2, Library-L3, Lab-101, Lab-102, Lab-203, Lab-301, Lab-302, Lecture-Hall-A, Lecture-Hall-B, Lecture-Hall-C, Study-Room-1, Study-Room-2, Study-Room-3, Cafeteria, and Meeting-Room-1. Would you like more detailed information on these rooms or assistance finding an unoccupied room?","5","To connect to eduroam WiFi, follow these steps:
+
+1. Ensure your device is connected to the eduroam network.
+2. Enter your La Trobe University username and password when prompted.","5","The library opening hours are as follows:
+
+- Monday to Friday: 8:00 AM to 10:00 PM
+- Saturday: 9:00 AM to 5:00 PM
+- Sunday: Closed","5","The after hours helpline number for La Trobe University is 1800 758 360.","5","The CRICOS code for the Master of ICT program is 061684F.","5","5","1","5","5","5","Happy to use all the features in one place","⭐⭐⭐⭐⭐ Excellent"
+"2026/04/28 6:38:21 PM GMT+10","Sukesh","no","Other","The room with the highest CO2 levels was Library-L3, with a maximum CO2 level of 1020 ppm.","5","Based on the latest data, the Library-L3 has the lowest noise level among the available rooms, currently at 35 dB. This might be a good option for studying quietly. Would you like more detailed information on this room or assistance finding another room?","5","The currently occupied rooms are Library-L1, Library-L2, Library-L3, Lab-101, Lab-102, Lab-203, Lab-301, Lab-302, Lecture","5","To connect to eduroam WiFi at La Trobe University Bundoora campus, follow these steps:
+
+1. Ensure your device is within range of an eduroam network.
+2. Open your device's Wi-Fi settings.
+3. Select ""eduroam"" from the list of available networks.
+4. Enter your La Trobe University username and password when prompted.
+
+If you encounter any issues, you can contact the IT Helpdesk for assistance. Their phone number is 03 9479 2222.","5","The library opening hours are as follows:
+
+- Monday to Friday: 8:00 AM to 10:00 PM
+- Saturday: 9:00 AM to 5:00 PM
+- Sunday: Closed
+
+These hours are subject to change, so it's a good idea to check the latest schedule on the library's website or sign up for the library newsletter to receive updates.","5","The after hours helpline number for La Trobe University is 1800 758 360.","5","The CRICOS code for the Master of ICT at La Trobe University is 061684F.","5","5","1","5","5","5","I loved it, easy to use","⭐⭐⭐⭐⭐ Excellent"
+"2026/04/28 6:44:18 PM GMT+10","Surya","no","Other","The room that had the highest CO2 levels among the queried rooms was Library-L3 with a CO2 level of 944 ppm.","5","Based on the latest data, the Study-Room-1 and Study-Room-2 have relatively low noise levels, making them suitable for studying. The noise levels in these rooms are currently below 30 dB.","5","The rooms currently occupied are Lecture-Hall-A, Lecture-Hall-B, and Lecture-Hall-C.","5","To connect to eduroam WiFi at La Trobe University Bundoora campus, follow these steps:
+
+1. Ensure your device is within range of an eduroam network.
+2. Open your device's Wi-Fi settings.
+3. Select ""eduroam"" from the list of available networks.
+4. Enter your La Trobe University username and password when prompted.
+
+If you encounter any issues, you can contact the IT Helpdesk for assistance. Their phone number is 03 9479 2222.","5","The library opening hours are as follows:
+
+- Monday to Friday: 8:00 AM to 10:00 PM
+- Saturday: 9:00 AM to 5:00 PM
+- Sunday: Closed
+
+These hours are subject to change, so it's a good idea to check the latest schedule on the library's website or sign up for the library newsletter to receive updates.","5","The after hours helpline number for La Trobe University is 1800 758 360.","5","The CRICOS code for the Master of ICT at La Trobe University is 061684F.","5","5","1","5","5","5","Good to see the concept and UI is good","⭐⭐⭐⭐⭐ Excellent"

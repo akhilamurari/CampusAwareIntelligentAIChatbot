@@ -1,0 +1,317 @@
+SOURCE: https://policies.latrobe.edu.au/document/view.php?id=229&version=2
+DOCUMENT: Asset Management Policy
+
+Asset Management Policy Section 1 - Key Information Section 2 - Purpose Section 3 - Scope Section 4 - Key Decisions Section 5 - Policy Statement Section 6 - Procedures Part A - Asset(s) Part B - Asset Class Part C - Research Equipment Part D - Asset Under Construction Part E - Intangible Assets Part F - Portable and Attractive Items Part G - Property on Loan, Lease or Hire Part H - Heritage Part I - Depreciation/Amortisation Part J - Valuations and Revaluations Part K - Investments and Other Financial Assets Part L - Noncurrent Assets Held for Sale and Discontinued Part M - Contingent Assets and Liabilities Contingent Liability Disclosure Contingent Asset Disclosure Part N - Responsibilities Section 7 - Definitions Section 8 - Authority and Associated Information This is the current version of this document. To view historic versions, click the link in the document's navigation bar. Section 1 - Key Information Policy Type and Approval Body Administrative – University Council Accountable Executive – Policy Chief Operating Officer Responsible Manager – Policy Chief Financial Officer Review Date 17 November 2026 Section 2 - Purpose (1) The purpose of this Policy is to ensure the University’s assets are procured, managed and accounted for in accordance with applicable governing rules, regulations, and strategic objectives. Section 3 - Scope (2) This Policy applies to: all students , staff , contractors, controlled entities and members of the University community all business assets across the University all portable and attractive items (<$500) owned by the University that are not defined as an asset all property that is either loaned or hired from or to the University including land, buildings and motor vehicles (3) This Policy does not apply to: transactions involving all property that is loaned between departments of the University. In such cases, parties concerned are urged to establish responsibility and liability before any arrangement is made. Section 4 - Key Decisions Key Decisions Role Appoints valuer to undertake valuations Associate Director, Corporate and Reporting Executes contracts for incoming and outgoing art loans Director, La Trobe Art Institute Section 5 - Policy Statement (4) All University assets, as guided by the Australian and International Accounting Standards, will be recorded and maintained on a Fixed Asset Register. (5) All determined Portable and Attractive items (>$500) will be recorded on a Portable and Attractive Item Register. (6) Management of all University assets and Portable and Attractive items will be carried out in accordance with the University’s Procurement Policy , Health and Safety Policy , Code of Conduct , current Sustainability Governance practices, the Financial Management Act 1994 , the Heritage Act 1995 , and the Electrical Safety Act 1998 . (7) The majority of University Assets will be valued based on purchase price, with the case of assets acquired at no or nominal cost recognised at fair value from the date of acquisition. Land, buildings, artworks and collectible items are valued at fair value and require appropriate revaluation, both in accordance with Accounting Standard AASB 116 – Property, Plant and Equipment. (8) All loan or hire transactions must be appropriately managed, including receiving all relevant approvals and declarations of responsibility(s) before transactions are finalised. (9) All areas of the University are required to adopt a standard agreement for hiring buildings, rooms, grounds etc. (10) Outgoing and incoming loans for artworks must have a Loan Agreement Document issued by the Art Institute. (11) Staff receiving a vehicle allowance as a part of their contract with the University, including those who have not chosen to lease or purchase a vehicle, are they themselves responsible for their own road transport costs associated with University Business Travel (see below for where exceptions apply). (12) In the case of equipment that is loaned or hired for the benefit of the University, the University’s insurances will apply. (13) In the case of equipment that is loaned or hired for the benefit of the borrower/hirer, insurance is the responsibility of the borrower/hirer. (14) The University does not accept responsibility for any injury to, or damage suffered by, any “external” borrower/hirer, or by third parties resulting from the loan or hire of its equipment. Section 6 - Procedures (15) These procedures are intended to be read in conjunction with the following associated documentation that provides further details, including but not limited to, specific procedures relative to asset classification, investments, purchasing, leasing, reporting requirements, research equipment, impairment thresholds and criteria, including but not limited to: Asset Management Procedure - Disposal/Sale University Vehicle Fleet Policy (16) If a staff member suspects that an asset has been stolen or intentionally damaged, they should immediately notify University Security and the Manager in charge of the area. Part A - Asset(s) (17) The University defines an asset as a transaction/group of transactions that comply with The Australian Standard 138.8; and: that do not meet the definition of an expense (refer below for capital vs expense guidance); and that as an individual unit is valued over $5,000 GST exclusive; and/or that as individual units, may cost less than $5,000 GST exclusive, but may combine to form an operating unit or network or have the same or similar nature with a combined cost of more than $10,000 GST exclusive. (18) All assets should not be carried at a greater value than its recoverable amount, and all (other than goodwill, indefinite life intangible assets and intangible assets that are not yet ready for use) are required to be tested for impairment where there is an impairment indicator. Part B - Asset Class (19) Once defined as an asset, all purchases of assets must adhere to the Procurement Policy and are required to be recorded in an Asset Class for financial reporting purposes. (20) The University maintains the following Asset Classes: Freehold Land Buildings Buildings - Leasehold Improvements Right Of Use Asset – Land and buildings Infrastructure Plant & Equipment 10YR Plant & Equipment 20YR (New) Furniture, Fixtures & Office Equipment Motor Vehicles (Passenger) Right Of Use Asset – Vehicles Right Of Use Asset – Plant & Equipment Motor Vehicles (Commercial) Hardware (Computer/Technical) Computer Software Cloud Based Software Online Digital Content Library Collection Collectors Items Assets Under Construction Part C - Research Equipment (21) Where research equipment is purchased with internal University funds, and is considered an asset for University purposes, it will be classified in the relevant asset class and depreciated over the applicable useful life. (22) Where research equipment is purchased with external research grant funds, and is considered an asset for University purposes, it will be classified in the relevant asset class and depreciated in the year it is purchased/or over the life of the grant. Part D - Asset Under Construction (23) Where a project is being executed, which is expected to result in the production of one or several assets (for example a building refurbishment or a new website), a Work Breakdown Structure (WBS) in the Project System with a WBS element settling to an ‘Asset Under Construction’ must be established. (24) The Asset Under Construction (commonly referred to as an AUC) holds a collection of transactions relating to the construction of the asset, until the asset is ready for its final intended use. (25) When the Assets are ready for their intended use (usually project practical completion) the WBS the Asset Under Construction is linked to then needs to be ‘settled’ and the transactions transferred to the relevant asset classes as new records on the Fixed Asset Register. Part E - Intangible Assets (26) By definition intangible assets are required to be recognised and measured. Including but not limited to, the following measurements: Goodwill acquired in a business combination is measured at cost, less any accumulated impairment losses (tested annually); Licences that have a finite useful life are carried at cost, less accumulated amortisation and impairment losses; Licences that have an indefinite useful life are not amortised and are assessed for impairment annually; Computer software is carried at cost less accumulated amortisation and impairment losses; Costs incurred in developing products or systems and costs incurred in acquiring software and licenses that will contribute to future period financial benefits through revenue generation and/or cost reduction are capitalised to software. Costs capitalised include external direct costs of materials, services, direct payroll and payroll related costs of employees’ time spent on the project. All other repairs and maintenance are charged to the income statement during the financial period in which they are incurred. Research expenditure is recognised as an expense as incurred. Costs incurred on development projects (relating to the design and testing of new or improved products) are recognised as intangible assets when it is probable that the project will, after considering its commercial and technical feasibility, be completed and generate future economic benefits and its costs can be measured reliably. Part F - Portable and Attractive Items (27) A Portable and Attractive item is defined as: having a value greater than $500 (the threshold may be lowered at the discretion of the Operational Unit for high-risk items); does not meet the University’s definition of an asset (refer to Asset Definition/Class Procedures); and are susceptible to theft or loss due to their portable nature and attractiveness for personal use or resale. (28) Items that meet the definition of a Portable and Attractive Item will need to be recorded on the Portable and Attractive Item Register. (29) All Portable and Attractive items must be recorded on the Register and maintained by the Operational Unit which purchased the asset. The template for the Portable and Attractive Item Register is available on the Finance website. (30) All information requested on the Portable and Attractive Item Register template i.e. purchase date, cost centre, category, mode/description, disposal information must be accounted for and documented. (31) Once authorised by the head of the responsible area, portable and attractive items are to be removed from the register when they are disposed of due to becoming obsolete, damaged, lost or stolen. Information relating to the reason for disposals is appropriately recorded, and where applicable, in accordance with environmental disposal requirements. Part G - Property on Loan, Lease or Hire (32) When equipment is loaned, leased or hired the following is taken into consideration: the legality of the arrangements; the protection of the University’s interest in the equipment; a clear definition of responsibility and liability between the University, its members and other persons and organisations for theft, loss or damage to the property/equipment*. (33) As a general principle*, the borrower/hirer will be responsible for the surety, maintenance, and insurance of the property concerned. This practice should only be altered when it is clearly in the best interest of the University to do so (for example, where University equipment is lent to others for University purposes). (34) Schools and Departments are responsible for maintaining records of equipment removed from the campus for any purpose (copies of loan/hire agreements will suffice for this purpose). (35) Where University equipment is hired to others, as a general principle, the hiring fee will represent the value of the use of the equipment to the hirer, and allow for fair wear and tear, and depreciation. (36) The borrower/hirer (whether an employee of the University, a student or an outside person or organisation) must complete the loan/hire agreement. The Loan Hire Agreement Form (University Equipment on Loan or hire to University Staff, Students or Others) is available on the University’s Insurance Office Web Site. (37) Outgoing and incoming loans for artworks must have a Loan Agreement Document issued by the Art Institute. The Loan Agreement documents are prepared and executed by the Director, La Trobe Art Institute for all incoming loans to the Collection and exhibitions and outgoing loans to outside organisations for  the purposes of exhibition, conservation treatment or research. (38) All areas of the University are required to adopt a standard agreement for hiring buildings, rooms, grounds etc. The standard Facilities Agreement and Tax Invoice for booking/hire of University buildings and facilities and the conditions are available on the University’s Insurance Office web site. Part H - Heritage (39) Heritage Assets are regarded as part of the generic asset class to which they belong and are recognised and depreciated on the basis applying to assets with the same functionality. (40) Any acquisition, disposal, refurbishment or re-configuration of a Heritage asset is subject to the requirements of the Heritage Act 1995 , and must (where appropriate) be discussed and approved by Heritage Victoria. Part I - Depreciation/Amortisation (41) All fixed assets other than land, land improvements, special collections and assets under construction (AUC) are depreciated (or in the case of software, amortised) over their estimated economic useful lives using the straight-line method. (42) Leasehold improvements are depreciated over their useful lives, or the unexpired period of the lease, whichever is shorter. (43) Depreciation of all fixed assets and amortisation of intangible assets will be calculated from the month after acquisition (or when the asset is put into use), until the item is fully depreciated/amortised or until the month of retirement, whichever is shorter. (44) Depreciation/amortisation will be charged to the cost centre responsible for the management and safekeeping of the asset (this will also be the cost centre responsible for stock-take and impairment testing annually). Summary Table – Asset Useful Life Asset Class Useful Life (Years) Buildings 50 Infrastructure 20 Leasehold Improvements Yrs/LOL Library Books and E-resources 10 Plant & Equipment 10YR 10 Plant & Equipment 20YR (New) 20 Furniture, Fixtures & Office Equipment 10 Motor Vehicles (Commercial) 10 Motor Vehicles (Passenger) 15 Hardware (Computer/Technical) 3 Software (10YR) 10 Software (5YR) (New) 5 Part J - Valuations and Revaluations (45) Land, buildings, and art catalogue collections are carried at fair value on the University Balance Sheet. Fixed assets acquired at no cost or for nominal consideration must be recognised at fair value at their date of acquisition via a valuation by an independent valuer designated by the University. (46) Revaluations must be made with sufficient regularity to ensure that the carrying values for the assets in these classes do not differ materially from their fair value. Specific requirements are detailed below: Buildings, infrastructure, land (including land improvements): require a comprehensive independent valuation at least every three years; Art catalogue collections: require a comprehensive independent valuation every three years; Land, buildings or art catalogue collections received for zero or nominal consideration will be independently valued and placed on the asset register as they are acquired, which will be in between the formal revaluation cycle. (47) Where an asset requires a valuation or revaluation, an independent valuer must be appointed, who is not an employee, or an associate of the University. The valuation must be provided in a report which is to be maintained for seven years as substantiation for an entry in the University’s financial records. (48) Any assets received for $nil consideration which are brought on to the Asset Register and general ledger at fair value will be debited to the asset balance and credited as revenue in the financial reports of the University. (49) Once a revaluation of a class of assets has been performed the Asset Register must be updated to reflect the revaluation and ensure the asset register and general ledger contains the correct asset balances for financial reporting purposes. Part K - Investments and Other Financial Assets (50) The University classes its investments and other financial assets in the following areas: financial assets at fair value through profit or loss; loans and receivables*; held-to-maturity investments; and available-for-sale financial assets. Assets in this category are measured at fair value, and transaction costs are expensed through the income statement. After initial recognition, assets in this category are measured at fair values, without any deductions for transaction costs that may be incurred on sale or other disposal. A gain or loss on a financial asset classified as at fair value through profit or loss is recognised in the income statement. (51) *After initial recognition, loans and receivables shall be measured at amortised cost using the effective interest method. A gain or loss shall be recorded in the income statement, when loans and receivables are derecognised or impaired, and through the amortisation process. Part L - Noncurrent Assets Held for Sale and Discontinued (52) The University, in general terms, classifies non-current assets (or disposal groups)* as held for sale if their carrying amount will be recovered principally through a sale transaction rather than through continuing use. (53) For this to be the case the asset (or disposal group) must be available for immediate sale in its present condition subject only to terms that are usual and customary for sale of such assets (or disposal groups) and its sale must be highly probable. (54) Non-current assets classified as held for sale and the assets of a disposal group classified as held for sale are presented separately from the other assets in the balance sheet. The liabilities of a disposal group classified as held for sale are presented separately from other liabilities in the balance sheet. (55) *The following asset types are not recognised as non-current assets or disposal groups: deferred tax assets; assets arising from employee benefits; financial assets; non-current assets that are accounted for in accordance with the fair value model; non-current assets that are measured at fair value less estimated point-of-sale costs; and contractual rights under insurance contracts. Part M - Contingent Assets and Liabilities (56) Contingent assets and contingent liabilities are not recognised in the financial statements of the University, however disclosure of information regarding contingent assets and contingent liabilities is required by way of a note to the annual financial report. Contingent Liability Disclosure (57) The University shall disclose for each class of contingent liability at the reporting date a brief description of the nature of the contingent liability and, where practicable: an estimate of its financial effect; an indication of the uncertainties relating to the amount or timing of any outflow; and the possibility of any reimbursement. Contingent Asset Disclosure (58) Where an inflow of economic benefits is probable, an entity shall disclose a brief description of the nature of the contingent asset at the reporting date, and, where practicable, an estimate of the financial effect. It is important that disclosures for contingent assets avoid giving misleading indications of the likelihood of income arising. (59) Under certain circumstances i.e. executory contracts, where it is not practicable, or where it may cause serious prejudice, the University may hold grounds for non-disclosure of contingent assets and liabilities, however, it still holds an accountability to report such cases. Part N - Responsibilities (60) Corporate and Reporting is responsible for collating the final presentation of asset information in the University’s Annual Financial Report. (61) Finance Managers are to keep a manual register of contingent assets and liabilities throughout the year. (62) Legal Services is to provide a register of potential legal actions that may eventuate into a contingent asset or a contingent liability at the end of the reporting year. Section 7 - Definitions (63) For the purpose of this Policy and procedure: Accruals: liabilities to pay for goods and services that have been received or supplied but have not yet been paid, invoiced or formally agreed with the supplier. Accruals are often reported as part of trade and other payables, whereas provisions are reported separately. Amortisation: the action or process of gradually writing off the initial cost of an asset. Asset: The Australian Accounting Standard 138.8 defines an asset as a resource that is: controlled by an entity as a result of past events; and from which future economic benefits are expected to flow to the entity. Note that ownership is not important in the definition of an asset (that is, we can hold an asset in the University’s balance sheet that is not held on University land, providing we have control over that asset). In order to have control without ownership, there must be some form of access agreement or lease in place over the land or property to guarantee our access and on-going benefit of the asset. ‘Future Economic Benefits’ refers to the University’s income earning activities. In order for something to be considered an asset, it must directly or indirectly be linked to the University’s ability to earn income. The University defines an asset as follows: A transaction/group of transactions that comply with the above accounting definition; and that do not meet the definition of an expense; and that as an individual unit is valued over $5,000 GST exclusive; and/or that as individual units, may cost less than $5,000 GST exclusive, but may combine to form an operating unit or network or have the same or similar nature with a combined cost of more than $10,000 GST exclusive. Asset Under Construction (AUC): is an asset the University is currently constructing, which is not yet being used for its final intended purpose. Contingent assets: possible assets that arise from past events and whose existence will be confirmed only by the occurrence or non-occurrence of one or more uncertain future events not wholly within the control of the University. Contingent assets are assessed continually and if they become certain that an inflow of economic benefits will arise, the asset and the related income are recognised in the financial statements in the period that the change from probable to certain occurs. Contingent liabilities: possible obligations that arise out of past events and whose existence will be confirmed only by the occurrence of or non-occurrence of one or more uncertain future events not wholly within the control of the University. These can also be present obligations that arise from past events but they are not recognised because it is not probable that an outflow of resources embodying economic benefits will be required to settle the obligation, or the amount of the obligation cannot be measured with sufficient reliability. Where the University is jointly and severally liable for an obligation, the part of the obligation that is expected to be met by the other parties is treated as a contingent liability. Fair Value: the amount for which an asset could be exchanged between knowledgeable, willing parties in an arm’s length transaction. Heritage Assets: Those places which the University has a statutory obligation to preserve, for example, those places listed under the Victorian Government’s Heritage Database. Hire: University property or equipment that is leased or hired to an external party under an agreement for a fee. Intangible Asset: an identifiable non-monetary asset without physical substance. Investments and other financial assets: A financial asset is classified in this category if acquired principally for the purpose of selling in the short term or if so designated by university management. The policy of the University is to designate a financial asset in this category if there exists the possibility it will be sold in the short term and if the asset is subject to frequent changes in fair value. Assets in this category are classified as current assets if they are either held for trading or are expected to be realised within 12 months of the balance sheet date. Derivatives are classified as held for trading unless they are designated as hedges. Lease: property that is leased or hired by the University under a lease or hire agreement for a fee; University property that is leased or hired to an external party under a lease or hire agreement for a fee. Liability: a present obligation of an entity arising from past events, the settlement of which is expected to result in an outflow from the University’s resources embodying economic benefits, e.g. trade payables and accruals. Loan: property or equipment that is temporarily loaned to the University for its use, or lent by the University to an external party; or property that is temporarily loaned to the University for its use, or lent by the University to an external party. Loans and receivables: non-derivative financial assets with fixed or determinable payments that are not quoted in an active market, other than: those that the University intends to sell immediately; those that the University designates as available for sale; or those for which the University may not recover substantially all of its initial investment. Provisions: liabilities which have an uncertain timing or amount. They are distinguished from other liabilities such as trade payables and accruals because there is uncertainty about the timing or the amount of the future expenditure required in settlement. The present obligation under an onerous contract is recognised as a provision. Valuation/Revaluation: a formal assessment or re-assessment of the fair value of an asset. Section 8 - Authority and Associated Information (64) This Policy is made under the La Trobe University Act 2009 . (65) Associated information includes: Finance and Procurement Intranet
+  • Current Version
+  • Status and Details
+  • Associated Information
+  • Historic Versions
+  • Future Versions
+  • Print
+  • Feedback
+
+============================================================
+ASSET MANAGEMENT POLICY
+============================================================
+  • Section 1 - Key Information
+  • Section 2 - Purpose
+  • Section 3 - Scope
+  • Section 4 - Key Decisions
+  • Section 5 - Policy Statement
+  • Section 6 - Procedures
+  • Part A - Asset(s)
+  • Part B - Asset Class
+  • Part C - Research Equipment
+  • Part D - Asset Under Construction
+  • Part E - Intangible Assets
+  • Part F - Portable and Attractive Items
+  • Part G - Property on Loan, Lease or Hire
+  • Part H - Heritage
+  • Part I - Depreciation/Amortisation
+  • Part J - Valuations and Revaluations
+  • Part K - Investments and Other Financial Assets
+  • Part L - Noncurrent Assets Held for Sale and Discontinued
+  • Part M - Contingent Assets and Liabilities
+  • Contingent Liability Disclosure
+  • Contingent Asset Disclosure
+  • Part N - Responsibilities
+  • Section 7 - Definitions
+  • Section 8 - Authority and Associated Information
+
+============================================================
+SECTION 1 - KEY INFORMATION
+============================================================
+Policy Type and Approval Body
+Administrative – University Council
+Accountable Executive – Policy
+Chief Operating Officer
+Responsible Manager – Policy
+Chief Financial Officer
+Review Date
+17 November 2026
+
+============================================================
+SECTION 2 - PURPOSE
+============================================================
+(1) The purpose of this Policy is to ensure the University’s assets are procured, managed and accounted for in accordance with applicable governing rules, regulations, and strategic objectives.
+
+============================================================
+SECTION 3 - SCOPE
+============================================================
+(2) This Policy applies to:
+  • all students , staff , contractors, controlled entities and members of the University community
+  • all business assets across the University
+  • all portable and attractive items (<$500) owned by the University that are not defined as an asset
+  • all property that is either loaned or hired from or to the University including land, buildings and motor vehicles
+(3) This Policy does not apply to:
+  • transactions involving all property that is loaned between departments of the University. In such cases, parties concerned are urged to establish responsibility and liability before any arrangement is made.
+
+============================================================
+SECTION 4 - KEY DECISIONS
+============================================================
+Key Decisions
+Role
+Appoints valuer to undertake valuations
+Associate Director, Corporate and Reporting
+Executes contracts for incoming and outgoing art loans
+Director, La Trobe Art Institute
+
+============================================================
+SECTION 5 - POLICY STATEMENT
+============================================================
+(4) All University assets, as guided by the Australian and International Accounting Standards, will be recorded and maintained on a Fixed Asset Register.
+(5) All determined Portable and Attractive items (>$500) will be recorded on a Portable and Attractive Item Register.
+(6) Management of all University assets and Portable and Attractive items will be carried out in accordance with the University’s Procurement Policy , Health and Safety Policy , Code of Conduct , current Sustainability Governance practices, the Financial Management Act 1994 , the Heritage Act 1995 , and the Electrical Safety Act 1998 .
+(7) The majority of University Assets will be valued based on purchase price, with the case of assets acquired at no or nominal cost recognised at fair value from the date of acquisition. Land, buildings, artworks and collectible items are valued at fair value and require appropriate revaluation, both in accordance with Accounting Standard AASB 116 – Property, Plant and Equipment.
+(8) All loan or hire transactions must be appropriately managed, including receiving all relevant approvals and declarations of responsibility(s) before transactions are finalised.
+(9) All areas of the University are required to adopt a standard agreement for hiring buildings, rooms, grounds etc.
+(10) Outgoing and incoming loans for artworks must have a Loan Agreement Document issued by the Art Institute.
+(11) Staff receiving a vehicle allowance as a part of their contract with the University, including those who have not chosen to lease or purchase a vehicle, are they themselves responsible for their own road transport costs associated with University Business Travel (see below for where exceptions apply).
+(12) In the case of equipment that is loaned or hired for the benefit of the University, the University’s insurances will apply.
+(13) In the case of equipment that is loaned or hired for the benefit of the borrower/hirer, insurance is the responsibility of the borrower/hirer.
+(14) The University does not accept responsibility for any injury to, or damage suffered by, any “external” borrower/hirer, or by third parties resulting from the loan or hire of its equipment.
+
+============================================================
+SECTION 6 - PROCEDURES
+============================================================
+(15) These procedures are intended to be read in conjunction with the following associated documentation that provides further details, including but not limited to, specific procedures relative to asset classification, investments, purchasing, leasing, reporting requirements, research equipment, impairment thresholds and criteria, including but not limited to:
+  • Asset Management Procedure - Disposal/Sale
+  • University Vehicle Fleet Policy
+(16) If a staff member suspects that an asset has been stolen or intentionally damaged, they should immediately notify University Security and the Manager in charge of the area.
+
+============================================================
+PART A - ASSET(S)
+============================================================
+(17) The University defines an asset as a transaction/group of transactions that comply with The Australian Standard 138.8; and:
+  • that do not meet the definition of an expense (refer below for capital vs expense guidance); and
+  • that as an individual unit is valued over $5,000 GST exclusive; and/or
+  • that as individual units, may cost less than $5,000 GST exclusive, but may combine to form an operating unit or network or have the same or similar nature with a combined cost of more than $10,000 GST exclusive.
+(18) All assets should not be carried at a greater value than its recoverable amount, and all (other than goodwill, indefinite life intangible assets and intangible assets that are not yet ready for use) are required to be tested for impairment where there is an impairment indicator.
+
+============================================================
+PART B - ASSET CLASS
+============================================================
+(19) Once defined as an asset, all purchases of assets must adhere to the Procurement Policy and are required to be recorded in an Asset Class for financial reporting purposes.
+(20) The University maintains the following Asset Classes:
+  • Freehold Land
+  • Buildings
+  • Buildings - Leasehold Improvements
+  • Right Of Use Asset – Land and buildings
+  • Infrastructure
+  • Plant & Equipment 10YR
+  • Plant & Equipment 20YR (New)
+  • Furniture, Fixtures & Office Equipment
+  • Motor Vehicles (Passenger)
+  • Right Of Use Asset – Vehicles
+  • Right Of Use Asset – Plant & Equipment
+  • Motor Vehicles (Commercial)
+  • Hardware (Computer/Technical)
+  • Computer Software
+  • Cloud Based Software
+  • Online Digital Content
+  • Library Collection
+  • Collectors Items
+  • Assets Under Construction
+
+============================================================
+PART C - RESEARCH EQUIPMENT
+============================================================
+(21) Where research equipment is purchased with internal University funds, and is considered an asset for University purposes, it will be classified in the relevant asset class and depreciated over the applicable useful life.
+(22) Where research equipment is purchased with external research grant funds, and is considered an asset for University purposes, it will be classified in the relevant asset class and depreciated in the year it is purchased/or over the life of the grant.
+
+============================================================
+PART D - ASSET UNDER CONSTRUCTION
+============================================================
+(23) Where a project is being executed, which is expected to result in the production of one or several assets (for example a building refurbishment or a new website), a Work Breakdown Structure (WBS) in the Project System with a WBS element settling to an ‘Asset Under Construction’ must be established.
+(24) The Asset Under Construction (commonly referred to as an AUC) holds a collection of transactions relating to the construction of the asset, until the asset is ready for its final intended use.
+(25) When the Assets are ready for their intended use (usually project practical completion) the WBS the Asset Under Construction is linked to then needs to be ‘settled’ and the transactions transferred to the relevant asset classes as new records on the Fixed Asset Register.
+
+============================================================
+PART E - INTANGIBLE ASSETS
+============================================================
+(26) By definition intangible assets are required to be recognised and measured. Including but not limited to, the following measurements:
+  • Goodwill acquired in a business combination is measured at cost, less any accumulated impairment losses (tested annually);
+  • Licences that have a finite useful life are carried at cost, less accumulated amortisation and impairment losses;
+  • Licences that have an indefinite useful life are not amortised and are assessed for impairment annually;
+  • Computer software is carried at cost less accumulated amortisation and impairment losses;
+  • Costs incurred in developing products or systems and costs incurred in acquiring software and licenses that will contribute to future period financial benefits through revenue generation and/or cost reduction are capitalised to software. Costs capitalised include external direct costs of materials, services, direct payroll and payroll related costs of employees’ time spent on the project. All other repairs and maintenance are charged to the income statement during the financial period in which they are incurred.
+  • Research expenditure is recognised as an expense as incurred. Costs incurred on development projects (relating to the design and testing of new or improved products) are recognised as intangible assets when it is probable that the project will, after considering its commercial and technical feasibility, be completed and generate future economic benefits and its costs can be measured reliably.
+
+============================================================
+PART F - PORTABLE AND ATTRACTIVE ITEMS
+============================================================
+(27) A Portable and Attractive item is defined as:
+  • having a value greater than $500 (the threshold may be lowered at the discretion of the Operational Unit for high-risk items);
+  • does not meet the University’s definition of an asset (refer to Asset Definition/Class Procedures); and
+  • are susceptible to theft or loss due to their portable nature and attractiveness for personal use or resale.
+(28) Items that meet the definition of a Portable and Attractive Item will need to be recorded on the Portable and Attractive Item Register.
+(29) All Portable and Attractive items must be recorded on the Register and maintained by the Operational Unit which purchased the asset. The template for the Portable and Attractive Item Register is available on the Finance website.
+(30) All information requested on the Portable and Attractive Item Register template i.e. purchase date, cost centre, category, mode/description, disposal information must be accounted for and documented.
+(31) Once authorised by the head of the responsible area, portable and attractive items are to be removed from the register when they are disposed of due to becoming obsolete, damaged, lost or stolen. Information relating to the reason for disposals is appropriately recorded, and where applicable, in accordance with environmental disposal requirements.
+
+============================================================
+PART G - PROPERTY ON LOAN, LEASE OR HIRE
+============================================================
+(32) When equipment is loaned, leased or hired the following is taken into consideration:
+  • the legality of the arrangements;
+  • the protection of the University’s interest in the equipment;
+  • a clear definition of responsibility and liability between the University, its members and other persons and organisations for theft, loss or damage to the property/equipment*.
+(33) As a general principle*, the borrower/hirer will be responsible for the surety, maintenance, and insurance of the property concerned. This practice should only be altered when it is clearly in the best interest of the University to do so (for example, where University equipment is lent to others for University purposes).
+(34) Schools and Departments are responsible for maintaining records of equipment removed from the campus for any purpose (copies of loan/hire agreements will suffice for this purpose).
+(35) Where University equipment is hired to others, as a general principle, the hiring fee will represent the value of the use of the equipment to the hirer, and allow for fair wear and tear, and depreciation.
+(36) The borrower/hirer (whether an employee of the University, a student or an outside person or organisation) must complete the loan/hire agreement. The Loan Hire Agreement Form (University Equipment on Loan or hire to University Staff, Students or Others) is available on the University’s Insurance Office Web Site.
+(37) Outgoing and incoming loans for artworks must have a Loan Agreement Document issued by the Art Institute. The Loan Agreement documents are prepared and executed by the Director, La Trobe Art Institute for all incoming loans to the Collection and exhibitions and outgoing loans to outside organisations for  the purposes of exhibition, conservation treatment or research.
+(38) All areas of the University are required to adopt a standard agreement for hiring buildings, rooms, grounds etc. The standard Facilities Agreement and Tax Invoice for booking/hire of University buildings and facilities and the conditions are available on the University’s Insurance Office web site.
+
+============================================================
+PART H - HERITAGE
+============================================================
+(39) Heritage Assets are regarded as part of the generic asset class to which they belong and are recognised and depreciated on the basis applying to assets with the same functionality.
+(40) Any acquisition, disposal, refurbishment or re-configuration of a Heritage asset is subject to the requirements of the Heritage Act 1995 , and must (where appropriate) be discussed and approved by Heritage Victoria.
+
+============================================================
+PART I - DEPRECIATION/AMORTISATION
+============================================================
+(41) All fixed assets other than land, land improvements, special collections and assets under construction (AUC) are depreciated (or in the case of software, amortised) over their estimated economic useful lives using the straight-line method.
+(42) Leasehold improvements are depreciated over their useful lives, or the unexpired period of the lease, whichever is shorter.
+(43) Depreciation of all fixed assets and amortisation of intangible assets will be calculated from the month after acquisition (or when the asset is put into use), until the item is fully depreciated/amortised or until the month of retirement, whichever is shorter.
+(44) Depreciation/amortisation will be charged to the cost centre responsible for the management and safekeeping of the asset (this will also be the cost centre responsible for stock-take and impairment testing annually).
+
+Summary Table – Asset Useful Life
+----------------------------------------
+Asset Class
+Useful Life (Years)
+Buildings
+Infrastructure
+Leasehold Improvements
+Yrs/LOL
+Library Books and E-resources
+Plant & Equipment 10YR
+Plant & Equipment 20YR (New)
+Furniture, Fixtures & Office Equipment
+Motor Vehicles (Commercial)
+Motor Vehicles (Passenger)
+Hardware (Computer/Technical)
+Software (10YR)
+Software (5YR) (New)
+
+============================================================
+PART J - VALUATIONS AND REVALUATIONS
+============================================================
+(45) Land, buildings, and art catalogue collections are carried at fair value on the University Balance Sheet. Fixed assets acquired at no cost or for nominal consideration must be recognised at fair value at their date of acquisition via a valuation by an independent valuer designated by the University.
+(46) Revaluations must be made with sufficient regularity to ensure that the carrying values for the assets in these classes do not differ materially from their fair value. Specific requirements are detailed below:
+  • Buildings, infrastructure, land (including land improvements): require a comprehensive independent valuation at least every three years;
+  • Art catalogue collections: require a comprehensive independent valuation every three years;
+  • Land, buildings or art catalogue collections received for zero or nominal consideration will be independently valued and placed on the asset register as they are acquired, which will be in between the formal revaluation cycle.
+(47) Where an asset requires a valuation or revaluation, an independent valuer must be appointed, who is not an employee, or an associate of the University. The valuation must be provided in a report which is to be maintained for seven years as substantiation for an entry in the University’s financial records.
+(48) Any assets received for $nil consideration which are brought on to the Asset Register and general ledger at fair value will be debited to the asset balance and credited as revenue in the financial reports of the University.
+(49) Once a revaluation of a class of assets has been performed the Asset Register must be updated to reflect the revaluation and ensure the asset register and general ledger contains the correct asset balances for financial reporting purposes.
+
+============================================================
+PART K - INVESTMENTS AND OTHER FINANCIAL ASSETS
+============================================================
+(50) The University classes its investments and other financial assets in the following areas:
+  • financial assets at fair value through profit or loss;
+  • loans and receivables*;
+  • held-to-maturity investments; and
+  • available-for-sale financial assets.
+  • Assets in this category are measured at fair value, and transaction costs are expensed through the income statement. After initial recognition, assets in this category are measured at fair values, without any deductions for transaction costs that may be incurred on sale or other disposal. A gain or loss on a financial asset classified as at fair value through profit or loss is recognised in the income statement.
+(51) *After initial recognition, loans and receivables shall be measured at amortised cost using the effective interest method. A gain or loss shall be recorded in the income statement, when loans and receivables are derecognised or impaired, and through the amortisation process.
+
+============================================================
+PART L - NONCURRENT ASSETS HELD FOR SALE AND DISCONTINUED
+============================================================
+(52) The University, in general terms, classifies non-current assets (or disposal groups)* as held for sale if their carrying amount will be recovered principally through a sale transaction rather than through continuing use.
+(53) For this to be the case the asset (or disposal group) must be available for immediate sale in its present condition subject only to terms that are usual and customary for sale of such assets (or disposal groups) and its sale must be highly probable.
+(54) Non-current assets classified as held for sale and the assets of a disposal group classified as held for sale are presented separately from the other assets in the balance sheet. The liabilities of a disposal group classified as held for sale are presented separately from other liabilities in the balance sheet.
+(55) *The following asset types are not recognised as non-current assets or disposal groups:
+  • deferred tax assets;
+  • assets arising from employee benefits;
+  • financial assets; non-current assets that are accounted for in accordance with the fair value model;
+  • non-current assets that are measured at fair value less estimated point-of-sale costs; and
+  • contractual rights under insurance contracts.
+
+============================================================
+PART M - CONTINGENT ASSETS AND LIABILITIES
+============================================================
+(56) Contingent assets and contingent liabilities are not recognised in the financial statements of the University, however disclosure of information regarding contingent assets and contingent liabilities is required by way of a note to the annual financial report.
+
+Contingent Liability Disclosure
+----------------------------------------
+(57) The University shall disclose for each class of contingent liability at the reporting date a brief description of the nature of the contingent liability and, where practicable:
+  • an estimate of its financial effect;
+  • an indication of the uncertainties relating to the amount or timing of any outflow; and
+  • the possibility of any reimbursement.
+
+Contingent Asset Disclosure
+----------------------------------------
+(58) Where an inflow of economic benefits is probable, an entity shall disclose a brief description of the nature of the contingent asset at the reporting date, and, where practicable, an estimate of the financial effect. It is important that disclosures for contingent assets avoid giving misleading indications of the likelihood of income arising.
+(59) Under certain circumstances i.e. executory contracts, where it is not practicable, or where it may cause serious prejudice, the University may hold grounds for non-disclosure of contingent assets and liabilities, however, it still holds an accountability to report such cases.
+
+============================================================
+PART N - RESPONSIBILITIES
+============================================================
+(60) Corporate and Reporting is responsible for collating the final presentation of asset information in the University’s Annual Financial Report.
+(61) Finance Managers are to keep a manual register of contingent assets and liabilities throughout the year.
+(62) Legal Services is to provide a register of potential legal actions that may eventuate into a contingent asset or a contingent liability at the end of the reporting year.
+
+============================================================
+SECTION 7 - DEFINITIONS
+============================================================
+(63) For the purpose of this Policy and procedure:
+  • Accruals: liabilities to pay for goods and services that have been received or supplied but have not yet been paid, invoiced or formally agreed with the supplier. Accruals are often reported as part of trade and other payables, whereas provisions are reported separately.
+  • Amortisation: the action or process of gradually writing off the initial cost of an asset.
+  • Asset: The Australian Accounting Standard 138.8 defines an asset as a resource that is: controlled by an entity as a result of past events; and from which future economic benefits are expected to flow to the entity. Note that ownership is not important in the definition of an asset (that is, we can hold an asset in the University’s balance sheet that is not held on University land, providing we have control over that asset). In order to have control without ownership, there must be some form of access agreement or lease in place over the land or property to guarantee our access and on-going benefit of the asset. ‘Future Economic Benefits’ refers to the University’s income earning activities. In order for something to be considered an asset, it must directly or indirectly be linked to the University’s ability to earn income.
+  • controlled by an entity as a result of past events; and
+  • from which future economic benefits are expected to flow to the entity.
+  • Note that ownership is not important in the definition of an asset (that is, we can hold an asset in the University’s balance sheet that is not held on University land, providing we have control over that asset).
+  • In order to have control without ownership, there must be some form of access agreement or lease in place over the land or property to guarantee our access and on-going benefit of the asset.
+  • ‘Future Economic Benefits’ refers to the University’s income earning activities. In order for something to be considered an asset, it must directly or indirectly be linked to the University’s ability to earn income.
+  • The University defines an asset as follows: A transaction/group of transactions that comply with the above accounting definition; and that do not meet the definition of an expense; and that as an individual unit is valued over $5,000 GST exclusive; and/or that as individual units, may cost less than $5,000 GST exclusive, but may combine to form an operating unit or network or have the same or similar nature with a combined cost of more than $10,000 GST exclusive.
+  • that do not meet the definition of an expense; and
+  • that as an individual unit is valued over $5,000 GST exclusive; and/or
+  • that as individual units, may cost less than $5,000 GST exclusive, but may combine to form an operating unit or network or have the same or similar nature with a combined cost of more than $10,000 GST exclusive.
+  • Asset Under Construction (AUC): is an asset the University is currently constructing, which is not yet being used for its final intended purpose.
+  • Contingent assets: possible assets that arise from past events and whose existence will be confirmed only by the occurrence or non-occurrence of one or more uncertain future events not wholly within the control of the University. Contingent assets are assessed continually and if they become certain that an inflow of economic benefits will arise, the asset and the related income are recognised in the financial statements in the period that the change from probable to certain occurs.
+  • Contingent liabilities: possible obligations that arise out of past events and whose existence will be confirmed only by the occurrence of or non-occurrence of one or more uncertain future events not wholly within the control of the University. These can also be present obligations that arise from past events but they are not recognised because it is not probable that an outflow of resources embodying economic benefits will be required to settle the obligation, or the amount of the obligation cannot be measured with sufficient reliability. Where the University is jointly and severally liable for an obligation, the part of the obligation that is expected to be met by the other parties is treated as a contingent liability.
+  • Fair Value: the amount for which an asset could be exchanged between knowledgeable, willing parties in an arm’s length transaction.
+  • Heritage Assets: Those places which the University has a statutory obligation to preserve, for example, those places listed under the Victorian Government’s Heritage Database.
+  • Hire: University property or equipment that is leased or hired to an external party under an agreement for a fee.
+  • Intangible Asset: an identifiable non-monetary asset without physical substance.
+  • Investments and other financial assets: A financial asset is classified in this category if acquired principally for the purpose of selling in the short term or if so designated by university management. The policy of the University is to designate a financial asset in this category if there exists the possibility it will be sold in the short term and if the asset is subject to frequent changes in fair value. Assets in this category are classified as current assets if they are either held for trading or are expected to be realised within 12 months of the balance sheet date. Derivatives are classified as held for trading unless they are designated as hedges.
+  • Lease: property that is leased or hired by the University under a lease or hire agreement for a fee; University property that is leased or hired to an external party under a lease or hire agreement for a fee.
+  • Liability: a present obligation of an entity arising from past events, the settlement of which is expected to result in an outflow from the University’s resources embodying economic benefits, e.g. trade payables and accruals.
+  • Loan: property or equipment that is temporarily loaned to the University for its use, or lent by the University to an external party; or property that is temporarily loaned to the University for its use, or lent by the University to an external party.
+  • Loans and receivables: non-derivative financial assets with fixed or determinable payments that are not quoted in an active market, other than: those that the University intends to sell immediately; those that the University designates as available for sale; or those for which the University may not recover substantially all of its initial investment.
+  • those that the University intends to sell immediately;
+  • those that the University designates as available for sale; or
+  • those for which the University may not recover substantially all of its initial investment.
+  • Provisions: liabilities which have an uncertain timing or amount. They are distinguished from other liabilities such as trade payables and accruals because there is uncertainty about the timing or the amount of the future expenditure required in settlement. The present obligation under an onerous contract is recognised as a provision.
+  • Valuation/Revaluation: a formal assessment or re-assessment of the fair value of an asset.
+
+============================================================
+SECTION 8 - AUTHORITY AND ASSOCIATED INFORMATION
+============================================================
+(64) This Policy is made under the La Trobe University Act 2009 .
+(65) Associated information includes:
+  • Finance and Procurement Intranet
