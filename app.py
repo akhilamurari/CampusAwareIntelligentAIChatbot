@@ -1,4 +1,17 @@
-# app.py
+"""
+app.py
+------
+Streamlit web interface for CampusAware AI chatbot.
+Provides a chat UI with:
+    - Custom styled chat bubbles (user right, bot left)
+    - Sidebar with quick example questions
+    - Connection status indicator (cloud/on-premises)
+    - Question counter
+    - Error handling for common connection issues
+
+Author: Tarun, Akhila
+"""
+
 import streamlit as st
 from agent import run_agent
 import os
@@ -6,12 +19,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# ── Page Configuration ─────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="CampusAware AI",
     page_icon="🎓",
     layout="centered"
 )
 
+# ── Custom CSS Styling ─────────────────────────────────────────────────────────
+# Applies Inter font, chat bubble styles, sidebar button styles
+# and chat input styling with La Trobe blue (#1f6feb) theme
+# ──────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
@@ -20,7 +38,7 @@ st.markdown("""
 
 #MainMenu, footer, header { visibility: hidden; }
 
-/* User bubble — right, blue */
+/* User bubble — right aligned, blue */
 .user-bubble-wrapper {
     display: flex;
     justify-content: flex-end;
@@ -37,7 +55,7 @@ st.markdown("""
     word-wrap: break-word;
 }
 
-/* Bot bubble — left, light grey */
+/* Bot bubble — left aligned, light grey */
 .bot-bubble-wrapper {
     display: flex;
     justify-content: flex-start;
@@ -67,7 +85,7 @@ st.markdown("""
     word-wrap: break-word;
 }
 
-/* Sidebar buttons */
+/* Sidebar example question buttons */
 [data-testid="stSidebar"] .stButton > button {
     background: #f0f2f6 !important;
     color: #1a1a1a !important;
@@ -85,7 +103,7 @@ st.markdown("""
     color: #1f6feb !important;
 }
 
-/* Fix red border on chat input — force blue everywhere */
+/* Chat input — blue border and caret */
 [data-testid="stChatInput"] > div {
     border-color: #1f6feb !important;
     box-shadow: none !important;
@@ -116,7 +134,7 @@ button[data-testid="stChatInputSubmitButton"] svg {
     stroke: #1f6feb !important;
 }
 
-/* Header */
+/* Page header */
 .app-header {
     text-align: center;
     margin-bottom: 1.5rem;
@@ -135,7 +153,7 @@ button[data-testid="stChatInputSubmitButton"] svg {
 </style>
 """, unsafe_allow_html=True)
 
-# ── Header ─────────────────────────────────────────────────────────
+# ── Page Header ────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="app-header">
     <h2>🎓 CampusAware AI</h2>
@@ -143,8 +161,10 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Sidebar ────────────────────────────────────────────────────────
+# ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
+
+    # Show connection status — cloud or on-premises
     nim_mode = os.getenv("NIM_MODE", "cloud")
     if nim_mode == "onprem":
         st.success("On-Premises — aiotcentre-03")
@@ -154,6 +174,7 @@ with st.sidebar:
     st.divider()
     st.markdown("**Try asking:**")
 
+    # Example questions for quick access
     examples = [
         "Which room had high CO2?",
         "Find me a quiet room to study",
@@ -169,24 +190,28 @@ with st.sidebar:
             st.session_state["quick_q"] = example
 
     st.divider()
+
+    # Clear chat history
     if st.button("Clear chat", use_container_width=True):
         st.session_state["messages"] = []
         st.rerun()
 
+    # Display total questions asked this session
     if "messages" in st.session_state:
         total = len([m for m in st.session_state["messages"] if m["role"] == "user"])
         st.caption(f"Questions asked: {total}")
 
-# ── Init ───────────────────────────────────────────────────────────
+# ── Session State Initialisation ───────────────────────────────────────────────
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
+# Handle quick question selected from sidebar
 if "quick_q" in st.session_state:
     prompt = st.session_state.pop("quick_q")
 else:
     prompt = None
 
-# ── Chat history ───────────────────────────────────────────────────
+# ── Chat History Display ───────────────────────────────────────────────────────
 for msg in st.session_state["messages"]:
     if msg["role"] == "user":
         st.markdown(f"""
@@ -203,10 +228,11 @@ for msg in st.session_state["messages"]:
         </div>
         """, unsafe_allow_html=True)
 
-# ── Input ──────────────────────────────────────────────────────────
+# ── Chat Input & Response ──────────────────────────────────────────────────────
 user_input = st.chat_input("Ask about the campus...") or prompt
 
 if user_input:
+    # Display user message
     st.markdown(f"""
     <div class="user-bubble-wrapper">
         <div class="user-bubble">{user_input}</div>
@@ -214,6 +240,7 @@ if user_input:
     """, unsafe_allow_html=True)
     st.session_state["messages"].append({"role": "user", "content": user_input})
 
+    # Get agent response with error handling
     with st.spinner("Thinking..."):
         try:
             response = run_agent(user_input)
@@ -228,6 +255,7 @@ if user_input:
             else:
                 response = f"Something went wrong: {error_msg}"
 
+    # Display bot response
     content = response.replace('\n', '<br>')
     st.markdown(f"""
     <div class="bot-bubble-wrapper">

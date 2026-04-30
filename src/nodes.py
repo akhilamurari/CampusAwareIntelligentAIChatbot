@@ -1,4 +1,11 @@
-# nodes.py
+"""
+nodes.py
+--------
+LangGraph agent node definitions for CampusAware AI.
+Handles LLM configuration (cloud/on-premises) and
+the main assistant node that processes user queries.
+"""
+
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage
@@ -8,7 +15,13 @@ import os
 
 load_dotenv()
 
-# ── Sprint 4: NIM Configuration ──
+# ── LLM Configuration ─────────────────────────────────────────────────────────
+# Supports two modes:
+#   - onprem: Qwen2.5-7B-Instruct via vLLM on aiotcentre-03
+#   - cloud:  NVIDIA NIM API (meta/llama-3.1-70b-instruct)
+# Set NIM_MODE in .env to switch between modes.
+# ──────────────────────────────────────────────────────────────────────────────
+
 NIM_MODE = os.getenv("NIM_MODE", "cloud")
 
 if NIM_MODE == "onprem":
@@ -22,18 +35,47 @@ else:
     model = os.getenv("NIM_MODEL", "meta/llama-3.1-70b-instruct")
     print(f"[Cloud] Agent using Cloud API: {base_url}")
 
+# Initialise LLM with OpenAI-compatible endpoint
+# Works with both on-premises vLLM and NVIDIA Cloud API
 llm = ChatOpenAI(
     model=model,
     base_url=base_url,
     api_key=api_key,
-    temperature=0
+    temperature=0  # Deterministic responses for factual campus queries
 )
 
-def assistant_node(state: AgentState):
+
+def assistant_node(state: AgentState) -> dict:
+    """
+    Main LangGraph agent node for processing user queries.
+
+    Handles three types of queries:
+    1. NL2SQL — Converts natural language to SQL and queries IoT database
+    2. RAG    — Retrieves information from campus PDF documents
+    3. Conversational — Responds to greetings and general questions
+
+    Args:
+        state (AgentState): Current conversation state containing message history
+
+    Returns:
+        dict: Updated state with assistant response appended to messages
+
+    Example:
+        >>> state = {"messages": [HumanMessage(content="Which room has high CO2?")]}
+        >>> result = assistant_node(state)
+        >>> print(result["messages"][-1].content)
+        "Library-L3 has the highest CO2 level at 1322.33 ppm."
+    """
     messages = state["messages"]
 
+    # ── System Prompt ──────────────────────────────────────────────────────────
+    # Instructs the LLM on how to handle different query types.
+    # DATABASE RULES: Forces immediate tool calling for IoT sensor queries
+    # DOCUMENT RULES: Forces RAG retrieval for campus information queries
+    # CONVERSATIONAL RULES: Handles greetings and general questions
+    # ──────────────────────────────────────────────────────────────────────────
     system_instructions = SystemMessage(content=(
-        "You are the Cisco-La Trobe CampusAware AI, a digital twin assistant for the Bundoora campus.\n"
+        "You are the Cisco-La Trobe CampusAware AI, a campus assistant chatbot for the Bundoora campus.\n"
         "\n"
         "--- DATABASE RULES ---\n"
         "When asked about room conditions (temperature, CO2, humidity, noise, occupancy, light, air quality):\n"
@@ -93,6 +135,7 @@ def assistant_node(state: AgentState):
         "6. NEVER end a response with a question.\n"
     ))
 
+    # Bind tools to LLM and invoke with conversation history
     llm_with_tools = llm.bind_tools([campus_db_tool, campus_rag_tool])
     response = llm_with_tools.invoke([system_instructions] + messages)
 

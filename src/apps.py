@@ -1,24 +1,42 @@
+"""
+apps.py
+-------
+LangGraph workflow definition for CampusAware AI.
+Builds the agent graph with:
+    - Assistant node: LLM that processes queries and decides which tool to call
+    - Tools node: Executes campus_db_tool (NL2SQL) or campus_rag_tool (RAG)
+    - Memory: Maintains conversation history within a session
+
+Graph Flow:
+    START → assistant → tools (if tool call needed) → assistant → END
+
+Author: Jince, Akhila
+"""
+
 from langgraph.graph import StateGraph, START
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
-from .state import AgentState # Assuming state.py is in the same folder
-from .nodes import assistant_node # Assuming nodes.py is in the same folder
-from .tools import campus_db_tool, campus_rag_tool # Your mock tools
+from .state import AgentState
+from .nodes import assistant_node
+from .tools import campus_db_tool, campus_rag_tool
 
-# 1. Initialize the Graph
+
+# ── Build LangGraph Workflow ───────────────────────────────────────────────────
+
+# Initialise state graph with AgentState schema
 workflow = StateGraph(AgentState)
 
-# 2. Add Logic Nodes
-workflow.add_node("assistant", assistant_node)
-workflow.add_node("tools", ToolNode([campus_db_tool, campus_rag_tool]))
+# Add agent nodes
+workflow.add_node("assistant", assistant_node)  # LLM decision node
+workflow.add_node("tools", ToolNode([campus_db_tool, campus_rag_tool]))  # Tool execution node
 
-# 3. Define the Flow
-workflow.add_edge(START, "assistant")
-workflow.add_conditional_edges("assistant", tools_condition)
-workflow.add_edge("tools", "assistant")
+# Define graph edges and flow
+workflow.add_edge(START, "assistant")  # Start with assistant
+workflow.add_conditional_edges("assistant", tools_condition)  # Route to tools if needed
+workflow.add_edge("tools", "assistant")  # Return to assistant after tool execution
 
-# 4. Compile with Memory
-# This allows the bot to remember the session context in the terminal
+# ── Compile Graph with Memory ──────────────────────────────────────────────────
+# MemorySaver maintains conversation history within a session
+# Allows multi-turn conversations with context awareness
 memory = MemorySaver()
-# Change the variable name to 'graph'
 graph = workflow.compile(checkpointer=memory)
