@@ -80,6 +80,8 @@ def assistant_node(state: AgentState):
         "6. NEVER ask the user if they want information or to see a document.\n"
         "7. NEVER end a response with a question.\n"
         "8. When multiple phone numbers appear — identify the SPECIFIC one requested.\n"
+        "9. Always quote the EXACT retrieved text when citing specific facts (phone numbers, fees, hours, dates).\n"
+        "10. If the retrieved context does not contain the answer, say: 'The campus documents don\'t specify this.' — NEVER guess.\n"
         "\n"
         "--- CONVERSATIONAL RULES ---\n"
         "For greetings or general questions:\n"

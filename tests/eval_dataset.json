@@ -1,0 +1,46 @@
+{
+  "rag": [
+    {
+      "question": "How do I connect to eduroam WiFi on campus?",
+      "ground_truth": "Open your WiFi settings, select eduroam, enter your student ID followed by @students.latrobe.edu.au as the username and your La Trobe password. Contact the IT Helpdesk on 03 9479 2222 for WiFi issues."
+    },
+    {
+      "question": "What are the Bundoora library face-to-face service hours?",
+      "ground_truth": "The Bundoora library offers face-to-face services from 10am to 4pm."
+    },
+    {
+      "question": "What is the daily parking fee for the white bay at Bundoora campus?",
+      "ground_truth": "The white bay daily maximum parking fee is $8.45."
+    },
+    {
+      "question": "What is the after-hours safety helpline number for La Trobe students?",
+      "ground_truth": "The after-hours safety helpline number is 1800 758 360."
+    },
+    {
+      "question": "How often can a student resident have a guest stay overnight?",
+      "ground_truth": "Guests are allowed to stay a maximum of 1 night per 4 weeks under the Rules of Residence."
+    }
+  ],
+  "nl2sql": [
+    {
+      "question": "Which room had the highest CO2 levels?",
+      "expected_columns": ["room_id", "co2_ppm"]
+    },
+    {
+      "question": "What is the average temperature across all library rooms?",
+      "expected_columns": ["avg(temperature_c)", "temperature_c"]
+    },
+    {
+      "question": "Which rooms currently have humidity above 70 percent?",
+      "expected_columns": ["room_id", "humidity_pct"]
+    },
+    {
+      "question": "How many rooms are currently occupied?",
+      "expected_columns": ["occupancy", "count"]
+    },
+    {
+      "question": "Which rooms have poor air quality?",
+      "expected_columns": ["room_id", "air_quality"]
+    }
+  ]
+}

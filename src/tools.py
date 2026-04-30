@@ -55,9 +55,14 @@ def campus_rag_tool(query: str):
             embeddings,
             allow_dangerous_deserialization=True
         )
-        # ── Sprint 5: Increased k from 3 to 5 for better policy coverage ──
-        docs = vector_db.similarity_search(query, k=5)
-        context = "\n---\n".join([doc.page_content for doc in docs])
+        # ── Sprint 6 (RAGAS fix): raise k, filter low-relevance chunks, add source metadata ──
+        docs_with_scores = vector_db.similarity_search_with_score(query, k=8)
+        # FAISS returns L2 distance; lower = more similar. Filter out poor matches (dist ≥ 1.5).
+        docs = [doc for doc, score in docs_with_scores if score < 1.5]
+        context = "\n---\n".join([
+            f"[Source: {doc.metadata.get('source_doc', doc.metadata.get('source', '?'))}]\n{doc.page_content}"
+            for doc in docs
+        ])
         return context
     except Exception as e:
         return f"RAG search error: {str(e)}"

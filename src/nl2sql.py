@@ -22,12 +22,14 @@ Columns:
   - noise_db (REAL): noise level in decibels
   - light_lux (REAL): light intensity in lux
   - occupancy (INTEGER): 1 if occupied, 0 if not
+  - air_quality (TEXT): air quality category — 'Good', 'Moderate', or 'Poor'
 
 Available room_ids:
   Library-L1, Library-L2, Library-L3,
-  Lab-101, Lab-102, Lab-203,
-  Lecture-Hall-A, Lecture-Hall-B,
-  Cafeteria, Study-Room-1, Study-Room-2
+  Lab-101, Lab-102, Lab-203, Lab-301, Lab-302,
+  Lecture-Hall-A, Lecture-Hall-B, Lecture-Hall-C,
+  Cafeteria, Study-Room-1, Study-Room-2, Study-Room-3,
+  Meeting-Room-1, Student-Lounge
 """
 
 # ─── LLM Setup ─────────────────────────────────────────

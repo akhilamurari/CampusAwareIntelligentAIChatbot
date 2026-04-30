@@ -43,12 +43,19 @@ def build_campus_rag():
     print(f"\n  Total documents loaded: {len(documents)}")
 
     # AC: Split text into chunks using LangChain text splitter
+    # ── Sprint 6 (RAGAS fix): smaller chunks for more precise retrieval ──
     print("\nStep 2: Splitting text into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=100
+        chunk_size=512,
+        chunk_overlap=128
     )
     chunks = text_splitter.split_documents(documents)
+
+    # ── Sprint 6: stamp source filename into metadata for LLM citation ──
+    for chunk in chunks:
+        chunk.metadata["source_doc"] = os.path.basename(
+            chunk.metadata.get("source", "unknown")
+        )
     print(f"  Created {len(chunks)} text chunks.")
 
     # AC: Generate embeddings and store in FAISS index
