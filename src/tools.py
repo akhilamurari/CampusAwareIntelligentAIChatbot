@@ -10,7 +10,6 @@ Author: Jince, Akhila
 """
 
 import os
-import sqlite3
 from langchain_core.tools import tool
 from langchain_community.utilities.sql_database import SQLDatabase
 from langchain_community.vectorstores import FAISS
@@ -89,14 +88,15 @@ def campus_rag_tool(query: str) -> str:
     - Admissions requirements
     - Code of conduct
 
-    Knowledge base contains 10 PDF documents with 246 indexed chunks.
+    Knowledge base contains 10 PDF documents indexed with FAISS.
     Uses sentence-transformers/all-MiniLM-L6-v2 for semantic search.
+    Filters low-relevance chunks using L2 distance threshold.
 
     Args:
         query (str): Natural language question to search for in campus documents
 
     Returns:
-        str: Relevant document excerpts joined by separator, or error message
+        str: Relevant document excerpts with source metadata, or error message
     """
     index_path = os.getenv("FAISS_INDEX_PATH", "data/campus_rag.index")
 
@@ -110,9 +110,15 @@ def campus_rag_tool(query: str) -> str:
             embeddings,
             allow_dangerous_deserialization=True
         )
-        # Retrieve top 5 most relevant document chunks
-        docs = vector_db.similarity_search(query, k=5)
-        context = "\n---\n".join([doc.page_content for doc in docs])
+        # Retrieve top 8 chunks with scores — filter poor matches (L2 distance >= 1.5)
+        docs_with_scores = vector_db.similarity_search_with_score(query, k=8)
+        docs = [doc for doc, score in docs_with_scores if score < 1.5]
+
+        # Include source document name in each chunk for citation
+        context = "\n---\n".join([
+            f"[Source: {doc.metadata.get('source_doc', doc.metadata.get('source', '?'))}]\n{doc.page_content}"
+            for doc in docs
+        ])
         return context
     except Exception as e:
         return f"RAG search error: {str(e)}"
