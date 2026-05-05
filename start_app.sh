@@ -1,26 +1,29 @@
 #!/bin/bash
-echo "Starting CampusAware AI..."
+echo "🚀 Starting CampusAware AI..."
+echo "ℹ️  vLLM server runs persistently on aiotcentre-03 via tmux"
 
 echo "Step 1 — Pulling latest changes..."
+git pull origin main
 
 echo "Step 2 — Activating venv..."
 source venv/bin/activate
 
 echo "Step 3 — Starting Streamlit..."
+pkill -f streamlit 2>/dev/null
 streamlit run app.py &
 
-echo "Waiting for Streamlit to start..."
+echo "⏳ Waiting for Streamlit to start..."
 sleep 10
 
 echo "Step 4 — Starting Ngrok..."
 pkill ngrok 2>/dev/null
-ngrok http 8518 &
+ngrok http 8501 &
 
-echo "Waiting for Ngrok..."
+echo "⏳ Waiting for Ngrok..."
 sleep 5
 
 echo "Step 5 — Opening browser..."
 /usr/bin/open "https://glorify-overcome-provoke.ngrok-free.dev"
 
-echo "Done! Share this URL with students:"
-echo "https://glorify-overcome-provoke.ngrok-free.dev"
+echo "✅ Done! Share this URL:"
+echo "🔗 https://glorify-overcome-provoke.ngrok-free.dev"
