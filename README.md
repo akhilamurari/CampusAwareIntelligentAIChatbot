@@ -1,11 +1,11 @@
-# 🎓 CampusAware Intelligent AI Agent
+# CampusAware Intelligent AI Agent
 ### Cisco-La Trobe University AI & IoT Centre
 
 An on-premises campus assistant chatbot for La Trobe University's Bundoora campus, powered by real-time IoT sensor data and campus document retrieval. Ask anything about campus room conditions, facilities, policies and course information in plain English.
 
 ---
 
-## 🏆 Key Results
+##  Key Results
 - **SUS Score:** 87/100 (Excellent)
 - **Response Time:** 1.8 seconds (on-premises)
 - **NL2SQL Accuracy:** 100%
@@ -14,7 +14,7 @@ An on-premises campus assistant chatbot for La Trobe University's Bundoora campu
 
 ---
 
-## 🤖 What Can It Do?
+##  What Can It Do?
 
 ### Room Conditions (NL2SQL)
 ```
@@ -36,39 +36,51 @@ An on-premises campus assistant chatbot for La Trobe University's Bundoora campu
 
 ---
 
-## 🏗️ Architecture
+## 🌐 Public Access
+
+The app is permanently deployed on the Cisco server!
+
+**Just open this URL in any browser:**
+```
+https://glorify-overcome-provoke.ngrok-free.dev
+```
+No setup, no installation, no SSH needed! 
+
+If you see a warning page — click **"Visit Site"** to proceed.
+
+---
+
+##  Architecture
 
 ```
-User Query
-    ↓
-Streamlit UI (app.py)
-    ↓
+Student Browser
+      ↓
+ngrok Public URL
+      ↓
+Streamlit UI (app.py) — running on aiotcentre-03
+      ↓
 LangGraph Agent (agent.py)
-    ↓
+      ↓
 ┌─────────────────────────────────┐
-│         LangGraph Agent         │
-│  ┌──────────┐  ┌─────────────┐ │
-│  │NL2SQL    │  │RAG Tool     │ │
-│  │Tool      │  │             │ │
-│  │(SQLite)  │  │(FAISS)      │ │
-│  └──────────┘  └─────────────┘ │
+│  campus_db_tool  |  campus_rag_tool  │
 └─────────────────────────────────┘
-    ↓
+      ↓                    ↓
+SQLite IoT DB          FAISS Vector Store
+      ↓
 Qwen2.5-7B-Instruct (vLLM)
-On-premises — aiotcentre-03
-4x NVIDIA L40S GPUs
+aiotcentre-03 — 4x NVIDIA L40S GPUs
 ```
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Component | Technology |
 |---|---|
 | LLM | Qwen2.5-7B-Instruct via vLLM |
 | Agent Framework | LangGraph + LangChain |
 | UI | Streamlit |
-| Database | SQLite (48,960 IoT records) |
+| Database | SQLite (48,960 simulated IoT records) |
 | Vector Store | FAISS (246 chunks) |
 | Embeddings | sentence-transformers/all-MiniLM-L6-v2 |
 | Server | aiotcentre-03 (4x NVIDIA L40S 46GB) |
@@ -76,7 +88,7 @@ On-premises — aiotcentre-03
 
 ---
 
-## 📋 Prerequisites
+##  Prerequisites (Local Development Only)
 
 - Python 3.11+
 - Mac/Linux
@@ -85,7 +97,7 @@ On-premises — aiotcentre-03
 
 ---
 
-## 🚀 Setup (One Time Only)
+##  Setup (One Time Only — Local Development)
 
 ### 1. Clone the repo
 ```bash
@@ -120,46 +132,82 @@ NVIDIA_API_KEY=not-required
 brew install ngrok
 ngrok config add-authtoken YOUR_TOKEN
 ```
-Get token from **ngrok.com** → Login → Your Authtoken
 
 ---
 
-## ▶️ Running the App (Every Time)
+## ▶ Running the App
 
-You need **3 terminal tabs** open:
+### For Users (Students & Team)
+The app is permanently deployed — just open the URL:
+```
+https://glorify-overcome-provoke.ngrok-free.dev
+```
 
-### Tab 1 — Start vLLM Server on aiotcentre-03
+---
+
+### For Developers (Local Development)
+
+You need **3 terminal tabs:**
+
+#### Tab 1 — SSH into Server + SSH Tunnel
 ```bash
-# Connect to server (requires La Trobe VPN)
+# Terminal 1 — SSH into server
 ssh -p 6022 22104705@students.ltu.edu.au@aiotcentre-03.latrobe.edu.au
 
-# Activate conda
-source ~/miniconda3/bin/activate
-
-# Start vLLM
-CUDA_VISIBLE_DEVICES=1 python -m vllm.entrypoints.openai.api_server --model /data/shared/nobackup/Qwen2.5-7B-Instruct --port 8000 --dtype bfloat16 --gpu-memory-utilization 0.65 --max-model-len 4096 --enable-auto-tool-choice --tool-call-parser hermes
-```
-⏳ Wait for: **Application startup complete**
-
-### Tab 2 — SSH Tunnel
-```bash
+# Terminal 2 — SSH tunnel
 ssh -p 6022 -L 8000:localhost:8000 22104705@students.ltu.edu.au@aiotcentre-03.latrobe.edu.au
 ```
-Keep this open — don't type anything!
 
-### Tab 3 — Run App
+#### Tab 3 — Run App Locally
 ```bash
 cd CampusAwareIntelligentAIChatbot
 source venv/bin/activate
 ./start_app.sh
 ```
-Browser opens automatically ✅
+
+---
+
+## 🖥️ Server Sessions (aiotcentre-03)
+
+All three components run persistently via tmux — no manual setup needed:
+
+| Session | Component | Port |
+|---|---|---|
+| vllm | Qwen2.5-7B-Instruct via vLLM | 8000 |
+| app | Streamlit web interface | 8502 |
+| ngrok | Public URL tunnel | — |
+
+### Check server status
+```bash
+ssh -p 6022 22104705@students.ltu.edu.au@aiotcentre-03.latrobe.edu.au
+tmux ls
+```
+
+### Restart everything if server reboots
+```bash
+# vLLM
+tmux new-session -d -s vllm
+tmux send-keys -t vllm "source ~/miniconda3/bin/activate && CUDA_VISIBLE_DEVICES=1 python -m vllm.entrypoints.openai.api_server --model /data/shared/nobackup/Qwen2.5-7B-Instruct --port 8000 --dtype bfloat16 --gpu-memory-utilization 0.65 --max-model-len 4096 --enable-auto-tool-choice --tool-call-parser hermes" Enter
+
+# Streamlit
+tmux new-session -d -s app
+tmux send-keys -t app "cd ~/CampusAwareIntelligentAIChatbot && source venv/bin/activate && streamlit run app.py --server.port 8502 --server.address 0.0.0.0" Enter
+
+# ngrok
+tmux new-session -d -s ngrok
+tmux send-keys -t ngrok "cd ~/CampusAwareIntelligentAIChatbot && ./ngrok http 8502" Enter
+```
+
+### Check ngrok URL
+```bash
+curl http://localhost:4040/api/tunnels
+```
 
 ---
 
 ## 🗄️ Database
 
-### IoT Sensor Data
+### Simulated IoT Sensor Data
 - **17 rooms** monitored
 - **48,960 records** (30 days, 15-minute intervals)
 - **Sensors:** temperature, humidity, CO2, noise, light, occupancy, air quality
@@ -181,7 +229,7 @@ python load_to_sqlite.py
 
 ---
 
-## 📚 Knowledge Base
+##  Knowledge Base
 
 ### PDFs Ingested (246 chunks)
 1. Melbourne Campus Map
@@ -202,7 +250,7 @@ python ingest_pdfs.py
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Run Agent Tests (requires vLLM server running)
 ```bash
@@ -226,13 +274,13 @@ python -m pytest tests/test_ci.py -v
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 CampusAwareIntelligentAIChatbot/
 ├── app.py                  # Streamlit UI
 ├── agent.py                # LangGraph agent runner
-├── start_app.sh            # Startup script
+├── start_app.sh            # Startup script (local development)
 ├── generate_iot_data.py    # IoT data generator
 ├── load_to_sqlite.py       # Load CSV to SQLite
 ├── ingest_pdfs.py          # PDF to FAISS ingestion
@@ -251,7 +299,9 @@ CampusAwareIntelligentAIChatbot/
 ├── docs/                   # PDF knowledge base + reports
 ├── tests/
 │   ├── test_agent.py       # Agent integration tests
-│   └── test_ci.py          # CI/CD lightweight tests
+│   ├── test_ci.py          # CI/CD lightweight tests
+│   ├── test_ragas_eval.py  # RAGAS evaluation tests
+│   └── eval_dataset.json   # RAGAS test dataset
 └── .github/
     └── workflows/
         └── ci.yml          # GitHub Actions CI/CD
@@ -259,7 +309,7 @@ CampusAwareIntelligentAIChatbot/
 
 ---
 
-## 🔧 Switching Between Cloud and On-Premises
+##  Switching Between Cloud and On-Premises
 
 ### On-Premises (Default)
 ```
@@ -278,7 +328,7 @@ NIM_API_KEY=your_api_key
 
 ---
 
-## 📊 Sprint Summary
+##  Sprint Summary
 
 | Sprint | Focus | Scrum Master | Status |
 |---|---|---|---|
@@ -304,16 +354,16 @@ NIM_API_KEY=your_api_key
 
 ---
 
-## 👨‍🏫 Supervisors
+##  Supervisors
 **Dr Di Wu** & **Phu Lai**
 Cisco-La Trobe Centre for AI & IoT
 La Trobe University 2026
 
-## 🏢 Industry Partner
+##  Industry Partner
 **Scott Mayfield**
 Cisco Systems
 
 ---
 
-## 📄 License
+## License
 La Trobe University — Academic Project 2026
