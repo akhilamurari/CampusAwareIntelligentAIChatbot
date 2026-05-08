@@ -42,6 +42,32 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          timeout: 60s
+          script: |
+            cd ~/CampusAwareIntelligentAIChatbot
+            git pull origin main
+            tmux kill-session -t app 2>/dev/null || true
+            sleep 2
+            tmux new-session -d -s app
+            tmux send-keys -t app "cd ~/CampusAwareIntelligentAIChatbot && source venv/bin/activate && streamlit run app.py --server.port 8502 --server.address 0.0.0.0" Enter
+            echo "Deployment complete!"name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to aiotcentre-03
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
           script: |
             cd ~/CampusAwareIntelligentAIChatbot
             git pull origin main
