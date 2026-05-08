@@ -11,6 +11,7 @@ Author: Tarun, Akhila
 """
 
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 from agent import run_agent
 import os
 import sqlite3
@@ -24,6 +25,9 @@ st.set_page_config(
     page_icon="🎓",
     layout="centered"
 )
+
+# Auto-refresh every 30 seconds to update live IoT data
+st_autorefresh(interval=30000, limit=None, key="iot_refresh")
 
 st.markdown("""
 <style>
