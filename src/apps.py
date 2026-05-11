@@ -10,8 +10,8 @@ Builds the agent graph with:
 Graph Flow:
     START → assistant → tools (if tool call needed) → assistant → END
 
-Fix CF1CT-53: Added recursion_limit=25 to allow multiple tool calls
-per turn when agent needs both IoT data and campus policy info.
+Fix CF1CT-53: recursion_limit=50 allows sequential multi-tool calls
+for complex queries needing both IoT data and campus policy info.
 """
 
 from langgraph.graph import StateGraph, START
@@ -23,25 +23,16 @@ from .tools import campus_db_tool, campus_rag_tool
 
 
 # ── Build LangGraph Workflow ───────────────────────────────────────────────────
-
-# Initialise state graph with AgentState schema
 workflow = StateGraph(AgentState)
 
-# Add agent nodes
-workflow.add_node("assistant", assistant_node)  # LLM decision node
-workflow.add_node("tools", ToolNode([campus_db_tool, campus_rag_tool]))  # Tool execution node
+workflow.add_node("assistant", assistant_node)
+workflow.add_node("tools", ToolNode([campus_db_tool, campus_rag_tool]))
 
-# Define graph edges and flow
-workflow.add_edge(START, "assistant")  # Start with assistant
-workflow.add_conditional_edges("assistant", tools_condition)  # Route to tools if needed
-workflow.add_edge("tools", "assistant")  # Return to assistant after tool execution
+workflow.add_edge(START, "assistant")
+workflow.add_conditional_edges("assistant", tools_condition)
+workflow.add_edge("tools", "assistant")
 
 # ── Compile Graph with Memory ──────────────────────────────────────────────────
-# MemorySaver maintains conversation history within a session.
-# Allows multi-turn conversations with context awareness.
-#
-# CF1CT-53 Fix: recursion_limit=25 allows the agent to loop through
-# multiple tool calls in a single turn without hitting the default limit.
-# ──────────────────────────────────────────────────────────────────────────────
+# recursion_limit=50 allows enough steps for sequential multi-tool calls
 memory = MemorySaver()
-graph = workflow.compile(checkpointer=memory, recursion_limit=25)
+graph = workflow.compile(checkpointer=memory, recursion_limit=50)

@@ -5,26 +5,22 @@ LangGraph agent node definitions for CampusAware AI.
 Handles LLM configuration (cloud/on-premises) and
 the main assistant node that processes user queries.
 
-Fix CF1CT-53: Added parallel_tool_calls=True to allow
-multiple tools to be called in a single turn.
+Fix CF1CT-53: Sequential multi-tool calling approach.
+Detects queries needing both tools and pre-calls both
+before passing combined results to LLM for final answer.
 """
 
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from .state import AgentState
 from .tools import campus_db_tool, campus_rag_tool
 import os
+import re
 
 load_dotenv()
 
 # ── LLM Configuration ─────────────────────────────────────────────────────────
-# Supports two modes:
-#   - onprem: Qwen2.5-7B-Instruct via vLLM on aiotcentre-03
-#   - cloud:  NVIDIA NIM API (meta/llama-3.1-70b-instruct)
-# Set NIM_MODE in .env to switch between modes.
-# ──────────────────────────────────────────────────────────────────────────────
-
 NIM_MODE = os.getenv("NIM_MODE", "cloud")
 
 if NIM_MODE == "onprem":
@@ -38,52 +34,99 @@ else:
     model = os.getenv("NIM_MODEL", "meta/llama-3.1-70b-instruct")
     print(f"[Cloud] Agent using Cloud API: {base_url}")
 
-# Initialise LLM with OpenAI-compatible endpoint
-# Works with both on-premises vLLM and NVIDIA Cloud API
 llm = ChatOpenAI(
     model=model,
     base_url=base_url,
     api_key=api_key,
-    temperature=0  # Deterministic responses for factual campus queries
+    temperature=0
 )
+
+# ── Keyword sets for tool detection ───────────────────────────────────────────
+DB_KEYWORDS = {
+    "temperature", "co2", "humidity", "noise", "occupancy", "light",
+    "air quality", "quiet", "quietest", "occupied", "vacant", "room",
+    "lab", "library level", "lecture hall", "study room", "cafeteria",
+    "meeting room", "student lounge", "decibel", "ppm", "celsius"
+}
+
+RAG_KEYWORDS = {
+    "library hours", "opening hours", "open", "parking", "fees", "permit",
+    "wifi", "eduroam", "bus", "glider", "safety", "helpline", "emergency",
+    "cricos", "ict", "course", "credit", "handbook", "policy", "rules",
+    "residence", "conduct", "support", "counselling", "admission", "atar",
+    "after hours", "security", "escort", "charter", "rights", "disability"
+}
+
+
+def needs_db(query: str) -> bool:
+    """Check if query needs database tool."""
+    q = query.lower()
+    return any(kw in q for kw in DB_KEYWORDS)
+
+
+def needs_rag(query: str) -> bool:
+    """Check if query needs RAG tool."""
+    q = query.lower()
+    return any(kw in q for kw in RAG_KEYWORDS)
 
 
 def assistant_node(state: AgentState) -> dict:
     """
     Main LangGraph agent node for processing user queries.
 
-    Handles three types of queries:
-    1. NL2SQL — Converts natural language to SQL and queries IoT database
-    2. RAG    — Retrieves information from campus PDF documents
-    3. Conversational — Responds to greetings and general questions
-
-    CF1CT-53 Fix: parallel_tool_calls=True allows the agent to call
-    both campus_db_tool and campus_rag_tool in a single turn for
-    complex queries that need both IoT data and campus policy info.
+    CF1CT-53 Fix: Detects multi-part queries needing both tools,
+    calls them sequentially, combines results and passes to LLM
+    for a single unified answer.
 
     Args:
-        state (AgentState): Current conversation state containing message history
+        state (AgentState): Current conversation state
 
     Returns:
-        dict: Updated state with assistant response appended to messages
-
-    Example:
-        >>> state = {"messages": [HumanMessage(content="Which room has high CO2?")]}
-        >>> result = assistant_node(state)
-        >>> print(result["messages"][-1].content)
-        "Library-L3 has the highest CO2 level at 1322.33 ppm."
+        dict: Updated state with assistant response
     """
     messages = state["messages"]
 
-    # ── System Prompt ──────────────────────────────────────────────────────────
-    # Instructs the LLM on how to handle different query types.
-    # DATABASE RULES: Forces immediate tool calling for IoT sensor queries
-    # DOCUMENT RULES: Forces RAG retrieval for campus information queries
-    # CONVERSATIONAL RULES: Handles greetings and general questions
+    # Get the latest user message
+    last_user_msg = ""
+    for msg in reversed(messages):
+        if isinstance(msg, HumanMessage) or (isinstance(msg, tuple) and msg[0] == "user"):
+            last_user_msg = msg.content if hasattr(msg, 'content') else msg[1]
+            break
+
+    # ── CF1CT-53: Multi-tool detection and sequential calling ─────────────────
+    # If query needs BOTH tools, call them both and combine results
+    # before passing to LLM — bypasses model's single-tool limitation
     # ──────────────────────────────────────────────────────────────────────────
+    combined_context = ""
+
+    if needs_db(last_user_msg) and needs_rag(last_user_msg):
+        # Call DB tool first
+        try:
+            db_result = campus_db_tool.invoke(last_user_msg)
+            combined_context += f"\n[SENSOR DATA]\n{db_result}\n"
+        except Exception as e:
+            combined_context += f"\n[SENSOR DATA]\nError: {str(e)}\n"
+
+        # Call RAG tool second
+        try:
+            rag_result = campus_rag_tool.invoke(last_user_msg)
+            combined_context += f"\n[CAMPUS DOCUMENTS]\n{rag_result}\n"
+        except Exception as e:
+            combined_context += f"\n[CAMPUS DOCUMENTS]\nError: {str(e)}\n"
+
     system_instructions = SystemMessage(content=(
         "You are the Cisco-La Trobe CampusAware AI, a campus assistant chatbot for the Bundoora campus.\n"
         "\n"
+        + (
+            f"The following information has already been retrieved for you. "
+            f"Use it to answer the user's question completely:\n{combined_context}\n"
+            "Answer ALL parts of the question using the retrieved information above.\n"
+            "Give a complete plain English answer covering every part of the question.\n"
+            "NEVER ask the user if they want more details.\n"
+            "NEVER end with a question.\n"
+            if combined_context else ""
+        )
+        +
         "--- DATABASE RULES ---\n"
         "When asked about room conditions (temperature, CO2, humidity, noise, occupancy, light, air quality):\n"
         "1. IMMEDIATELY call campus_db_tool with a SQL query. DO NOT explain or show the SQL to the user.\n"
@@ -93,8 +136,6 @@ def assistant_node(state: AgentState) -> dict:
         "5. Always LIMIT results to 10 rows.\n"
         "6. After getting results, give ONLY a plain English answer. NEVER show SQL to the user.\n"
         "7. NEVER ask the user if they want results — just run the query and answer directly.\n"
-        "8. For queries needing BOTH room data AND campus info (e.g. 'quiet room near parking'),\n"
-        "   call BOTH campus_db_tool AND campus_rag_tool in the same turn.\n"
         "\n"
         "--- DOCUMENT RULES ---\n"
         "The campus knowledge base contains these documents:\n"
@@ -144,15 +185,9 @@ def assistant_node(state: AgentState) -> dict:
         "6. NEVER end a response with a question.\n"
     ))
 
-    # parallel_tool_calls=True ────────────────────────────────
-    # Allows the agent to call multiple tools in a single turn.
-    # Example: "What are library hours and which room is quietest?"
-    # will call campus_rag_tool AND campus_db_tool in one turn.
-    # ──────────────────────────────────────────────────────────────────────────
-    llm_with_tools = llm.bind_tools(
-        [campus_db_tool, campus_rag_tool],
-        parallel_tool_calls=True
-    )
+    # Bind tools to LLM — no parallel_tool_calls as Qwen2.5-7B doesn't support it
+    # Multi-tool queries handled by pre-calling tools above (combined_context)
+    llm_with_tools = llm.bind_tools([campus_db_tool, campus_rag_tool])
     response = llm_with_tools.invoke([system_instructions] + messages)
 
     return {"messages": [response]}
