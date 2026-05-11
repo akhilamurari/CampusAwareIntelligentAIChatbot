@@ -5,18 +5,17 @@ LangGraph agent node definitions for CampusAware AI.
 Handles LLM configuration (cloud/on-premises) and
 the main assistant node that processes user queries.
 
-Fix CF1CT-53: Sequential multi-tool calling approach.
-Detects queries needing both tools and pre-calls both
-before passing combined results to LLM for final answer.
+Fix CF1CT-53: Updated system prompt to explicitly instruct
+the model to handle multi-part queries by calling tools
+sequentially across multiple turns.
 """
 
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_core.messages import SystemMessage
 from .state import AgentState
 from .tools import campus_db_tool, campus_rag_tool
 import os
-import re
 
 load_dotenv()
 
@@ -41,92 +40,29 @@ llm = ChatOpenAI(
     temperature=0
 )
 
-# ── Keyword sets for tool detection ───────────────────────────────────────────
-DB_KEYWORDS = {
-    "temperature", "co2", "humidity", "noise", "occupancy", "light",
-    "air quality", "quiet", "quietest", "occupied", "vacant", "room",
-    "lab", "library level", "lecture hall", "study room", "cafeteria",
-    "meeting room", "student lounge", "decibel", "ppm", "celsius"
-}
-
-RAG_KEYWORDS = {
-    "library hours", "opening hours", "open", "parking", "fees", "permit",
-    "wifi", "eduroam", "bus", "glider", "safety", "helpline", "emergency",
-    "cricos", "ict", "course", "credit", "handbook", "policy", "rules",
-    "residence", "conduct", "support", "counselling", "admission", "atar",
-    "after hours", "security", "escort", "charter", "rights", "disability"
-}
-
-
-def needs_db(query: str) -> bool:
-    """Check if query needs database tool."""
-    q = query.lower()
-    return any(kw in q for kw in DB_KEYWORDS)
-
-
-def needs_rag(query: str) -> bool:
-    """Check if query needs RAG tool."""
-    q = query.lower()
-    return any(kw in q for kw in RAG_KEYWORDS)
-
 
 def assistant_node(state: AgentState) -> dict:
     """
     Main LangGraph agent node for processing user queries.
 
-    CF1CT-53 Fix: Detects multi-part queries needing both tools,
-    calls them sequentially, combines results and passes to LLM
-    for a single unified answer.
-
     Args:
-        state (AgentState): Current conversation state
+        state (AgentState): Current conversation state containing message history
 
     Returns:
-        dict: Updated state with assistant response
+        dict: Updated state with assistant response appended to messages
     """
     messages = state["messages"]
-
-    # Get the latest user message
-    last_user_msg = ""
-    for msg in reversed(messages):
-        if isinstance(msg, HumanMessage) or (isinstance(msg, tuple) and msg[0] == "user"):
-            last_user_msg = msg.content if hasattr(msg, 'content') else msg[1]
-            break
-
-    # ── CF1CT-53: Multi-tool detection and sequential calling ─────────────────
-    # If query needs BOTH tools, call them both and combine results
-    # before passing to LLM — bypasses model's single-tool limitation
-    # ──────────────────────────────────────────────────────────────────────────
-    combined_context = ""
-
-    if needs_db(last_user_msg) and needs_rag(last_user_msg):
-        # Call DB tool first
-        try:
-            db_result = campus_db_tool.invoke(last_user_msg)
-            combined_context += f"\n[SENSOR DATA]\n{db_result}\n"
-        except Exception as e:
-            combined_context += f"\n[SENSOR DATA]\nError: {str(e)}\n"
-
-        # Call RAG tool second
-        try:
-            rag_result = campus_rag_tool.invoke(last_user_msg)
-            combined_context += f"\n[CAMPUS DOCUMENTS]\n{rag_result}\n"
-        except Exception as e:
-            combined_context += f"\n[CAMPUS DOCUMENTS]\nError: {str(e)}\n"
 
     system_instructions = SystemMessage(content=(
         "You are the Cisco-La Trobe CampusAware AI, a campus assistant chatbot for the Bundoora campus.\n"
         "\n"
-        + (
-            f"The following information has already been retrieved for you. "
-            f"Use it to answer the user's question completely:\n{combined_context}\n"
-            "Answer ALL parts of the question using the retrieved information above.\n"
-            "Give a complete plain English answer covering every part of the question.\n"
-            "NEVER ask the user if they want more details.\n"
-            "NEVER end with a question.\n"
-            if combined_context else ""
-        )
-        +
+        "--- MULTI-PART QUERY RULES ---\n"
+        "If the user asks multiple questions in one message (e.g. library hours AND quiet room):\n"
+        "1. Call campus_db_tool FIRST for the room/sensor part.\n"
+        "2. Then call campus_rag_tool for the campus info part.\n"
+        "3. Combine BOTH results into ONE complete answer.\n"
+        "4. NEVER answer only one part — always answer ALL parts.\n"
+        "\n"
         "--- DATABASE RULES ---\n"
         "When asked about room conditions (temperature, CO2, humidity, noise, occupancy, light, air quality):\n"
         "1. IMMEDIATELY call campus_db_tool with a SQL query. DO NOT explain or show the SQL to the user.\n"
@@ -185,8 +121,6 @@ def assistant_node(state: AgentState) -> dict:
         "6. NEVER end a response with a question.\n"
     ))
 
-    # Bind tools to LLM — no parallel_tool_calls as Qwen2.5-7B doesn't support it
-    # Multi-tool queries handled by pre-calling tools above (combined_context)
     llm_with_tools = llm.bind_tools([campus_db_tool, campus_rag_tool])
     response = llm_with_tools.invoke([system_instructions] + messages)
 
