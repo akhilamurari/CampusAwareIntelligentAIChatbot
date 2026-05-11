@@ -35,4 +35,4 @@ workflow.add_edge("tools", "assistant")
 # ── Compile Graph with Memory ──────────────────────────────────────────────────
 # recursion_limit=50 allows enough steps for sequential multi-tool calls
 memory = MemorySaver()
-graph = workflow.compile(checkpointer=memory, recursion_limit=50)
+graph = workflow.compile(checkpointer=memory)

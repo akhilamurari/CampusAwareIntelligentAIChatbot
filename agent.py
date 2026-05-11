@@ -4,6 +4,7 @@ agent.py
 Entry point for running the CampusAware AI agent.
 Provides the run_agent() function used by the Streamlit UI
 to process user queries through the LangGraph workflow.
+
 """
 
 import uuid
@@ -12,10 +13,13 @@ from src.apps import graph
 
 # ── Session Configuration ──────────────────────────────────────────────────────
 # Each session gets a unique thread_id for conversation memory isolation.
-# This allows multiple users to have independent conversations.
+# recursion_limit=50 allows multiple tool calls per turn for complex queries.
 # ──────────────────────────────────────────────────────────────────────────────
 
-_config = {"configurable": {"thread_id": str(uuid.uuid4())}}
+_config = {
+    "configurable": {"thread_id": str(uuid.uuid4())},
+    "recursion_limit": 50
+}
 
 
 def run_agent(user_input: str) -> str:
