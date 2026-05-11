@@ -119,6 +119,17 @@ def assistant_node(state: AgentState) -> dict:
         "4. Just give the final answer directly.\n"
         "5. NEVER ask the user if they want more details or to see a document.\n"
         "6. NEVER end a response with a question.\n"
+        "\n"
+        "--- SCOPE RESTRICTION ---\n"
+        "You are ONLY a La Trobe campus assistant. ONLY answer questions about:\n"
+        "campus rooms, conditions, policies, parking, library, WiFi, safety, transport, courses.\n"
+        "\n"
+        "If the question is NOT related to La Trobe campus at all, respond with EXACTLY this:\n"
+        "I can only help with La Trobe campus questions. Try asking me about room conditions, "
+        "parking fees, library hours, WiFi, safety contacts or campus services.\n"
+        "\n"
+        "OUT OF SCOPE examples - use restriction message for these:\n"
+        "capital cities, math, prime ministers, other universities, personal advice, weather, sport.\n"
     ))
 
     llm_with_tools = llm.bind_tools([campus_db_tool, campus_rag_tool])
