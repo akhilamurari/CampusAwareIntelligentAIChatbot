@@ -10,7 +10,8 @@ Builds the agent graph with:
 Graph Flow:
     START → assistant → tools (if tool call needed) → assistant → END
 
-Author: Jince, Akhila
+Fix CF1CT-53: Added recursion_limit=25 to allow multiple tool calls
+per turn when agent needs both IoT data and campus policy info.
 """
 
 from langgraph.graph import StateGraph, START
@@ -36,7 +37,11 @@ workflow.add_conditional_edges("assistant", tools_condition)  # Route to tools i
 workflow.add_edge("tools", "assistant")  # Return to assistant after tool execution
 
 # ── Compile Graph with Memory ──────────────────────────────────────────────────
-# MemorySaver maintains conversation history within a session
-# Allows multi-turn conversations with context awareness
+# MemorySaver maintains conversation history within a session.
+# Allows multi-turn conversations with context awareness.
+#
+# CF1CT-53 Fix: recursion_limit=25 allows the agent to loop through
+# multiple tool calls in a single turn without hitting the default limit.
+# ──────────────────────────────────────────────────────────────────────────────
 memory = MemorySaver()
-graph = workflow.compile(checkpointer=memory)
+graph = workflow.compile(checkpointer=memory, recursion_limit=25)

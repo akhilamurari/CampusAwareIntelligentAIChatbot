@@ -4,6 +4,9 @@ nodes.py
 LangGraph agent node definitions for CampusAware AI.
 Handles LLM configuration (cloud/on-premises) and
 the main assistant node that processes user queries.
+
+Fix CF1CT-53: Added parallel_tool_calls=True to allow
+multiple tools to be called in a single turn.
 """
 
 from dotenv import load_dotenv
@@ -54,6 +57,10 @@ def assistant_node(state: AgentState) -> dict:
     2. RAG    — Retrieves information from campus PDF documents
     3. Conversational — Responds to greetings and general questions
 
+    CF1CT-53 Fix: parallel_tool_calls=True allows the agent to call
+    both campus_db_tool and campus_rag_tool in a single turn for
+    complex queries that need both IoT data and campus policy info.
+
     Args:
         state (AgentState): Current conversation state containing message history
 
@@ -86,6 +93,8 @@ def assistant_node(state: AgentState) -> dict:
         "5. Always LIMIT results to 10 rows.\n"
         "6. After getting results, give ONLY a plain English answer. NEVER show SQL to the user.\n"
         "7. NEVER ask the user if they want results — just run the query and answer directly.\n"
+        "8. For queries needing BOTH room data AND campus info (e.g. 'quiet room near parking'),\n"
+        "   call BOTH campus_db_tool AND campus_rag_tool in the same turn.\n"
         "\n"
         "--- DOCUMENT RULES ---\n"
         "The campus knowledge base contains these documents:\n"
@@ -135,8 +144,15 @@ def assistant_node(state: AgentState) -> dict:
         "6. NEVER end a response with a question.\n"
     ))
 
-    # Bind tools to LLM and invoke with conversation history
-    llm_with_tools = llm.bind_tools([campus_db_tool, campus_rag_tool])
+    # parallel_tool_calls=True ────────────────────────────────
+    # Allows the agent to call multiple tools in a single turn.
+    # Example: "What are library hours and which room is quietest?"
+    # will call campus_rag_tool AND campus_db_tool in one turn.
+    # ──────────────────────────────────────────────────────────────────────────
+    llm_with_tools = llm.bind_tools(
+        [campus_db_tool, campus_rag_tool],
+        parallel_tool_calls=True
+    )
     response = llm_with_tools.invoke([system_instructions] + messages)
 
     return {"messages": [response]}

@@ -4,8 +4,6 @@ agent.py
 Entry point for running the CampusAware AI agent.
 Provides the run_agent() function used by the Streamlit UI
 to process user queries through the LangGraph workflow.
-
-Author: Jince, Akhila
 """
 
 import uuid
