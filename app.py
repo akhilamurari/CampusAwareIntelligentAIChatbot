@@ -7,6 +7,13 @@ Based on original working UI. Sidebar now shows:
   - Reduced example questions (fewer, more relevant)
 Chat input stays at bottom as always.
 
+Fix CF1CT-42: Each browser session gets a unique thread_id
+stored in st.session_state — isolates conversation history
+between multiple users.
+
+Fix CF1CT-44: Context limit exceeded handled gracefully —
+thread reset and user prompted to ask again.
+
 Author: Tarun, Akhila
 """
 
@@ -16,6 +23,7 @@ from agent import run_agent
 import os
 import sqlite3
 import pandas as pd
+import uuid
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -149,6 +157,19 @@ def get_room_data():
         return pd.DataFrame()
 
 
+# ── Session State ──────────────────────────────────────────────────────────────
+# CF1CT-42 Fix: Generate unique thread_id per browser session
+# Each user gets their own isolated conversation history
+if "thread_id" not in st.session_state:
+    st.session_state["thread_id"] = str(uuid.uuid4())
+
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
+
+if "quick_q" not in st.session_state:
+    st.session_state["quick_q"] = None
+
+
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
 
@@ -181,18 +202,12 @@ with st.sidebar:
     df = get_room_data()
 
     if not df.empty:
-        occupied  = int(df["occupancy"].sum())
-        total     = len(df)
-        vacant    = total - occupied
-        avg_co2   = int(df["co2_ppm"].mean())
-        avg_temp  = round(df["temperature_c"].mean(), 1)
-        avg_noise = round(df["noise_db"].mean(), 0)
-
-        # Quietest room
-        quietest = df.loc[df["noise_db"].idxmin(), "room_id"]
-        # Best air quality (lowest CO2)
-        best_air = df.loc[df["co2_ppm"].idxmin(), "room_id"]
-        # Highest CO2
+        occupied       = int(df["occupancy"].sum())
+        total          = len(df)
+        vacant         = total - occupied
+        avg_co2        = int(df["co2_ppm"].mean())
+        avg_temp       = round(df["temperature_c"].mean(), 1)
+        quietest       = df.loc[df["noise_db"].idxmin(), "room_id"]
         worst_co2_room = df.loc[df["co2_ppm"].idxmax(), "room_id"]
         worst_co2_val  = int(df["co2_ppm"].max())
 
@@ -247,8 +262,10 @@ with st.sidebar:
 
     st.divider()
 
+    # Clear chat — also resets thread_id for clean session
     if st.button("🗑 Clear chat", use_container_width=True):
         st.session_state["messages"] = []
+        st.session_state["thread_id"] = str(uuid.uuid4())  # CF1CT-42: new thread on clear
         st.rerun()
 
     if "messages" in st.session_state:
@@ -256,11 +273,8 @@ with st.sidebar:
         st.caption(f"Questions asked: {total_q}")
 
 
-# ── Session State ──────────────────────────────────────────────────────────────
-if "messages" not in st.session_state:
-    st.session_state["messages"] = []
-
-if "quick_q" in st.session_state:
+# ── Resolve quick question ─────────────────────────────────────────────────────
+if st.session_state["quick_q"]:
     prompt = st.session_state.pop("quick_q")
 else:
     prompt = None
@@ -297,7 +311,15 @@ if user_input:
 
     with st.spinner("Thinking..."):
         try:
-            response = run_agent(user_input)
+            # CF1CT-42 Fix: Pass session-specific thread_id to agent
+            response = run_agent(user_input, st.session_state["thread_id"])
+
+            # CF1CT-44 Fix: Handle context limit exceeded gracefully
+            if response == "context_limit_exceeded":
+                st.session_state["thread_id"] = str(uuid.uuid4())
+                st.session_state["messages"] = []
+                response = "Our conversation got too long and I've reset the memory. Please ask your question again!"
+
         except Exception as e:
             err = str(e)
             if "401"          in err:        response = "API key error — check NIM configuration."
