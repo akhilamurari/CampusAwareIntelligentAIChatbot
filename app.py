@@ -245,15 +245,59 @@ with st.sidebar:
     st.caption(f"Questions asked: {total_q}")
 
 
-# ── Expander — works on both mobile and desktop ───────────────────────────────
-with st.expander("📡 Live Room Stats & Quick Questions", expanded=False):
-    render_iot_cards(df)
-    st.markdown("**Quick questions:**")
-    col1, col2 = st.columns(2)
-    for i, example in enumerate(EXAMPLES):
-        with (col1 if i % 2 == 0 else col2):
-            if st.button(example, key=f"mob_{example}", use_container_width=True):
-                st.session_state["quick_q"] = example
+# ── Detect mobile and show expander only on mobile ────────────────────────────
+# JavaScript sends screen width to Streamlit via query params
+st.components.v1.html("""
+<script>
+    // Send screen width to parent Streamlit app via URL
+    const width = window.innerWidth;
+    const isMobile = width < 768;
+    // Store in sessionStorage so we can read it
+    window.parent.postMessage({type: "streamlit:setComponentValue", value: isMobile}, "*");
+</script>
+""", height=0)
+
+# Use screen width stored in session state
+if "is_mobile" not in st.session_state:
+    st.session_state["is_mobile"] = False
+
+# Check query params for mobile detection
+params = st.query_params
+if "mobile" in params:
+    st.session_state["is_mobile"] = params["mobile"] == "true"
+
+# Inject JS to detect mobile and set query param
+st.markdown("""
+<script>
+    setTimeout(function() {
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+            const url = new URL(window.location.href);
+            if (url.searchParams.get('mobile') !== 'true') {
+                url.searchParams.set('mobile', 'true');
+                window.location.href = url.toString();
+            }
+        } else {
+            const url = new URL(window.location.href);
+            if (url.searchParams.get('mobile') === 'true') {
+                url.searchParams.set('mobile', 'false');
+                window.location.href = url.toString();
+            }
+        }
+    }, 500);
+</script>
+""", unsafe_allow_html=True)
+
+# Show expander only on mobile
+if st.session_state.get("is_mobile", False):
+    with st.expander("📡 Live Room Stats & Quick Questions", expanded=True):
+        render_iot_cards(df)
+        st.markdown("**Quick questions:**")
+        col1, col2 = st.columns(2)
+        for i, example in enumerate(EXAMPLES):
+            with (col1 if i % 2 == 0 else col2):
+                if st.button(example, key=f"mob_{example}", use_container_width=True):
+                    st.session_state["quick_q"] = example
 
 # ── Resolve quick question ─────────────────────────────────────────────────────
 if st.session_state["quick_q"]:
