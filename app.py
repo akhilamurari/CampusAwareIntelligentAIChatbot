@@ -1,10 +1,8 @@
 """
 app.py
 ------
-CampusAware AI — Final version with proper mobile detection.
-- Desktop (>=768px): sidebar only, no expander
-- Mobile (<768px): expander with stats + quick questions
-- Uses streamlit-js-eval, stores width in session_state to avoid flicker
+CampusAware AI — Final clean version.
+Sidebar only. No expander. No mobile detection.
 
 Fix CF1CT-42: Unique thread_id per browser session.
 Fix CF1CT-44: Context window reset handled gracefully.
@@ -14,7 +12,6 @@ Author: Tarun, Akhila
 
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
-from streamlit_js_eval import streamlit_js_eval
 from agent import run_agent
 import os
 import sqlite3
@@ -114,7 +111,38 @@ def get_room_data():
         return pd.DataFrame()
 
 
-def render_iot_cards(df):
+# ── Session State ─────────────────────────────────────────────────────────────
+if "thread_id" not in st.session_state: st.session_state["thread_id"] = str(uuid.uuid4())
+if "messages"  not in st.session_state: st.session_state["messages"]  = []
+if "quick_q"   not in st.session_state: st.session_state["quick_q"]   = None
+
+df = get_room_data()
+
+EXAMPLES = [
+    "Find me a quiet room to study",
+    "Which room has high CO2?",
+    "What are parking fees?",
+    "How do I connect to eduroam WiFi?",
+    "What is the after hours helpline?",
+]
+
+# ── SIDEBAR ───────────────────────────────────────────────────────────────────
+with st.sidebar:
+    nim_mode = os.getenv("NIM_MODE", "cloud")
+    if nim_mode == "onprem":
+        st.success("● On-Premises — aiotcentre-03")
+    else:
+        st.info("● NVIDIA Cloud API")
+
+    st.divider()
+    st.markdown("**Try asking:**")
+    for example in EXAMPLES:
+        if st.button(example, use_container_width=True, key=f"ex_{example}"):
+            st.session_state["quick_q"] = example
+
+    st.divider()
+    st.markdown("**📡 Live Room Stats**")
+
     if not df.empty:
         occupied       = int(df["occupancy"].sum())
         total          = len(df)
@@ -155,53 +183,6 @@ def render_iot_cards(df):
     else:
         st.warning("No sensor data available")
 
-
-# ── Session State ─────────────────────────────────────────────────────────────
-if "thread_id"    not in st.session_state: st.session_state["thread_id"]    = str(uuid.uuid4())
-if "messages"     not in st.session_state: st.session_state["messages"]     = []
-if "quick_q"      not in st.session_state: st.session_state["quick_q"]      = None
-if "screen_width" not in st.session_state: st.session_state["screen_width"] = None
-
-df = get_room_data()
-
-EXAMPLES = [
-    "Find me a quiet room to study",
-    "Which room has high CO2?",
-    "What are parking fees?",
-    "How do I connect to eduroam WiFi?",
-    "What is the after hours helpline?",
-]
-
-# ── Detect screen width ONCE and store in session_state ───────────────────────
-# On first load: returns None, stored as None
-# On second render: returns actual width, stored permanently
-detected_width = streamlit_js_eval(js_expressions="window.innerWidth", key="sw_detect")
-if detected_width is not None:
-    st.session_state["screen_width"] = detected_width
-
-is_mobile = (
-    st.session_state["screen_width"] is not None and
-    st.session_state["screen_width"] < 768
-)
-
-# ── SIDEBAR ───────────────────────────────────────────────────────────────────
-with st.sidebar:
-    nim_mode = os.getenv("NIM_MODE", "cloud")
-    if nim_mode == "onprem":
-        st.success("● On-Premises — aiotcentre-03")
-    else:
-        st.info("● NVIDIA Cloud API")
-
-    st.divider()
-    st.markdown("**Try asking:**")
-    for example in EXAMPLES:
-        if st.button(example, use_container_width=True, key=f"ex_{example}"):
-            st.session_state["quick_q"] = example
-
-    st.divider()
-    st.markdown("**📡 Live Room Stats**")
-    render_iot_cards(df)
-
     st.divider()
     if st.button("🗑 Clear chat", use_container_width=True):
         st.session_state["messages"] = []
@@ -210,18 +191,6 @@ with st.sidebar:
 
     total_q = len([m for m in st.session_state["messages"] if m["role"] == "user"])
     st.caption(f"Questions asked: {total_q}")
-
-
-# ── MOBILE EXPANDER — only when confirmed mobile ──────────────────────────────
-if is_mobile:
-    with st.expander("📡 Live Room Stats & Quick Questions", expanded=True):
-        render_iot_cards(df)
-        st.markdown("**Quick questions:**")
-        col1, col2 = st.columns(2)
-        for i, example in enumerate(EXAMPLES):
-            with (col1 if i % 2 == 0 else col2):
-                if st.button(example, key=f"mob_{example}", use_container_width=True):
-                    st.session_state["quick_q"] = example
 
 
 # ── Resolve quick question ────────────────────────────────────────────────────
