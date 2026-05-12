@@ -245,44 +245,15 @@ with st.sidebar:
     st.caption(f"Questions asked: {total_q}")
 
 
-# ── Mobile-only sidebar hint — hidden on desktop via CSS ──────────────────────
-st.markdown("""
-<style>
-/* Hide on desktop (screen wider than 768px) */
-@media (min-width: 768px) {
-    .mobile-sidebar-hint { display: none !important; }
-}
-/* Show only on mobile */
-@media (max-width: 767px) {
-    .mobile-sidebar-hint {
-        display: flex !important;
-        justify-content: center;
-        margin: 10px 0 20px 0;
-    }
-    .mobile-sidebar-btn {
-        background: #4B2E83;
-        color: white;
-        border: none;
-        border-radius: 25px;
-        padding: 12px 28px;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(75,46,131,0.4);
-        font-family: Inter, sans-serif;
-    }
-}
-</style>
-<div class="mobile-sidebar-hint">
-    <button class="mobile-sidebar-btn" 
-        onclick="
-            var btn = document.querySelector('[data-testid=collapsedControl]');
-            if(btn) btn.click();
-        ">
-        ☰ &nbsp; Quick Questions &amp; Live Stats
-    </button>
-</div>
-""", unsafe_allow_html=True)
+# ── Expander — works on both mobile and desktop ───────────────────────────────
+with st.expander("📡 Live Room Stats & Quick Questions", expanded=False):
+    render_iot_cards(df)
+    st.markdown("**Quick questions:**")
+    col1, col2 = st.columns(2)
+    for i, example in enumerate(EXAMPLES):
+        with (col1 if i % 2 == 0 else col2):
+            if st.button(example, key=f"mob_{example}", use_container_width=True):
+                st.session_state["quick_q"] = example
 
 # ── Resolve quick question ─────────────────────────────────────────────────────
 if st.session_state["quick_q"]:
