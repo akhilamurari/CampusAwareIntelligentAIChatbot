@@ -245,18 +245,6 @@ with st.sidebar:
     st.caption(f"Questions asked: {total_q}")
 
 
-# ── MOBILE ONLY — Expander + Quick chips ──────────────────────────────────────
-# These show on mobile where sidebar is hidden
-with st.expander("📡 Live Room Stats & Quick Questions", expanded=False):
-    render_iot_cards(df)
-    st.markdown("**Quick questions:**")
-    col1, col2 = st.columns(2)
-    for i, example in enumerate(EXAMPLES):
-        with (col1 if i % 2 == 0 else col2):
-            if st.button(example, key=f"mob_{example}", use_container_width=True):
-                st.session_state["quick_q"] = example
-
-
 # ── Resolve quick question ─────────────────────────────────────────────────────
 if st.session_state["quick_q"]:
     prompt = st.session_state.pop("quick_q")
