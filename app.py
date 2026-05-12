@@ -1,9 +1,10 @@
 """
 app.py
 ------
-CampusAware AI — Original UI restored.
-Sidebar with live stats and quick questions (desktop).
-Mobile expander added at top for mobile users only.
+CampusAware AI — Final version with proper mobile detection.
+- Desktop (>=768px): sidebar only, no expander
+- Mobile (<768px): expander with stats + quick questions
+- Uses streamlit-js-eval, stores width in session_state to avoid flicker
 
 Fix CF1CT-42: Unique thread_id per browser session.
 Fix CF1CT-44: Context window reset handled gracefully.
@@ -13,13 +14,13 @@ Author: Tarun, Akhila
 
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
+from streamlit_js_eval import streamlit_js_eval
 from agent import run_agent
 import os
 import sqlite3
 import pandas as pd
 import uuid
 from dotenv import load_dotenv
-from streamlit_js_eval import streamlit_js_eval
 
 load_dotenv()
 
@@ -29,7 +30,6 @@ st.set_page_config(
     layout="centered"
 )
 
-# Auto-refresh every 30 seconds to update live IoT data
 st_autorefresh(interval=30000, limit=None, key="iot_refresh")
 
 st.markdown("""
@@ -39,97 +39,55 @@ st.markdown("""
 * { font-family: 'Inter', sans-serif; }
 #MainMenu, footer, header { visibility: hidden; }
 
-/* User bubble */
-.user-bubble-wrapper {
-    display: flex; justify-content: flex-end; margin: 6px 0;
-}
+.user-bubble-wrapper { display:flex; justify-content:flex-end; margin:6px 0; }
 .user-bubble {
-    background: #4B2E83;
-    color: #ffffff;
-    padding: 10px 16px;
+    background: #4B2E83; color: #fff; padding: 10px 16px;
     border-radius: 20px 20px 4px 20px;
     max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
 }
-
-/* Bot bubble */
-.bot-bubble-wrapper {
-    display: flex; justify-content: flex-start;
-    align-items: flex-end; gap: 8px; margin: 6px 0;
-}
+.bot-bubble-wrapper { display:flex; justify-content:flex-start; align-items:flex-end; gap:8px; margin:6px 0; }
 .bot-avatar {
-    width: 32px; height: 32px; background: #4B2E83;
-    border-radius: 50%; display: flex; align-items: center;
-    justify-content: center; font-size: 1rem; flex-shrink: 0;
+    width:32px; height:32px; background:#4B2E83;
+    border-radius:50%; display:flex; align-items:center;
+    justify-content:center; font-size:1rem; flex-shrink:0;
 }
 .bot-bubble {
-    background: #f0f2f6; color: #1a1a1a;
-    padding: 10px 16px;
+    background: #f0f2f6; color: #1a1a1a; padding: 10px 16px;
     border-radius: 20px 20px 20px 4px;
     max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
 }
-
-/* Sidebar example buttons */
 [data-testid="stSidebar"] .stButton > button {
-    background: #f0f2f6 !important;
-    color: #1a1a1a !important;
-    border: 1px solid #e0e0e0 !important;
-    border-radius: 8px !important;
-    font-size: 0.82rem !important;
-    text-align: left !important;
-    padding: 8px 12px !important;
-    margin-bottom: 4px;
-    transition: all 0.15s;
+    background: #f0f2f6 !important; color: #1a1a1a !important;
+    border: 1px solid #e0e0e0 !important; border-radius: 8px !important;
+    font-size: 0.82rem !important; text-align: left !important;
+    padding: 8px 12px !important; margin-bottom: 4px; transition: all 0.15s;
 }
 [data-testid="stSidebar"] .stButton > button:hover {
-    background: #EDE9FE !important;
-    border-color: #4B2E83 !important;
-    color: #4B2E83 !important;
+    background: #EDE9FE !important; border-color: #4B2E83 !important; color: #4B2E83 !important;
 }
-
-/* Chat input — La Trobe purple */
-[data-testid="stChatInput"] > div {
-    border-color: #4B2E83 !important;
-    box-shadow: none !important;
-}
+[data-testid="stChatInput"] > div { border-color: #4B2E83 !important; }
 [data-testid="stChatInput"] > div:focus-within {
     border-color: #4B2E83 !important;
     box-shadow: 0 0 0 2px rgba(75,46,131,0.2) !important;
 }
-[data-testid="stChatInput"] textarea {
-    outline: none !important; box-shadow: none !important; caret-color: #4B2E83 !important;
-}
+[data-testid="stChatInput"] textarea { caret-color: #4B2E83 !important; }
 button[data-testid="stChatInputSubmitButton"] svg {
     fill: #4B2E83 !important; stroke: #4B2E83 !important;
 }
-
-/* Page header */
-.app-header { text-align: center; margin-bottom: 1.5rem; }
-.app-header h2 { color: #1a1a1a; font-weight: 600; font-size: 1.4rem; margin: 0; }
-.app-header p  { color: #6b7280; font-size: 0.82rem; margin: 4px 0 0 0; }
-
-/* IoT stat cards */
+.app-header { text-align:center; margin-bottom:1.5rem; }
+.app-header h2 { color:#1a1a1a; font-weight:600; font-size:1.4rem; margin:0; }
+.app-header p  { color:#6b7280; font-size:0.82rem; margin:4px 0 0 0; }
 .iot-card {
-    background: #f8f9fa;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 10px 14px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    background:#f8f9fa; border:1px solid #e0e0e0; border-radius:10px;
+    padding:10px 14px; margin-bottom:8px;
+    display:flex; align-items:center; justify-content:space-between;
 }
-.iot-card-label { font-size: 11px; color: #6b7280; font-weight: 500; }
-.iot-card-value { font-size: 18px; font-weight: 700; font-family: monospace; }
-.iot-card-sub   { font-size: 9px; color: #9ca3af; }
-
-/* Hide mobile expander on desktop, show on mobile */
-@media (min-width: 768px) {
-    .mobile-only { display: none !important; }
-}
+.iot-card-label { font-size:11px; color:#6b7280; font-weight:500; }
+.iot-card-value { font-size:18px; font-weight:700; font-family:monospace; }
+.iot-card-sub   { font-size:9px; color:#9ca3af; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Page Header ────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="app-header">
     <h2>🎓 CampusAware AI</h2>
@@ -145,8 +103,7 @@ def get_room_data():
         db_path = os.getenv("SQLITE_DB_PATH", "data/campus.db")
         conn = sqlite3.connect(db_path)
         df = pd.read_sql_query("""
-            SELECT room_id, temperature_c, humidity_pct, co2_ppm,
-                   noise_db, occupancy
+            SELECT room_id, temperature_c, humidity_pct, co2_ppm, noise_db, occupancy
             FROM room_telemetry
             WHERE timestamp=(SELECT MAX(timestamp) FROM room_telemetry)
             ORDER BY room_id
@@ -158,7 +115,6 @@ def get_room_data():
 
 
 def render_iot_cards(df):
-    """Render IoT stat cards — reused in both sidebar and mobile expander."""
     if not df.empty:
         occupied       = int(df["occupancy"].sum())
         total          = len(df)
@@ -200,13 +156,11 @@ def render_iot_cards(df):
         st.warning("No sensor data available")
 
 
-# ── Session State ──────────────────────────────────────────────────────────────
-if "thread_id" not in st.session_state:
-    st.session_state["thread_id"] = str(uuid.uuid4())
-if "messages" not in st.session_state:
-    st.session_state["messages"] = []
-if "quick_q" not in st.session_state:
-    st.session_state["quick_q"] = None
+# ── Session State ─────────────────────────────────────────────────────────────
+if "thread_id"    not in st.session_state: st.session_state["thread_id"]    = str(uuid.uuid4())
+if "messages"     not in st.session_state: st.session_state["messages"]     = []
+if "quick_q"      not in st.session_state: st.session_state["quick_q"]      = None
+if "screen_width" not in st.session_state: st.session_state["screen_width"] = None
 
 df = get_room_data()
 
@@ -218,7 +172,19 @@ EXAMPLES = [
     "What is the after hours helpline?",
 ]
 
-# ── SIDEBAR — Desktop view ─────────────────────────────────────────────────────
+# ── Detect screen width ONCE and store in session_state ───────────────────────
+# On first load: returns None, stored as None
+# On second render: returns actual width, stored permanently
+detected_width = streamlit_js_eval(js_expressions="window.innerWidth", key="sw_detect")
+if detected_width is not None:
+    st.session_state["screen_width"] = detected_width
+
+is_mobile = (
+    st.session_state["screen_width"] is not None and
+    st.session_state["screen_width"] < 768
+)
+
+# ── SIDEBAR ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     nim_mode = os.getenv("NIM_MODE", "cloud")
     if nim_mode == "onprem":
@@ -246,10 +212,8 @@ with st.sidebar:
     st.caption(f"Questions asked: {total_q}")
 
 
-# ── Mobile detection using streamlit-js-eval ──────────────────────────────────
-screen_width = streamlit_js_eval(js_expressions="window.innerWidth", key="screen_width")
-
-if screen_width and screen_width < 768:
+# ── MOBILE EXPANDER — only when confirmed mobile ──────────────────────────────
+if is_mobile:
     with st.expander("📡 Live Room Stats & Quick Questions", expanded=True):
         render_iot_cards(df)
         st.markdown("**Quick questions:**")
@@ -259,14 +223,15 @@ if screen_width and screen_width < 768:
                 if st.button(example, key=f"mob_{example}", use_container_width=True):
                     st.session_state["quick_q"] = example
 
-# ── Resolve quick question ─────────────────────────────────────────────────────
+
+# ── Resolve quick question ────────────────────────────────────────────────────
 if st.session_state["quick_q"]:
     prompt = st.session_state.pop("quick_q")
 else:
     prompt = None
 
 
-# ── Chat History ───────────────────────────────────────────────────────────────
+# ── Chat History ──────────────────────────────────────────────────────────────
 for msg in st.session_state["messages"]:
     if msg["role"] == "user":
         st.markdown(f"""
@@ -284,7 +249,7 @@ for msg in st.session_state["messages"]:
         """, unsafe_allow_html=True)
 
 
-# ── Chat Input ─────────────────────────────────────────────────────────────────
+# ── Chat Input ────────────────────────────────────────────────────────────────
 user_input = st.chat_input("Ask about the campus...") or prompt
 
 if user_input:
@@ -298,12 +263,10 @@ if user_input:
     with st.spinner("Thinking..."):
         try:
             response = run_agent(user_input, st.session_state["thread_id"])
-
             if response == "context_limit_exceeded":
                 st.session_state["thread_id"] = str(uuid.uuid4())
                 st.session_state["messages"] = []
                 response = "Our conversation got too long and I've reset the memory. Please ask your question again!"
-
         except Exception as e:
             err = str(e)
             if "401"          in err:        response = "API key error — check NIM configuration."
