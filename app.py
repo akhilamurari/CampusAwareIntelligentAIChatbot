@@ -245,6 +245,45 @@ with st.sidebar:
     st.caption(f"Questions asked: {total_q}")
 
 
+# ── Mobile-only sidebar hint — hidden on desktop via CSS ──────────────────────
+st.markdown("""
+<style>
+/* Hide on desktop (screen wider than 768px) */
+@media (min-width: 768px) {
+    .mobile-sidebar-hint { display: none !important; }
+}
+/* Show only on mobile */
+@media (max-width: 767px) {
+    .mobile-sidebar-hint {
+        display: flex !important;
+        justify-content: center;
+        margin: 10px 0 20px 0;
+    }
+    .mobile-sidebar-btn {
+        background: #4B2E83;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 12px 28px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(75,46,131,0.4);
+        font-family: Inter, sans-serif;
+    }
+}
+</style>
+<div class="mobile-sidebar-hint">
+    <button class="mobile-sidebar-btn" 
+        onclick="
+            var btn = document.querySelector('[data-testid=collapsedControl]');
+            if(btn) btn.click();
+        ">
+        ☰ &nbsp; Quick Questions &amp; Live Stats
+    </button>
+</div>
+""", unsafe_allow_html=True)
+
 # ── Resolve quick question ─────────────────────────────────────────────────────
 if st.session_state["quick_q"]:
     prompt = st.session_state.pop("quick_q")
