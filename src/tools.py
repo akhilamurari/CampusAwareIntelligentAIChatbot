@@ -56,7 +56,9 @@ def _get_vector_db():
 
     try:
         print("[RAG Tool] Loading FAISS index into memory (first call only)...")
-        _embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        _embedding_model = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+        _embeddings = HuggingFaceEmbeddings(model_name=_embedding_model)
+        print(f"[RAG Tool] Using embedding model: {_embedding_model}")
         _vector_db = FAISS.load_local(
             index_path,
             _embeddings,

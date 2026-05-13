@@ -64,7 +64,8 @@ def nim_embeddings():
     """Embeddings model for RAGAS (reuse the same HuggingFace model as the app)."""
     from langchain_huggingface import HuggingFaceEmbeddings
 
-    return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embedding_model = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+    return HuggingFaceEmbeddings(model_name=embedding_model)
 
 
 # ---------------------------------------------------------------------------

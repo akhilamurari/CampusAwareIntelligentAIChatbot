@@ -59,8 +59,12 @@ def build_campus_rag():
     print(f"  Created {len(chunks)} text chunks.")
 
     # AC: Generate embeddings and store in FAISS index
-    print("\nStep 3: Generating embeddings (using HuggingFace)...")
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    # CF1CT-XX Fix: Read model name from EMBEDDING_MODEL env var for consistency
+    from dotenv import load_dotenv
+    load_dotenv()
+    embedding_model = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+    print(f"\nStep 3: Generating embeddings (model: {embedding_model})...")
+    embeddings = HuggingFaceEmbeddings(model_name=embedding_model)
 
     print("\nStep 4: Building and saving FAISS index...")
     vector_db = FAISS.from_documents(chunks, embeddings)
@@ -70,7 +74,7 @@ def build_campus_rag():
         os.makedirs("data")
 
     vector_db.save_local(index_path)
-    print(f"\n✅ SUCCESS: Index saved to {index_path}")
+    print(f"\n[OK] SUCCESS: Index saved to {index_path}")
     print(f"   Total chunks indexed: {len(chunks)}")
 
 if __name__ == "__main__":
