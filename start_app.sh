@@ -17,7 +17,7 @@ sleep 10
 
 echo "Step 4 — Starting Ngrok..."
 pkill ngrok 2>/dev/null
-ngrok http 8501 &
+ngrok http 8502 &
 
 echo "⏳ Waiting for Ngrok..."
 sleep 5
