@@ -9,6 +9,7 @@ Builds the agent graph with:
 
 Graph Flow:
     START → assistant → tools (if tool call needed) → assistant → END
+
 """
 
 from langgraph.graph import StateGraph, START
@@ -33,5 +34,7 @@ workflow.add_edge("tools", "assistant")
 checkpoint_db = os.getenv("CHECKPOINT_DB_PATH", "data/checkpoints.db")
 os.makedirs(os.path.dirname(checkpoint_db), exist_ok=True)
 
-memory = SqliteSaver.from_conn_string(checkpoint_db)
+import sqlite3
+conn = sqlite3.connect(checkpoint_db, check_same_thread=False)
+memory = SqliteSaver(conn)
 graph = workflow.compile(checkpointer=memory)
