@@ -32,7 +32,7 @@ def run_agent(user_input: str, thread_id: str) -> str:
     def _invoke(tid: str) -> str:
         config = {
             "configurable": {"thread_id": tid},
-            "recursion_limit": 50
+            "recursion_limit": 10
         }
         input_state = {"messages": [("user", user_input)]}
         response = ""

@@ -5,9 +5,8 @@ LangGraph agent node definitions for CampusAware AI.
 Handles LLM configuration (cloud/on-premises) and
 the main assistant node that processes user queries.
 
-Fix CF1CT-53: Updated system prompt to explicitly instruct
-the model to handle multi-part queries by calling tools
-sequentially across multiple turns.
+Reverted multi-part query rules that caused infinite tool loop.
+Single tool per turn is the correct behaviour for Qwen2.5-7B.
 """
 
 from dotenv import load_dotenv
@@ -19,7 +18,6 @@ import os
 
 load_dotenv()
 
-# ── LLM Configuration ─────────────────────────────────────────────────────────
 NIM_MODE = os.getenv("NIM_MODE", "cloud")
 
 if NIM_MODE == "onprem":
@@ -46,22 +44,15 @@ def assistant_node(state: AgentState) -> dict:
     Main LangGraph agent node for processing user queries.
 
     Args:
-        state (AgentState): Current conversation state containing message history
+        state (AgentState): Current conversation state
 
     Returns:
-        dict: Updated state with assistant response appended to messages
+        dict: Updated state with assistant response
     """
     messages = state["messages"]
 
     system_instructions = SystemMessage(content=(
         "You are the Cisco-La Trobe CampusAware AI, a campus assistant chatbot for the Bundoora campus.\n"
-        "\n"
-        "--- MULTI-PART QUERY RULES ---\n"
-        "If the user asks multiple questions in one message (e.g. library hours AND quiet room):\n"
-        "1. Call campus_db_tool FIRST for the room/sensor part.\n"
-        "2. Then call campus_rag_tool for the campus info part.\n"
-        "3. Combine BOTH results into ONE complete answer.\n"
-        "4. NEVER answer only one part — always answer ALL parts.\n"
         "\n"
         "--- DATABASE RULES ---\n"
         "When asked about room conditions (temperature, CO2, humidity, noise, occupancy, light, air quality):\n"
@@ -72,6 +63,7 @@ def assistant_node(state: AgentState) -> dict:
         "5. Always LIMIT results to 10 rows.\n"
         "6. After getting results, give ONLY a plain English answer. NEVER show SQL to the user.\n"
         "7. NEVER ask the user if they want results — just run the query and answer directly.\n"
+        "8. Call campus_db_tool ONCE only — do NOT call it again after getting results.\n"
         "\n"
         "--- DOCUMENT RULES ---\n"
         "The campus knowledge base contains these documents:\n"
@@ -108,8 +100,9 @@ def assistant_node(state: AgentState) -> dict:
         "6. NEVER ask the user if they want information or to see a document.\n"
         "7. NEVER end a response with a question.\n"
         "8. When multiple phone numbers appear — identify the SPECIFIC one requested.\n"
-        "9. Always quote the EXACT retrieved text when citing specific facts (phone numbers, fees, hours, dates).\n"
+        "9. Always quote the EXACT retrieved text when citing specific facts.\n"
         "10. If the retrieved context does not contain the answer, say: 'The campus documents don\'t specify this.' — NEVER guess.\n"
+        "11. Call campus_rag_tool ONCE only — do NOT call it again after getting results.\n"
         "\n"
         "--- CONVERSATIONAL RULES ---\n"
         "For greetings or general questions:\n"
