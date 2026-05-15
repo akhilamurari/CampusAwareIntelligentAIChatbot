@@ -27,7 +27,9 @@ st.set_page_config(
     layout="centered"
 )
 
-st_autorefresh(interval=30000, limit=None, key="iot_refresh")
+# Auto-refresh every 30s — disabled while query is running to prevent lost responses
+if not st.session_state.get("thinking", False):
+    st_autorefresh(interval=30000, limit=None, key="iot_refresh")
 
 st.markdown("""
 <style>
@@ -229,6 +231,7 @@ if user_input:
     """, unsafe_allow_html=True)
     st.session_state["messages"].append({"role": "user", "content": user_input})
 
+    st.session_state["thinking"] = True
     with st.spinner("Thinking..."):
         try:
             response = run_agent(user_input, st.session_state["thread_id"])
@@ -250,5 +253,6 @@ if user_input:
         <div class="bot-bubble">{content}</div>
     </div>
     """, unsafe_allow_html=True)
+    st.session_state["thinking"] = False
     st.session_state["messages"].append({"role": "assistant", "content": response})
     st.rerun()
