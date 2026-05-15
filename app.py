@@ -11,7 +11,6 @@ Author: Tarun, Akhila
 """
 
 import streamlit as st
-from streamlit_autorefresh import st_autorefresh
 from agent import run_agent
 import os
 import sqlite3
@@ -27,9 +26,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Auto-refresh every 30s — disabled while query is running to prevent lost responses
-if not st.session_state.get("thinking", False):
-    st_autorefresh(interval=30000, limit=None, key="iot_refresh")
+
 
 st.markdown("""
 <style>
@@ -181,7 +178,9 @@ with st.sidebar:
             <div class="iot-card-value" style="color:#EF4444;font-size:13px">{worst_co2_room}</div>
         </div>
         """, unsafe_allow_html=True)
-        st.caption("🔄 Auto-refreshes every 30s")
+        if st.button("🔄 Refresh stats", use_container_width=True):
+        st.cache_data.clear()
+        st.rerun()
     else:
         st.warning("No sensor data available")
 
