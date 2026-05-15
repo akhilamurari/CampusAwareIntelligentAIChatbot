@@ -5,11 +5,9 @@ Entry point for running the CampusAware AI agent.
 Provides the run_agent() function used by the Streamlit UI
 to process user queries through the LangGraph workflow.
 
-Fix CF1CT-42: thread_id now passed per session from app.py
-instead of being a global shared across all users.
-
-Fix CF1CT-44: Context window managed by trimming oldest messages
-when token limit is exceeded. Recursion limit set to 50.
+Fix CF1CT-42: thread_id now passed per session from app.py.
+Fix CF1CT-44: On context limit, automatically retries with
+fresh thread so user gets an answer without seeing an error.
 """
 
 import uuid
@@ -20,14 +18,8 @@ def run_agent(user_input: str, thread_id: str) -> str:
     """
     Process a user query through the CampusAware LangGraph agent.
 
-    Streams the agent response and returns the final text answer.
-    Handles context length errors by resetting the conversation thread.
-
-    CF1CT-42 Fix: thread_id passed per session from app.py —
-    each browser session has its own isolated conversation history.
-
-    CF1CT-44 Fix: Context length errors handled gracefully —
-    thread is reset and user is prompted to ask again.
+    On context length exceeded — automatically retries with a new
+    thread_id so user gets an answer without manual intervention.
 
     Args:
         user_input (str): Natural language query from the user
@@ -35,41 +27,47 @@ def run_agent(user_input: str, thread_id: str) -> str:
 
     Returns:
         str: Agent response as plain English text, or error message
-
-    Example:
-        >>> response = run_agent("Which room had the highest CO2?", "abc-123")
-        >>> print(response)
-        "Library-L3 had the highest CO2 levels at 1322.33 ppm."
     """
-    # CF1CT-42 Fix: Use per-session thread_id passed from app.py
-    # CF1CT-44 Fix: recursion_limit=50 for sequential multi-tool calls
-    config = {
-        "configurable": {"thread_id": thread_id},
-        "recursion_limit": 50
-    }
 
-    input_state = {"messages": [("user", user_input)]}
-    response = ""
+    def _invoke(tid: str) -> str:
+        config = {
+            "configurable": {"thread_id": tid},
+            "recursion_limit": 50
+        }
+        input_state = {"messages": [("user", user_input)]}
+        response = ""
 
-    try:
-        # Stream agent events and extract final text response
-        for event in graph.stream(
-            input_state,
-            config,
-            stream_mode="values"
-        ):
+        for event in graph.stream(input_state, config, stream_mode="values"):
             if event["messages"]:
                 last_msg = event["messages"][-1]
-                # Filter out tool call messages (start with JSON)
                 if hasattr(last_msg, 'content') and isinstance(last_msg.content, str):
                     if last_msg.content and not last_msg.content.startswith('{"name"'):
                         response = last_msg.content
+        return response
+
+    try:
+        response = _invoke(thread_id)
 
     except Exception as e:
         error_msg = str(e)
-        if "4097" in error_msg or "context length" in error_msg or "input_tokens" in error_msg:
-            return "context_limit_exceeded"
 
-        return f"Sorry, something went wrong: {error_msg}"
+        # Context limit exceeded — retry with fresh thread automatically
+        if "4097" in error_msg or "context length" in error_msg or "input_tokens" in error_msg:
+            try:
+                new_thread = str(uuid.uuid4())
+                response = _invoke(new_thread)
+                # Signal app.py to update thread_id and clear display messages
+                return f"__new_thread__{new_thread}__{response}"
+            except Exception:
+                return "context_limit_exceeded"
+
+        elif "401" in error_msg:
+            return "API key error — check NIM configuration."
+        elif "Connection" in error_msg:
+            return "Connection error — check SSH tunnel is running."
+        elif "timeout" in error_msg.lower():
+            return "Request timed out — server may be busy."
+        else:
+            return f"Sorry, something went wrong: {error_msg}"
 
     return response if response else "Sorry, I couldn't process that request. Please try again."

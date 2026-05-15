@@ -235,10 +235,17 @@ if user_input:
     with st.spinner("Thinking..."):
         try:
             response = run_agent(user_input, st.session_state["thread_id"])
+
+            # Handle automatic thread reset on context limit
             if response == "context_limit_exceeded":
                 st.session_state["thread_id"] = str(uuid.uuid4())
                 st.session_state["messages"] = []
                 response = "Our conversation got too long and I've reset the memory. Please ask your question again!"
+            elif response.startswith("__new_thread__"):
+                # Agent auto-retried with new thread — update thread_id silently
+                parts = response.split("__", 3)
+                st.session_state["thread_id"] = parts[2]
+                response = parts[3] if len(parts) > 3 else "Please try your question again."
         except Exception as e:
             err = str(e)
             if "401"          in err:        response = "API key error — check NIM configuration."
