@@ -179,8 +179,8 @@ with st.sidebar:
         </div>
         """, unsafe_allow_html=True)
         if st.button("🔄 Refresh stats", use_container_width=True):
-        st.cache_data.clear()
-        st.rerun()
+            st.cache_data.clear()
+            st.rerun()
     else:
         st.warning("No sensor data available")
 
