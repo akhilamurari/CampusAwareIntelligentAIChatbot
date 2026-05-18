@@ -188,49 +188,52 @@ button[data-testid="stChatInputSubmitButton"] svg {
 </style>
 """, unsafe_allow_html=True)
 
-# ── Teams-style avatar top right ──────────────────────────────────────────────
+# ── Fixed top-right avatar (like La Trobe website) ────────────────────────────
 full_name  = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
 student_id = st.session_state.get("student_id", "")
 initials   = "".join([w[0].upper() for w in full_name.split()[:2]]) if full_name else "?"
 
 st.markdown(f"""
 <style>
-.avatar-bar {{
+/* Fixed avatar top right corner */
+.avatar-fixed {{
+    position: fixed;
+    top: 14px;
+    right: 24px;
+    z-index: 9999;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+    gap: 8px;
 }}
 .avatar-circle {{
-    width: 36px; height: 36px;
+    width: 38px; height: 38px;
     background: #4B2E83;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     color: white; font-weight: 700; font-size: 13px;
+    box-shadow: 0 2px 8px rgba(75,46,131,0.4);
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(75,46,131,0.4);
 }}
 .avatar-name {{
     font-size: 0.82rem; color: #4B2E83; font-weight: 600;
 }}
+/* Hide default Streamlit top bar padding interference */
+[data-testid="stAppViewContainer"] > .main {{ padding-top: 1rem; }}
 </style>
-<div class="avatar-bar">
+<div class="avatar-fixed">
     <span class="avatar-name">{full_name}</span>
-    <div class="avatar-circle">{initials}</div>
+    <div class="avatar-circle" title="{full_name} · {student_id}">{initials}</div>
 </div>
 """, unsafe_allow_html=True)
 
-# Sign out hidden in expander under avatar
-with st.expander("", expanded=False):
-    st.caption(f"**{full_name}**  ·  {student_id}")
-    if st.button("🚪 Sign Out", use_container_width=True):
-        st.session_state["authenticated"] = False
-        st.session_state["student_id"]    = ""
-        st.session_state["full_name"]      = ""
-        st.session_state["messages"]       = []
-        st.session_state["thread_id"]      = str(uuid.uuid4())
-        st.rerun()
+# Sign out hidden in sidebar bottom
+if st.sidebar.button("🚪 Sign Out", use_container_width=True, key="signout_btn"):
+    st.session_state["authenticated"] = False
+    st.session_state["student_id"]    = ""
+    st.session_state["full_name"]      = ""
+    st.session_state["messages"]       = []
+    st.session_state["thread_id"]      = str(uuid.uuid4())
+    st.rerun()
 
 st.markdown("""
 <div class="app-header">
