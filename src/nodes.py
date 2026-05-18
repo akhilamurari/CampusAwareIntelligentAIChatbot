@@ -62,7 +62,7 @@ def assistant_node(state: AgentState) -> dict:
         "4. Use double-quotes for string literals: WHERE room_id = \"Lab-101\"\n"
         "5. Always LIMIT results to 10 rows.\n"
         "6. After getting results, give ONLY a plain English answer. NEVER show SQL to the user.\n"
-        "7. NEVER ask the user if they want results — just run the query and answer directly.\n"
+        "7. NEVER ask the user if they want results — just run the query and answer directly.\n"        "8. For quiet room / best room queries — ALWAYS search ALL 17 rooms, not just Study Rooms.\n"        "   Use: SELECT room_id, noise_db FROM room_telemetry WHERE timestamp=(SELECT MAX(timestamp) FROM room_telemetry) ORDER BY noise_db ASC LIMIT 5\n"        "   This includes Library-L1, Library-L2, Library-L3, Labs, Lecture Halls, Study Rooms, Cafeteria etc.\n"
         "8. Call campus_db_tool ONCE only — do NOT call it again after getting results.\n"
         "\n"
         "--- DOCUMENT RULES ---\n"
