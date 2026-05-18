@@ -17,6 +17,7 @@ import sqlite3
 import pandas as pd
 import uuid
 from dotenv import load_dotenv
+from auth import init_auth_table, login_student, register_student, validate_student_id
 
 load_dotenv()
 
@@ -26,75 +27,84 @@ st.set_page_config(
     layout="centered"
 )
 
-# ── CF1CT-42: Session State Init ───────────────────────────────────────────────
+# ── Initialise auth table on startup ──────────────────────────────────────────
+init_auth_table()
+
+# ── Session State Init ─────────────────────────────────────────────────────────
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 if "student_id" not in st.session_state:
     st.session_state["student_id"] = ""
-if "login_error" not in st.session_state:
-    st.session_state["login_error"] = ""
+if "full_name" not in st.session_state:
+    st.session_state["full_name"] = ""
+if "login_tab" not in st.session_state:
+    st.session_state["login_tab"] = "login"
 
-# ── Login Page ─────────────────────────────────────────────────────────────────
-def validate_student_id(sid):
-    """Validate La Trobe student ID format — starts with 2, 8 digits total."""
-    import re
-    return bool(re.match(r'^2\d{7}$', sid.strip()))
-
+# ── Login / Register Page ──────────────────────────────────────────────────────
 if not st.session_state["authenticated"]:
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     * { font-family: 'Inter', sans-serif; }
     #MainMenu, footer, header { visibility: hidden; }
-    .login-container {
-        max-width: 420px; margin: 80px auto; padding: 40px;
-        background: #F3F0FA; border-radius: 16px;
-        border: 1px solid #DDD6FE;
-        box-shadow: 0 8px 24px rgba(75,46,131,0.12);
-    }
-    .login-title { text-align: center; color: #4B2E83; font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
-    .login-sub { text-align: center; color: #6B7280; font-size: 0.85rem; margin-bottom: 24px; }
-    .login-error { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 10px 14px; color: #DC2626; font-size: 0.85rem; margin-bottom: 12px; }
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown('''
-    <div class="login-container">
-        <div class="login-title">🎓 CampusAware AI</div>
-        <div class="login-sub">La Trobe Bundoora Campus Assistant<br>Please sign in with your student ID</div>
+    st.markdown("""
+    <div style="text-align:center; padding: 30px 0 10px 0;">
+        <h2 style="color:#4B2E83; margin:0;">🎓 CampusAware AI</h2>
+        <p style="color:#6B7280; font-size:0.88rem; margin:6px 0 0 0;">La Trobe Bundoora Campus Assistant</p>
     </div>
-    ''', unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-    with st.form("login_form"):
-        st.markdown("#### Sign In")
-        student_id = st.text_input(
-            "Student ID",
-            placeholder="e.g. 20012345",
-            help="Your 8-digit La Trobe student ID starting with 2"
-        )
-        password = st.text_input(
-            "Password",
-            type="password",
-            placeholder="Your La Trobe password",
-            help="Enter your La Trobe university password"
-        )
-        submitted = st.form_submit_button("Sign In", use_container_width=True, type="primary")
+    tab_login, tab_register = st.tabs(["🔑 Sign In", "📝 Register"])
 
-        if submitted:
-            if not student_id:
-                st.error("Please enter your student ID.")
-            elif not validate_student_id(student_id):
-                st.error("Invalid student ID. Must be 8 digits starting with 2 (e.g. 20012345).")
-            elif not password:
-                st.error("Please enter your password.")
-            elif len(password) < 6:
-                st.error("Password must be at least 6 characters.")
-            else:
-                st.session_state["authenticated"] = True
-                st.session_state["student_id"] = student_id.strip()
-                st.rerun()
+    # ── LOGIN TAB ──────────────────────────────────────────────────
+    with tab_login:
+        with st.form("login_form"):
+            st.markdown("##### Sign in with your student credentials")
+            student_id = st.text_input("Student ID", placeholder="e.g. 20012345", help="8-digit La Trobe student ID")
+            password   = st.text_input("Password", type="password", placeholder="Your password")
+            submitted  = st.form_submit_button("Sign In", use_container_width=True, type="primary")
 
-    st.caption("🔒 Your session is private and isolated. Queries are processed on-premises at La Trobe.")
+            if submitted:
+                if not student_id or not password:
+                    st.error("Please fill in all fields.")
+                else:
+                    success, result = login_student(student_id.strip(), password)
+                    if success:
+                        st.session_state["authenticated"] = True
+                        st.session_state["student_id"]    = student_id.strip()
+                        st.session_state["full_name"]      = result
+                        st.session_state["thread_id"]      = str(uuid.uuid4())
+                        st.session_state["messages"]       = []
+                        st.rerun()
+                    else:
+                        st.error(result)
+
+    # ── REGISTER TAB ───────────────────────────────────────────────
+    with tab_register:
+        with st.form("register_form"):
+            st.markdown("##### Create your CampusAware account")
+            reg_id       = st.text_input("Student ID", placeholder="e.g. 20012345", help="8-digit La Trobe student ID starting with 2")
+            reg_name     = st.text_input("Full Name", placeholder="e.g. Akhila Murari")
+            reg_password = st.text_input("Password", type="password", placeholder="Min 6 characters")
+            reg_confirm  = st.text_input("Confirm Password", type="password", placeholder="Re-enter your password")
+            reg_submit   = st.form_submit_button("Register", use_container_width=True, type="primary")
+
+            if reg_submit:
+                if not reg_id or not reg_name or not reg_password or not reg_confirm:
+                    st.error("Please fill in all fields.")
+                elif reg_password != reg_confirm:
+                    st.error("Passwords do not match.")
+                else:
+                    success, msg = register_student(reg_id.strip(), reg_password, reg_name.strip())
+                    if success:
+                        st.success(msg + " Please sign in.")
+                    else:
+                        st.error(msg)
+
+    st.caption("🔒 Passwords are hashed and stored securely on-premises at La Trobe.")
     st.stop()
 
 
@@ -205,13 +215,16 @@ with st.sidebar:
         st.info("● NVIDIA Cloud API")
 
     # Show logged in student
-    st.markdown(f"**👤 {st.session_state.get('student_id', 'Student')}**")
+    full_name = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
+    st.markdown(f"**👤 {full_name}**")
+    st.caption(f"ID: {st.session_state.get('student_id', '')}")
 
     if st.button("🚪 Sign Out", use_container_width=True):
         st.session_state["authenticated"] = False
-        st.session_state["student_id"] = ""
-        st.session_state["messages"] = []
-        st.session_state["thread_id"] = str(uuid.uuid4())
+        st.session_state["student_id"]    = ""
+        st.session_state["full_name"]      = ""
+        st.session_state["messages"]       = []
+        st.session_state["thread_id"]      = str(uuid.uuid4())
         st.rerun()
 
     st.divider()
