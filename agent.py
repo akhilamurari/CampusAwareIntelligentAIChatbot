@@ -40,9 +40,16 @@ def run_agent(user_input: str, thread_id: str) -> str:
         for event in graph.stream(input_state, config, stream_mode="values"):
             if event["messages"]:
                 last_msg = event["messages"][-1]
-                if hasattr(last_msg, 'content') and isinstance(last_msg.content, str):
-                    if last_msg.content and not last_msg.content.startswith('{"name"'):
-                        response = last_msg.content
+                # Only use AIMessage responses — skip ToolMessage and tool call messages
+                msg_type = type(last_msg).__name__
+                if msg_type == "AIMessage":
+                    content = last_msg.content
+                    # Skip if content is empty or is a raw tool call JSON
+                    if (content
+                        and isinstance(content, str)
+                        and not content.strip().startswith('{')
+                        and not content.strip().startswith('[{')):
+                        response = content
         return response
 
     try:
