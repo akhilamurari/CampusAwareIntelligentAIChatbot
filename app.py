@@ -17,7 +17,7 @@ import sqlite3
 import pandas as pd
 import uuid
 from dotenv import load_dotenv
-from auth import init_auth_table, login_student, register_student, validate_student_id
+from auth import init_auth_table, login_student, register_student, validate_student_id, create_session_token, validate_session_token, delete_session_token
 
 load_dotenv()
 
@@ -30,37 +30,31 @@ st.set_page_config(
 # ── Initialise auth table on startup ──────────────────────────────────────────
 init_auth_table()
 
-# ── Session Persistence — 5 minute timeout ────────────────────────────────────
-import time
-
-SESSION_TIMEOUT = 5 * 60  # 5 minutes in seconds
-
-# Initialise session state
+# ── Session State Init ─────────────────────────────────────────────────────────
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 if "student_id" not in st.session_state:
     st.session_state["student_id"] = ""
 if "full_name" not in st.session_state:
     st.session_state["full_name"] = ""
-if "login_tab" not in st.session_state:
-    st.session_state["login_tab"] = "login"
-if "last_active" not in st.session_state:
-    st.session_state["last_active"] = 0.0
+if "session_token" not in st.session_state:
+    st.session_state["session_token"] = ""
 
-# Check if session is still valid (within 5 minutes)
-if st.session_state["authenticated"]:
-    elapsed = time.time() - st.session_state["last_active"]
-    if elapsed > SESSION_TIMEOUT:
-        # Session expired — force logout
-        st.session_state["authenticated"] = False
-        st.session_state["student_id"]    = ""
-        st.session_state["full_name"]      = ""
-        st.session_state["messages"]       = []
-        st.session_state["thread_id"]      = str(uuid.uuid4())
-        st.warning("Your session expired after 5 minutes of inactivity. Please log in again.")
-    else:
-        # Refresh the timer on every interaction
-        st.session_state["last_active"] = time.time()
+# ── Restore session from URL token on refresh ──────────────────────────────────
+# On page refresh session_state is lost but token stays in URL
+if not st.session_state["authenticated"]:
+    url_token = st.query_params.get("token", "")
+    if url_token:
+        student_id, full_name = validate_session_token(url_token)
+        if student_id:
+            st.session_state["authenticated"] = True
+            st.session_state["student_id"]    = student_id
+            st.session_state["full_name"]      = full_name
+            st.session_state["session_token"]  = url_token
+            if "thread_id" not in st.session_state:
+                st.session_state["thread_id"] = str(uuid.uuid4())
+            if "messages" not in st.session_state:
+                st.session_state["messages"] = []
 
 # ── Login / Register Page ──────────────────────────────────────────────────────
 if not st.session_state["authenticated"]:
@@ -95,12 +89,14 @@ if not st.session_state["authenticated"]:
                 else:
                     success, result = login_student(student_id.strip(), password)
                     if success:
+                        token = create_session_token(student_id.strip())
                         st.session_state["authenticated"] = True
                         st.session_state["student_id"]    = student_id.strip()
                         st.session_state["full_name"]      = result
+                        st.session_state["session_token"]  = token
                         st.session_state["thread_id"]      = str(uuid.uuid4())
                         st.session_state["messages"]       = []
-                        st.session_state["last_active"]    = time.time()
+                        st.query_params["token"]           = token
                         st.rerun()
                     else:
                         st.error(result)
@@ -276,13 +272,14 @@ st.markdown(f"""
 
 # Handle logout via query param
 if st.query_params.get("logout") == "true":
+    delete_session_token(st.session_state.get("session_token", ""))
     st.query_params.clear()
     st.session_state["authenticated"] = False
     st.session_state["student_id"]    = ""
     st.session_state["full_name"]      = ""
+    st.session_state["session_token"]  = ""
     st.session_state["messages"]       = []
     st.session_state["thread_id"]      = str(uuid.uuid4())
-    st.session_state["last_active"]    = 0.0
     st.rerun()
 
 

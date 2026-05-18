@@ -14,6 +14,8 @@ import sqlite3
 import hashlib
 import os
 import re
+import secrets
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -145,6 +147,79 @@ def login_student(student_id: str, password: str) -> tuple[bool, str]:
 
     except Exception as e:
         return False, f"Login error: {str(e)}"
+    finally:
+        conn.close()
+
+
+def create_session_token(student_id: str) -> str:
+    """
+    Create a session token for a student and store in DB.
+    Token expires after 5 minutes.
+    """
+    import secrets
+    import time
+    token = secrets.token_urlsafe(32)
+    expires_at = time.time() + (5 * 60)  # 5 minutes
+
+    conn = get_conn()
+    try:
+        # Create sessions table if not exists
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS sessions (
+                token       TEXT PRIMARY KEY,
+                student_id  TEXT NOT NULL,
+                expires_at  REAL NOT NULL,
+                created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        # Clean old expired sessions
+        conn.execute("DELETE FROM sessions WHERE expires_at < ?", (time.time(),))
+        # Insert new session
+        conn.execute(
+            "INSERT INTO sessions (token, student_id, expires_at) VALUES (?, ?, ?)",
+            (token, student_id, expires_at)
+        )
+        conn.commit()
+        return token
+    finally:
+        conn.close()
+
+
+def validate_session_token(token: str):
+    """
+    Validate a session token.
+    Returns (student_id, full_name) if valid, else (None, None).
+    Refreshes expiry by 5 more minutes on each validation.
+    """
+    import time
+    if not token:
+        return None, None
+
+    conn = get_conn()
+    try:
+        row = conn.execute(
+            "SELECT s.student_id, st.full_name FROM sessions s JOIN students st ON s.student_id = st.student_id WHERE s.token = ? AND s.expires_at > ?",
+            (token, time.time())
+        ).fetchone()
+
+        if not row:
+            return None, None
+
+        # Refresh expiry — 5 more minutes from now
+        new_expiry = time.time() + (5 * 60)
+        conn.execute("UPDATE sessions SET expires_at = ? WHERE token = ?", (new_expiry, token))
+        conn.commit()
+        return row[0], row[1] or row[0]
+    finally:
+        conn.close()
+
+
+def delete_session_token(token: str):
+    """Delete a session token (logout)."""
+    conn = get_conn()
+    try:
+        conn.execute("DELETE FROM sessions WHERE token = ?", (token,))
+        conn.commit()
     finally:
         conn.close()
 
