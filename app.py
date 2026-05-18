@@ -30,7 +30,12 @@ st.set_page_config(
 # ── Initialise auth table on startup ──────────────────────────────────────────
 init_auth_table()
 
-# ── Session State Init ─────────────────────────────────────────────────────────
+# ── Session Persistence — 5 minute timeout ────────────────────────────────────
+import time
+
+SESSION_TIMEOUT = 5 * 60  # 5 minutes in seconds
+
+# Initialise session state
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 if "student_id" not in st.session_state:
@@ -39,6 +44,23 @@ if "full_name" not in st.session_state:
     st.session_state["full_name"] = ""
 if "login_tab" not in st.session_state:
     st.session_state["login_tab"] = "login"
+if "last_active" not in st.session_state:
+    st.session_state["last_active"] = 0.0
+
+# Check if session is still valid (within 5 minutes)
+if st.session_state["authenticated"]:
+    elapsed = time.time() - st.session_state["last_active"]
+    if elapsed > SESSION_TIMEOUT:
+        # Session expired — force logout
+        st.session_state["authenticated"] = False
+        st.session_state["student_id"]    = ""
+        st.session_state["full_name"]      = ""
+        st.session_state["messages"]       = []
+        st.session_state["thread_id"]      = str(uuid.uuid4())
+        st.warning("Your session expired after 5 minutes of inactivity. Please log in again.")
+    else:
+        # Refresh the timer on every interaction
+        st.session_state["last_active"] = time.time()
 
 # ── Login / Register Page ──────────────────────────────────────────────────────
 if not st.session_state["authenticated"]:
@@ -78,6 +100,7 @@ if not st.session_state["authenticated"]:
                         st.session_state["full_name"]      = result
                         st.session_state["thread_id"]      = str(uuid.uuid4())
                         st.session_state["messages"]       = []
+                        st.session_state["last_active"]    = time.time()
                         st.rerun()
                     else:
                         st.error(result)
