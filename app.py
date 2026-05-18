@@ -65,7 +65,7 @@ if not st.session_state["authenticated"]:
             st.markdown("##### Login with your student credentials")
             student_id = st.text_input("Student ID", placeholder="e.g. 20012345", help="8-digit La Trobe student ID")
             password   = st.text_input("Password", type="password", placeholder="Your password")
-            submitted  = st.form_submit_button("Sign In", use_container_width=True, type="primary")
+            submitted  = st.form_submit_button("Login", use_container_width=True, type="primary")
 
             if submitted:
                 if not student_id or not password:
@@ -90,7 +90,7 @@ if not st.session_state["authenticated"]:
             reg_name     = st.text_input("Full Name", placeholder="e.g. Akhila Murari")
             reg_password = st.text_input("Password", type="password", placeholder="Min 6 characters")
             reg_confirm  = st.text_input("Confirm Password", type="password", placeholder="Re-enter your password")
-            reg_submit   = st.form_submit_button("Register", use_container_width=True, type="primary")
+            reg_submit   = st.form_submit_button("Sign Up", use_container_width=True, type="primary")
 
             if reg_submit:
                 if not reg_id or not reg_name or not reg_password or not reg_confirm:
@@ -165,43 +165,43 @@ button[data-testid="stChatInputSubmitButton"] svg {
 </style>
 """, unsafe_allow_html=True)
 
-# ── Top menu bar with student name and sign out ───────────────────────────────
+# ── Teams-style avatar top right ──────────────────────────────────────────────
 full_name  = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
 student_id = st.session_state.get("student_id", "")
+initials   = "".join([w[0].upper() for w in full_name.split()[:2]]) if full_name else "?"
 
 st.markdown(f"""
 <style>
-.top-menu {{
+.avatar-bar {{
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}}
+.avatar-circle {{
+    width: 36px; height: 36px;
     background: #4B2E83;
-    padding: 8px 20px;
-    border-radius: 10px;
-    margin-bottom: 12px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(75,46,131,0.4);
 }}
-.top-menu-title {{
-    color: white;
-    font-weight: 700;
-    font-size: 1rem;
-    margin: 0;
-}}
-.top-menu-user {{
-    color: #DDD6FE;
-    font-size: 0.82rem;
+.avatar-name {{
+    font-size: 0.82rem; color: #4B2E83; font-weight: 600;
 }}
 </style>
-<div class="top-menu">
-    <span class="top-menu-title">🎓 CampusAware AI</span>
-    <span class="top-menu-user">👤 {full_name} &nbsp;|&nbsp; {student_id}</span>
+<div class="avatar-bar">
+    <span class="avatar-name">{full_name}</span>
+    <div class="avatar-circle">{initials}</div>
 </div>
 """, unsafe_allow_html=True)
 
-# Sign out in expander — hidden under arrow
-with st.expander("⚙️ Account", expanded=False):
-    st.caption(f"Logged in as: **{full_name}**")
-    st.caption(f"Student ID: {student_id}")
-    if st.button("🚪 Sign Out", use_container_width=True, type="primary"):
+# Sign out hidden in expander under avatar
+with st.expander("", expanded=False):
+    st.caption(f"**{full_name}**  ·  {student_id}")
+    if st.button("🚪 Sign Out", use_container_width=True):
         st.session_state["authenticated"] = False
         st.session_state["student_id"]    = ""
         st.session_state["full_name"]      = ""
@@ -211,6 +211,7 @@ with st.expander("⚙️ Account", expanded=False):
 
 st.markdown("""
 <div class="app-header">
+    <h2>🎓 CampusAware AI</h2>
     <p>La Trobe Bundoora Campus Assistant</p>
 </div>
 """, unsafe_allow_html=True)
