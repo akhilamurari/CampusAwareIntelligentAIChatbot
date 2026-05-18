@@ -57,12 +57,12 @@ if not st.session_state["authenticated"]:
     </div>
     """, unsafe_allow_html=True)
 
-    tab_login, tab_register = st.tabs(["🔑 Sign In", "📝 Register"])
+    tab_login, tab_register = st.tabs(["🔑 Login", "📝 Sign Up"])
 
     # ── LOGIN TAB ──────────────────────────────────────────────────
     with tab_login:
         with st.form("login_form"):
-            st.markdown("##### Sign in with your student credentials")
+            st.markdown("##### Login with your student credentials")
             student_id = st.text_input("Student ID", placeholder="e.g. 20012345", help="8-digit La Trobe student ID")
             password   = st.text_input("Password", type="password", placeholder="Your password")
             submitted  = st.form_submit_button("Sign In", use_container_width=True, type="primary")
@@ -165,9 +165,52 @@ button[data-testid="stChatInputSubmitButton"] svg {
 </style>
 """, unsafe_allow_html=True)
 
+# ── Top menu bar with student name and sign out ───────────────────────────────
+full_name  = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
+student_id = st.session_state.get("student_id", "")
+
+st.markdown(f"""
+<style>
+.top-menu {{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #4B2E83;
+    padding: 8px 20px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+}}
+.top-menu-title {{
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    margin: 0;
+}}
+.top-menu-user {{
+    color: #DDD6FE;
+    font-size: 0.82rem;
+}}
+</style>
+<div class="top-menu">
+    <span class="top-menu-title">🎓 CampusAware AI</span>
+    <span class="top-menu-user">👤 {full_name} &nbsp;|&nbsp; {student_id}</span>
+</div>
+""", unsafe_allow_html=True)
+
+# Sign out in expander — hidden under arrow
+with st.expander("⚙️ Account", expanded=False):
+    st.caption(f"Logged in as: **{full_name}**")
+    st.caption(f"Student ID: {student_id}")
+    if st.button("🚪 Sign Out", use_container_width=True, type="primary"):
+        st.session_state["authenticated"] = False
+        st.session_state["student_id"]    = ""
+        st.session_state["full_name"]      = ""
+        st.session_state["messages"]       = []
+        st.session_state["thread_id"]      = str(uuid.uuid4())
+        st.rerun()
+
 st.markdown("""
 <div class="app-header">
-    <h2>🎓 CampusAware AI</h2>
     <p>La Trobe Bundoora Campus Assistant</p>
 </div>
 """, unsafe_allow_html=True)
@@ -214,18 +257,7 @@ with st.sidebar:
     else:
         st.info("● NVIDIA Cloud API")
 
-    # Show logged in student
-    full_name = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
-    st.markdown(f"**👤 {full_name}**")
-    st.caption(f"ID: {st.session_state.get('student_id', '')}")
 
-    if st.button("🚪 Sign Out", use_container_width=True):
-        st.session_state["authenticated"] = False
-        st.session_state["student_id"]    = ""
-        st.session_state["full_name"]      = ""
-        st.session_state["messages"]       = []
-        st.session_state["thread_id"]      = str(uuid.uuid4())
-        st.rerun()
 
     st.divider()
     st.markdown("**Try asking:**")
