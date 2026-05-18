@@ -195,15 +195,12 @@ initials   = "".join([w[0].upper() for w in full_name.split()[:2]]) if full_name
 
 st.markdown(f"""
 <style>
-/* Fixed avatar top right corner */
-.avatar-fixed {{
+.avatar-wrapper {{
     position: fixed;
-    top: 14px;
-    right: 24px;
+    top: 12px;
+    right: 20px;
     z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-family: Inter, sans-serif;
 }}
 .avatar-circle {{
     width: 38px; height: 38px;
@@ -211,29 +208,84 @@ st.markdown(f"""
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     color: white; font-weight: 700; font-size: 13px;
-    box-shadow: 0 2px 8px rgba(75,46,131,0.4);
+    box-shadow: 0 2px 8px rgba(75,46,131,0.35);
     cursor: pointer;
+    border: 2px solid white;
+    margin-left: auto;
 }}
-.avatar-name {{
-    font-size: 0.82rem; color: #4B2E83; font-weight: 600;
+.avatar-dropdown {{
+    display: none;
+    position: absolute;
+    top: 48px;
+    right: 0;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    min-width: 200px;
+    padding: 8px 0;
+    z-index: 99999;
 }}
-/* Hide default Streamlit top bar padding interference */
-[data-testid="stAppViewContainer"] > .main {{ padding-top: 1rem; }}
+.avatar-wrapper:hover .avatar-dropdown {{
+    display: block;
+}}
+.dropdown-header {{
+    padding: 10px 16px 8px 16px;
+    border-bottom: 1px solid #F3F4F6;
+}}
+.dropdown-name {{
+    font-weight: 700; font-size: 13px; color: #1E293B;
+}}
+.dropdown-id {{
+    font-size: 11px; color: #6B7280; margin-top: 2px;
+}}
+.dropdown-item {{
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #374151;
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+}}
+.dropdown-item:hover {{
+    background: #F3F0FA;
+    color: #4B2E83;
+}}
+.dropdown-logout {{
+    color: #EF4444 !important;
+    border-top: 1px solid #F3F4F6;
+    margin-top: 4px;
+}}
+.dropdown-logout:hover {{
+    background: #FEF2F2 !important;
+    color: #EF4444 !important;
+}}
 </style>
-<div class="avatar-fixed">
-    <span class="avatar-name">{full_name}</span>
-    <div class="avatar-circle" title="{full_name} · {student_id}">{initials}</div>
+
+<div class="avatar-wrapper">
+    <div class="avatar-circle">{initials}</div>
+    <div class="avatar-dropdown">
+        <div class="dropdown-header">
+            <div class="dropdown-name">{full_name}</div>
+            <div class="dropdown-id">{student_id}</div>
+        </div>
+        <a class="dropdown-item dropdown-logout" href="?logout=true">🚪 Logout</a>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Sign out hidden in sidebar bottom
-if st.sidebar.button("🚪 Sign Out", use_container_width=True, key="signout_btn"):
+# Handle logout via query param
+if st.query_params.get("logout") == "true":
+    st.query_params.clear()
     st.session_state["authenticated"] = False
     st.session_state["student_id"]    = ""
     st.session_state["full_name"]      = ""
     st.session_state["messages"]       = []
     st.session_state["thread_id"]      = str(uuid.uuid4())
+    st.session_state["last_active"]    = 0.0
     st.rerun()
+
+
 
 st.markdown("""
 <div class="app-header">
