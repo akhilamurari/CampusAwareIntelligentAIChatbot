@@ -62,7 +62,10 @@ if not st.session_state["authenticated"]:
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     * { font-family: 'Inter', sans-serif; }
-    #MainMenu, footer, header { visibility: hidden; }
+    #MainMenu, footer { visibility: hidden; }
+[data-testid="stHeader"] { background: transparent !important; }
+[data-testid="stSidebar"] button[aria-label="Close sidebar"] { display: none !important; }
+[data-testid="collapsedControl"] { display: none !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -133,7 +136,10 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 * { font-family: 'Inter', sans-serif; }
-#MainMenu, footer, header { visibility: hidden; }
+#MainMenu, footer { visibility: hidden; }
+[data-testid="stHeader"] { background: transparent !important; }
+[data-testid="stSidebar"] button[aria-label="Close sidebar"] { display: none !important; }
+[data-testid="collapsedControl"] { display: none !important; }
 
 .user-bubble-wrapper { display:flex; justify-content:flex-end; margin:6px 0; }
 .user-bubble {
