@@ -199,6 +199,7 @@ st.markdown(f"""
     right: 20px;
     z-index: 9999;
     font-family: Inter, sans-serif;
+    padding-bottom: 20px;
 }}
 .avatar-circle {{
     width: 38px; height: 38px;
@@ -214,7 +215,7 @@ st.markdown(f"""
 .avatar-dropdown {{
     display: none;
     position: absolute;
-    top: 48px;
+    top: 38px;
     right: 0;
     background: white;
     border: 1px solid #E5E7EB;
