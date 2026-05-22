@@ -6,6 +6,7 @@ Sidebar only. No expander. No mobile detection.
 
 Fix CF1CT-42: Unique thread_id per browser session.
 Fix CF1CT-44: Context window reset handled gracefully.
+Fix CF1CT-49: Avatar logout button — works on all browsers and mobile.
 
 Author: Tarun, Akhila
 """
@@ -17,7 +18,9 @@ import sqlite3
 import pandas as pd
 import uuid
 from dotenv import load_dotenv
-from auth import init_auth_table, login_student, register_student, validate_student_id, create_session_token, validate_session_token, delete_session_token
+from auth import (init_auth_table, login_student, register_student,
+                  validate_student_id, create_session_token,
+                  validate_session_token, delete_session_token)
 
 load_dotenv()
 
@@ -39,9 +42,10 @@ if "full_name" not in st.session_state:
     st.session_state["full_name"] = ""
 if "session_token" not in st.session_state:
     st.session_state["session_token"] = ""
+if "show_logout" not in st.session_state:
+    st.session_state["show_logout"] = False
 
 # ── Restore session from URL token on refresh ──────────────────────────────────
-# On page refresh session_state is lost but token stays in URL
 if not st.session_state["authenticated"]:
     url_token = st.query_params.get("token", "")
     if url_token:
@@ -63,9 +67,9 @@ if not st.session_state["authenticated"]:
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     * { font-family: 'Inter', sans-serif; }
     #MainMenu, footer { visibility: hidden; }
-[data-testid="stHeader"] { background: transparent !important; }
-[data-testid="stSidebar"] button[aria-label="Close sidebar"] { display: none !important; }
-[data-testid="collapsedControl"] { display: none !important; }
+    [data-testid="stHeader"] { background: transparent !important; }
+    [data-testid="stSidebar"] button[aria-label="Close sidebar"] { display: none !important; }
+    [data-testid="collapsedControl"] { display: none !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -82,9 +86,12 @@ if not st.session_state["authenticated"]:
     with tab_login:
         with st.form("login_form"):
             st.markdown("##### Login with your student credentials")
-            student_id = st.text_input("Student ID", placeholder="e.g. 20012345", help="8-digit La Trobe student ID")
-            password   = st.text_input("Password", type="password", placeholder="Your password")
-            submitted  = st.form_submit_button("Login", use_container_width=True, type="primary")
+            student_id = st.text_input("Student ID", placeholder="e.g. 20012345",
+                                       help="8-digit La Trobe student ID")
+            password   = st.text_input("Password", type="password",
+                                       placeholder="Your password")
+            submitted  = st.form_submit_button("Login", use_container_width=True,
+                                               type="primary")
 
             if submitted:
                 if not student_id or not password:
@@ -99,6 +106,7 @@ if not st.session_state["authenticated"]:
                         st.session_state["session_token"]  = token
                         st.session_state["thread_id"]      = str(uuid.uuid4())
                         st.session_state["messages"]       = []
+                        st.session_state["show_logout"]    = False
                         st.query_params["token"]           = token
                         st.rerun()
                     else:
@@ -108,11 +116,15 @@ if not st.session_state["authenticated"]:
     with tab_register:
         with st.form("register_form"):
             st.markdown("##### Create your CampusAware account")
-            reg_id       = st.text_input("Student ID", placeholder="e.g. 20012345", help="8-digit La Trobe student ID starting with 2")
+            reg_id       = st.text_input("Student ID", placeholder="e.g. 20012345",
+                                         help="8-digit La Trobe student ID starting with 2")
             reg_name     = st.text_input("Full Name", placeholder="e.g. Akhila Murari")
-            reg_password = st.text_input("Password", type="password", placeholder="Min 6 characters")
-            reg_confirm  = st.text_input("Confirm Password", type="password", placeholder="Re-enter your password")
-            reg_submit   = st.form_submit_button("Sign Up", use_container_width=True, type="primary")
+            reg_password = st.text_input("Password", type="password",
+                                         placeholder="Min 6 characters")
+            reg_confirm  = st.text_input("Confirm Password", type="password",
+                                         placeholder="Re-enter your password")
+            reg_submit   = st.form_submit_button("Sign Up", use_container_width=True,
+                                                  type="primary")
 
             if reg_submit:
                 if not reg_id or not reg_name or not reg_password or not reg_confirm:
@@ -120,7 +132,8 @@ if not st.session_state["authenticated"]:
                 elif reg_password != reg_confirm:
                     st.error("Passwords do not match.")
                 else:
-                    success, msg = register_student(reg_id.strip(), reg_password, reg_name.strip())
+                    success, msg = register_student(reg_id.strip(), reg_password,
+                                                    reg_name.strip())
                     if success:
                         st.success(msg + " Please sign in.")
                     else:
@@ -130,7 +143,7 @@ if not st.session_state["authenticated"]:
     st.stop()
 
 
-
+# ── Main App CSS ───────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
@@ -147,7 +160,10 @@ st.markdown("""
     border-radius: 20px 20px 4px 20px;
     max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
 }
-.bot-bubble-wrapper { display:flex; justify-content:flex-start; align-items:flex-end; gap:8px; margin:6px 0; }
+.bot-bubble-wrapper {
+    display:flex; justify-content:flex-start;
+    align-items:flex-end; gap:8px; margin:6px 0;
+}
 .bot-avatar {
     width:32px; height:32px; background:#4B2E83;
     border-radius:50%; display:flex; align-items:center;
@@ -165,7 +181,8 @@ st.markdown("""
     padding: 8px 12px !important; margin-bottom: 4px; transition: all 0.15s;
 }
 [data-testid="stSidebar"] .stButton > button:hover {
-    background: #EDE9FE !important; border-color: #4B2E83 !important; color: #4B2E83 !important;
+    background: #EDE9FE !important; border-color: #4B2E83 !important;
+    color: #4B2E83 !important;
 }
 [data-testid="stChatInput"] > div { border-color: #4B2E83 !important; }
 [data-testid="stChatInput"] > div:focus-within {
@@ -187,115 +204,79 @@ button[data-testid="stChatInputSubmitButton"] svg {
 .iot-card-label { font-size:11px; color:#6b7280; font-weight:500; }
 .iot-card-value { font-size:18px; font-weight:700; font-family:monospace; }
 .iot-card-sub   { font-size:9px; color:#9ca3af; }
+
+/* Avatar button styling */
+div[data-testid="stButton"] button.avatar-btn {
+    background: #4B2E83 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    width: 38px !important;
+    height: 38px !important;
+    padding: 0 !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    border: 2px solid white !important;
+    box-shadow: 0 2px 8px rgba(75,46,131,0.35) !important;
+    min-width: 38px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# ── Fixed top-right avatar (like La Trobe website) ────────────────────────────
+
+# ── Top-right avatar with logout ──────────────────────────────────────────────
 full_name  = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
 student_id = st.session_state.get("student_id", "")
 initials   = "".join([w[0].upper() for w in full_name.split()[:2]]) if full_name else "?"
 
-st.markdown(f"""
-<style>
-.avatar-wrapper {{
-    position: fixed;
-    top: 12px;
-    right: 20px;
-    z-index: 9999;
-    font-family: Inter, sans-serif;
-}}
-.avatar-circle {{
-    width: 38px; height: 38px;
-    background: #4B2E83;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-weight: 700; font-size: 13px;
-    box-shadow: 0 2px 8px rgba(75,46,131,0.35);
-    cursor: pointer;
-    border: 2px solid white;
-    margin-left: auto;
-}}
-.avatar-dropdown {{
-    display: none;
-    position: absolute;
-    top: 48px;
-    right: 0;
-    background: white;
-    border: 1px solid #E5E7EB;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    min-width: 200px;
-    padding: 8px 0;
-    z-index: 99999;
-}}
-.avatar-wrapper:hover .avatar-dropdown {{
-    display: block;
-}}
-.dropdown-header {{
-    padding: 10px 16px 8px 16px;
-    border-bottom: 1px solid #F3F4F6;
-}}
-.dropdown-name {{
-    font-weight: 700; font-size: 13px; color: #1E293B;
-}}
-.dropdown-id {{
-    font-size: 11px; color: #6B7280; margin-top: 2px;
-}}
-.dropdown-item {{
-    padding: 10px 16px;
-    font-size: 13px;
-    color: #374151;
-    cursor: pointer;
-    display: block;
-    text-decoration: none;
-}}
-.dropdown-item:hover {{
-    background: #F3F0FA;
-    color: #4B2E83;
-}}
-.dropdown-logout {{
-    color: #EF4444 !important;
-    border-top: 1px solid #F3F4F6;
-    margin-top: 4px;
-}}
-.dropdown-logout:hover {{
-    background: #FEF2F2 !important;
-    color: #EF4444 !important;
-}}
-</style>
+# Header row — title left, avatar right
+header_col, avatar_col = st.columns([9, 1])
 
-<div class="avatar-wrapper">
-    <div class="avatar-circle">{initials}</div>
-    <div class="avatar-dropdown">
-        <div class="dropdown-header">
-            <div class="dropdown-name">{full_name}</div>
-            <div class="dropdown-id">{student_id}</div>
-        </div>
-        <a class="dropdown-item dropdown-logout" href="?logout=true">🚪 Logout</a>
+with header_col:
+    st.markdown("""
+    <div class="app-header">
+        <h2>🎓 CampusAware AI</h2>
+        <p>La Trobe Bundoora Campus Assistant</p>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# Handle logout via query param
-if st.query_params.get("logout") == "true":
-    delete_session_token(st.session_state.get("session_token", ""))
-    st.query_params.clear()
-    st.session_state["authenticated"] = False
-    st.session_state["student_id"]    = ""
-    st.session_state["full_name"]      = ""
-    st.session_state["session_token"]  = ""
-    st.session_state["messages"]       = []
-    st.session_state["thread_id"]      = str(uuid.uuid4())
-    st.rerun()
+with avatar_col:
+    if st.button(
+        initials,
+        key="avatar_btn",
+        help=f"{full_name} ({student_id})\nClick to logout",
+        type="primary"
+    ):
+        st.session_state["show_logout"] = not st.session_state["show_logout"]
 
+# ── Logout confirmation ────────────────────────────────────────────────────────
+if st.session_state.get("show_logout", False):
+    st.markdown(f"""
+    <div style="background:#FEF2F2; border:1px solid #FECACA; border-radius:10px;
+                padding:12px 16px; margin-bottom:12px; text-align:center;">
+        <strong style="color:#1a1a1a;">👤 {full_name}</strong>
+        <span style="color:#6B7280; font-size:0.82rem; display:block;">
+            Student ID: {student_id}
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
 
-
-st.markdown("""
-<div class="app-header">
-    <h2>🎓 CampusAware AI</h2>
-    <p>La Trobe Bundoora Campus Assistant</p>
-</div>
-""", unsafe_allow_html=True)
+    logout_col1, logout_col2 = st.columns(2)
+    with logout_col1:
+        if st.button("🚪 Logout", key="confirm_logout", use_container_width=True, type="primary"):
+            delete_session_token(st.session_state.get("session_token", ""))
+            st.query_params.clear()
+            st.session_state["authenticated"] = False
+            st.session_state["student_id"]    = ""
+            st.session_state["full_name"]      = ""
+            st.session_state["session_token"]  = ""
+            st.session_state["messages"]       = []
+            st.session_state["thread_id"]      = str(uuid.uuid4())
+            st.session_state["show_logout"]    = False
+            st.rerun()
+    with logout_col2:
+        if st.button("✕ Cancel", key="cancel_logout", use_container_width=True):
+            st.session_state["show_logout"] = False
+            st.rerun()
 
 
 # ── Load IoT Data ─────────────────────────────────────────────────────────────
@@ -317,9 +298,12 @@ def get_room_data():
 
 
 # ── Session State ─────────────────────────────────────────────────────────────
-if "thread_id" not in st.session_state: st.session_state["thread_id"] = str(uuid.uuid4())
-if "messages"  not in st.session_state: st.session_state["messages"]  = []
-if "quick_q"   not in st.session_state: st.session_state["quick_q"]   = None
+if "thread_id" not in st.session_state:
+    st.session_state["thread_id"] = str(uuid.uuid4())
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
+if "quick_q" not in st.session_state:
+    st.session_state["quick_q"] = None
 
 df = get_room_data()
 
@@ -338,8 +322,6 @@ with st.sidebar:
         st.success("● On-Premises — aiotcentre-03")
     else:
         st.info("● NVIDIA Cloud API")
-
-
 
     st.divider()
     st.markdown("**Try asking:**")
@@ -362,30 +344,49 @@ with st.sidebar:
 
         st.markdown(f"""
         <div class="iot-card">
-            <div><div class="iot-card-label">🏢 Rooms Occupied</div><div class="iot-card-sub">of {total} total</div></div>
+            <div>
+                <div class="iot-card-label">🏢 Rooms Occupied</div>
+                <div class="iot-card-sub">of {total} total</div>
+            </div>
             <div class="iot-card-value" style="color:#EF4444">{occupied}</div>
         </div>
         <div class="iot-card">
-            <div><div class="iot-card-label">✅ Rooms Available</div><div class="iot-card-sub">vacant now</div></div>
+            <div>
+                <div class="iot-card-label">✅ Rooms Available</div>
+                <div class="iot-card-sub">vacant now</div>
+            </div>
             <div class="iot-card-value" style="color:#10B981">{vacant}</div>
         </div>
         <div class="iot-card">
-            <div><div class="iot-card-label">💨 Avg CO₂</div><div class="iot-card-sub">campus-wide</div></div>
+            <div>
+                <div class="iot-card-label">💨 Avg CO₂</div>
+                <div class="iot-card-sub">campus-wide</div>
+            </div>
             <div class="iot-card-value" style="color:#F59E0B">{avg_co2} ppm</div>
         </div>
         <div class="iot-card">
-            <div><div class="iot-card-label">🌡 Avg Temp</div><div class="iot-card-sub">campus-wide</div></div>
+            <div>
+                <div class="iot-card-label">🌡 Avg Temp</div>
+                <div class="iot-card-sub">campus-wide</div>
+            </div>
             <div class="iot-card-value" style="color:#3B82F6">{avg_temp}°C</div>
         </div>
         <div class="iot-card">
-            <div><div class="iot-card-label">🔇 Quietest Room</div><div class="iot-card-sub">best for studying</div></div>
+            <div>
+                <div class="iot-card-label">🔇 Quietest Room</div>
+                <div class="iot-card-sub">best for studying</div>
+            </div>
             <div class="iot-card-value" style="color:#4B2E83;font-size:13px">{quietest}</div>
         </div>
         <div class="iot-card">
-            <div><div class="iot-card-label">⚠️ High CO₂ Room</div><div class="iot-card-sub">{worst_co2_val} ppm</div></div>
+            <div>
+                <div class="iot-card-label">⚠️ High CO₂ Room</div>
+                <div class="iot-card-sub">{worst_co2_val} ppm</div>
+            </div>
             <div class="iot-card-value" style="color:#EF4444;font-size:13px">{worst_co2_room}</div>
         </div>
         """, unsafe_allow_html=True)
+
         if st.button("🔄 Refresh stats", use_container_width=True):
             st.cache_data.clear()
             st.rerun()
@@ -438,27 +439,29 @@ if user_input:
     """, unsafe_allow_html=True)
     st.session_state["messages"].append({"role": "user", "content": user_input})
 
-    st.session_state["thinking"] = True
     with st.spinner("Thinking..."):
         try:
             response = run_agent(user_input, st.session_state["thread_id"])
 
-            # Handle automatic thread reset on context limit
             if response == "context_limit_exceeded":
                 st.session_state["thread_id"] = str(uuid.uuid4())
                 st.session_state["messages"] = []
                 response = "Our conversation got too long and I've reset the memory. Please ask your question again!"
             elif response.startswith("__new_thread__"):
-                # Agent auto-retried with new thread — update thread_id silently
                 parts = response.split("__", 3)
                 st.session_state["thread_id"] = parts[2]
                 response = parts[3] if len(parts) > 3 else "Please try your question again."
+
         except Exception as e:
             err = str(e)
-            if "401"          in err:        response = "API key error — check NIM configuration."
-            elif "Connection" in err:         response = "Connection error — check SSH tunnel is running."
-            elif "timeout"    in err.lower(): response = "Request timed out — server may be busy."
-            else:                             response = f"Something went wrong: {err}"
+            if "401" in err:
+                response = "API key error — check NIM configuration."
+            elif "Connection" in err:
+                response = "Connection error — check SSH tunnel is running."
+            elif "timeout" in err.lower():
+                response = "Request timed out — server may be busy."
+            else:
+                response = f"Something went wrong: {err}"
 
     content = response.replace('\n', '<br>')
     st.markdown(f"""
@@ -467,6 +470,5 @@ if user_input:
         <div class="bot-bubble">{content}</div>
     </div>
     """, unsafe_allow_html=True)
-    st.session_state["thinking"] = False
     st.session_state["messages"].append({"role": "assistant", "content": response})
     st.rerun()
