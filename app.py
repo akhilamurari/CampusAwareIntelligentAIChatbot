@@ -6,12 +6,13 @@ Sidebar only. No expander. No mobile detection.
 
 Fix CF1CT-42: Unique thread_id per browser session.
 Fix CF1CT-44: Context window reset handled gracefully.
-Fix CF1CT-49: Avatar click dropdown logout — JS toggle, works everywhere.
+Fix CF1CT-49: Avatar logout — components.html, works in all browsers.
 
 Author: Tarun, Akhila
 """
 
 import streamlit as st
+import streamlit.components.v1 as components
 from agent import run_agent
 import os
 import sqlite3
@@ -151,179 +152,272 @@ if st.query_params.get("logout") == "true":
     st.rerun()
 
 
-# ── Main App CSS + Avatar JS ───────────────────────────────────────────────────
+# ── Main App CSS ───────────────────────────────────────────────────────────────
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+* { font-family: 'Inter', sans-serif; }
+#MainMenu, footer { visibility: hidden; }
+[data-testid="stHeader"] { background: transparent !important; }
+[data-testid="stSidebar"] button[aria-label="Close sidebar"] { display: none !important; }
+[data-testid="collapsedControl"] { display: none !important; }
+
+.user-bubble-wrapper { display:flex; justify-content:flex-end; margin:6px 0; }
+.user-bubble {
+    background: #4B2E83; color: #fff; padding: 10px 16px;
+    border-radius: 20px 20px 4px 20px;
+    max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
+}
+.bot-bubble-wrapper {
+    display:flex; justify-content:flex-start;
+    align-items:flex-end; gap:8px; margin:6px 0;
+}
+.bot-avatar {
+    width:32px; height:32px; background:#4B2E83;
+    border-radius:50%; display:flex; align-items:center;
+    justify-content:center; font-size:1rem; flex-shrink:0;
+}
+.bot-bubble {
+    background: #f0f2f6; color: #1a1a1a; padding: 10px 16px;
+    border-radius: 20px 20px 20px 4px;
+    max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
+}
+[data-testid="stSidebar"] .stButton > button {
+    background: #f0f2f6 !important; color: #1a1a1a !important;
+    border: 1px solid #e0e0e0 !important; border-radius: 8px !important;
+    font-size: 0.82rem !important; text-align: left !important;
+    padding: 8px 12px !important; margin-bottom: 4px; transition: all 0.15s;
+}
+[data-testid="stSidebar"] .stButton > button:hover {
+    background: #EDE9FE !important; border-color: #4B2E83 !important;
+    color: #4B2E83 !important;
+}
+[data-testid="stChatInput"] > div { border-color: #4B2E83 !important; }
+[data-testid="stChatInput"] > div:focus-within {
+    border-color: #4B2E83 !important;
+    box-shadow: 0 0 0 2px rgba(75,46,131,0.2) !important;
+}
+[data-testid="stChatInput"] textarea { caret-color: #4B2E83 !important; }
+button[data-testid="stChatInputSubmitButton"] svg {
+    fill: #4B2E83 !important; stroke: #4B2E83 !important;
+}
+.app-header { text-align:center; margin-bottom:1.5rem; }
+.app-header h2 { color:#1a1a1a; font-weight:600; font-size:1.4rem; margin:0; }
+.app-header p  { color:#6b7280; font-size:0.82rem; margin:4px 0 0 0; }
+.iot-card {
+    background:#f8f9fa; border:1px solid #e0e0e0; border-radius:10px;
+    padding:10px 14px; margin-bottom:8px;
+    display:flex; align-items:center; justify-content:space-between;
+}
+.iot-card-label { font-size:11px; color:#6b7280; font-weight:500; }
+.iot-card-value { font-size:18px; font-weight:700; font-family:monospace; }
+.iot-card-sub   { font-size:9px; color:#9ca3af; }
+</style>
+""", unsafe_allow_html=True)
+
+
+# ── Avatar — inject into parent page via components.html ──────────────────────
 full_name  = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
 student_id = st.session_state.get("student_id", "")
 initials   = "".join([w[0].upper() for w in full_name.split()[:2]]) if full_name else "?"
 token      = st.session_state.get("session_token", "")
 
-st.markdown(f"""
+# Get current page URL to build logout link
+components.html(f"""
+<!DOCTYPE html>
+<html>
+<head>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+  * {{ margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }}
+  body {{ background: transparent; overflow: visible; }}
 
-* {{ font-family: 'Inter', sans-serif; }}
-#MainMenu, footer {{ visibility: hidden; }}
-[data-testid="stHeader"] {{ background: transparent !important; }}
-[data-testid="stSidebar"] button[aria-label="Close sidebar"] {{ display: none !important; }}
-[data-testid="collapsedControl"] {{ display: none !important; }}
-
-.user-bubble-wrapper {{ display:flex; justify-content:flex-end; margin:6px 0; }}
-.user-bubble {{
-    background: #4B2E83; color: #fff; padding: 10px 16px;
-    border-radius: 20px 20px 4px 20px;
-    max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
-}}
-.bot-bubble-wrapper {{
-    display:flex; justify-content:flex-start;
-    align-items:flex-end; gap:8px; margin:6px 0;
-}}
-.bot-avatar {{
-    width:32px; height:32px; background:#4B2E83;
-    border-radius:50%; display:flex; align-items:center;
-    justify-content:center; font-size:1rem; flex-shrink:0;
-}}
-.bot-bubble {{
-    background: #f0f2f6; color: #1a1a1a; padding: 10px 16px;
-    border-radius: 20px 20px 20px 4px;
-    max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
-}}
-[data-testid="stSidebar"] .stButton > button {{
-    background: #f0f2f6 !important; color: #1a1a1a !important;
-    border: 1px solid #e0e0e0 !important; border-radius: 8px !important;
-    font-size: 0.82rem !important; text-align: left !important;
-    padding: 8px 12px !important; margin-bottom: 4px; transition: all 0.15s;
-}}
-[data-testid="stSidebar"] .stButton > button:hover {{
-    background: #EDE9FE !important; border-color: #4B2E83 !important;
-    color: #4B2E83 !important;
-}}
-[data-testid="stChatInput"] > div {{ border-color: #4B2E83 !important; }}
-[data-testid="stChatInput"] > div:focus-within {{
-    border-color: #4B2E83 !important;
-    box-shadow: 0 0 0 2px rgba(75,46,131,0.2) !important;
-}}
-[data-testid="stChatInput"] textarea {{ caret-color: #4B2E83 !important; }}
-button[data-testid="stChatInputSubmitButton"] svg {{
-    fill: #4B2E83 !important; stroke: #4B2E83 !important;
-}}
-.app-header {{ text-align:center; margin-bottom:1.5rem; }}
-.app-header h2 {{ color:#1a1a1a; font-weight:600; font-size:1.4rem; margin:0; }}
-.app-header p  {{ color:#6b7280; font-size:0.82rem; margin:4px 0 0 0; }}
-.iot-card {{
-    background:#f8f9fa; border:1px solid #e0e0e0; border-radius:10px;
-    padding:10px 14px; margin-bottom:8px;
-    display:flex; align-items:center; justify-content:space-between;
-}}
-.iot-card-label {{ font-size:11px; color:#6b7280; font-weight:500; }}
-.iot-card-value {{ font-size:18px; font-weight:700; font-family:monospace; }}
-.iot-card-sub   {{ font-size:9px; color:#9ca3af; }}
-
-/* Avatar */
-#campus-avatar-btn {{
-    position: fixed;
-    top: 14px;
-    right: 20px;
-    z-index: 99999;
-    width: 38px;
-    height: 38px;
+  #avatar-btn {{
+    width: 38px; height: 38px;
     background: #4B2E83;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 13px;
     box-shadow: 0 2px 8px rgba(75,46,131,0.35);
     cursor: pointer;
     border: 2px solid white;
     user-select: none;
-}}
+    position: absolute;
+    top: 0; right: 0;
+  }}
 
-/* Dropdown */
-#campus-avatar-dropdown {{
+  #dropdown {{
     display: none;
-    position: fixed;
-    top: 60px;
-    right: 20px;
-    z-index: 99999;
+    position: absolute;
+    top: 46px;
+    right: 0;
     background: white;
     border: 1px solid #E5E7EB;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     min-width: 210px;
-    font-family: Inter, sans-serif;
     overflow: hidden;
-}}
-#campus-avatar-dropdown .dd-header {{
+    z-index: 9999;
+  }}
+
+  .dd-header {{
     padding: 12px 16px 10px 16px;
     border-bottom: 1px solid #F3F4F6;
-}}
-#campus-avatar-dropdown .dd-name {{
-    font-weight: 700;
-    font-size: 13px;
-    color: #1E293B;
-}}
-#campus-avatar-dropdown .dd-id {{
-    font-size: 11px;
-    color: #6B7280;
-    margin-top: 2px;
-}}
-#campus-avatar-dropdown a {{
+  }}
+  .dd-name {{
+    font-weight: 700; font-size: 13px; color: #1E293B;
+  }}
+  .dd-id {{
+    font-size: 11px; color: #6B7280; margin-top: 2px;
+  }}
+  .dd-item {{
     display: block;
     padding: 11px 16px;
     font-size: 13px;
     text-decoration: none;
+    cursor: pointer;
     transition: background 0.15s;
-}}
-#campus-avatar-dropdown a.dd-logout {{
+  }}
+  .dd-logout {{
     color: #EF4444;
-}}
-#campus-avatar-dropdown a.dd-logout:hover {{
+  }}
+  .dd-logout:hover {{
     background: #FEF2F2;
-}}
-#campus-avatar-dropdown a.dd-cancel {{
+  }}
+  .dd-cancel {{
     color: #374151;
     border-top: 1px solid #F3F4F6;
-}}
-#campus-avatar-dropdown a.dd-cancel:hover {{
+  }}
+  .dd-cancel:hover {{
     background: #F9FAFB;
-}}
+  }}
+
+  #wrapper {{
+    position: absolute;
+    top: 8px;
+    right: 16px;
+  }}
 </style>
-
-<!-- Avatar circle -->
-<div id="campus-avatar-btn" onclick="toggleAvatarDropdown()">{initials}</div>
-
-<!-- Dropdown menu -->
-<div id="campus-avatar-dropdown">
+</head>
+<body>
+<div id="wrapper">
+  <div id="avatar-btn" onclick="toggle()">{initials}</div>
+  <div id="dropdown">
     <div class="dd-header">
-        <div class="dd-name">{full_name}</div>
-        <div class="dd-id">Student ID: {student_id}</div>
+      <div class="dd-name">{full_name}</div>
+      <div class="dd-id">Student ID: {student_id}</div>
     </div>
-    <a class="dd-logout" href="?logout=true">🚪 Logout</a>
-    <a class="dd-cancel" href="#" onclick="toggleAvatarDropdown(); return false;">✕ Cancel</a>
+    <a class="dd-item dd-logout" onclick="doLogout()">🚪 Logout</a>
+    <a class="dd-item dd-cancel" onclick="toggle()">✕ Cancel</a>
+  </div>
 </div>
 
 <script>
-function toggleAvatarDropdown() {{
-    var dd = document.getElementById('campus-avatar-dropdown');
-    if (dd.style.display === 'block') {{
-        dd.style.display = 'none';
-    }} else {{
-        dd.style.display = 'block';
-    }}
-}}
+  function toggle() {{
+    var dd = document.getElementById('dropdown');
+    dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+  }}
 
-// Close dropdown if user clicks anywhere else
-document.addEventListener('click', function(e) {{
-    var btn = document.getElementById('campus-avatar-btn');
-    var dd  = document.getElementById('campus-avatar-dropdown');
-    if (dd && btn && !btn.contains(e.target) && !dd.contains(e.target)) {{
-        dd.style.display = 'none';
+  function doLogout() {{
+    // Navigate parent window to logout URL
+    window.parent.location.href = window.parent.location.pathname + '?logout=true';
+  }}
+
+  // Close when clicking outside
+  document.addEventListener('click', function(e) {{
+    var btn = document.getElementById('avatar-btn');
+    var dd  = document.getElementById('dropdown');
+    if (!btn.contains(e.target) && !dd.contains(e.target)) {{
+      dd.style.display = 'none';
     }}
-}});
+  }});
+
+  // Inject avatar into parent page header so it sits top-right correctly
+  // This runs in the iframe context — use parent postMessage to move it up
+  function injectIntoParent() {{
+    try {{
+      var parentDoc = window.parent.document;
+
+      // Remove old avatar if exists
+      var old = parentDoc.getElementById('campus-avatar-injected');
+      if (old) old.remove();
+
+      // Create avatar container in parent
+      var container = parentDoc.createElement('div');
+      container.id = 'campus-avatar-injected';
+      container.style.cssText = 'position:fixed;top:14px;right:20px;z-index:99999;font-family:Inter,sans-serif;';
+
+      container.innerHTML = `
+        <style>
+          #cai-btn {{
+            width:38px;height:38px;background:#4B2E83;border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            color:white;font-weight:700;font-size:13px;
+            box-shadow:0 2px 8px rgba(75,46,131,0.35);cursor:pointer;
+            border:2px solid white;user-select:none;
+          }}
+          #cai-dd {{
+            display:none;position:absolute;top:46px;right:0;
+            background:white;border:1px solid #E5E7EB;border-radius:12px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:210px;
+            overflow:hidden;z-index:99999;
+          }}
+          .cai-hdr {{padding:12px 16px 10px;border-bottom:1px solid #F3F4F6;}}
+          .cai-name {{font-weight:700;font-size:13px;color:#1E293B;font-family:Inter,sans-serif;}}
+          .cai-id {{font-size:11px;color:#6B7280;margin-top:2px;font-family:Inter,sans-serif;}}
+          .cai-item {{display:block;padding:11px 16px;font-size:13px;
+            text-decoration:none;cursor:pointer;transition:background 0.15s;
+            font-family:Inter,sans-serif;}}
+          .cai-out {{color:#EF4444;}}
+          .cai-out:hover {{background:#FEF2F2;}}
+          .cai-can {{color:#374151;border-top:1px solid #F3F4F6;}}
+          .cai-can:hover {{background:#F9FAFB;}}
+        </style>
+        <div id="cai-btn" onclick="caiToggle()">{initials}</div>
+        <div id="cai-dd">
+          <div class="cai-hdr">
+            <div class="cai-name">{full_name}</div>
+            <div class="cai-id">Student ID: {student_id}</div>
+          </div>
+          <a class="cai-item cai-out" onclick="caiLogout()">🚪 Logout</a>
+          <a class="cai-item cai-can" onclick="caiToggle()">✕ Cancel</a>
+        </div>
+      `;
+
+      parentDoc.body.appendChild(container);
+
+      parentDoc.caiToggle = function() {{
+        var dd = parentDoc.getElementById('cai-dd');
+        dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+      }};
+
+      parentDoc.caiLogout = function() {{
+        parentDoc.location.href = parentDoc.location.pathname + '?logout=true';
+      }};
+
+      parentDoc.addEventListener('click', function(e) {{
+        var btn = parentDoc.getElementById('cai-btn');
+        var dd  = parentDoc.getElementById('cai-dd');
+        if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {{
+          dd.style.display = 'none';
+        }}
+      }});
+
+    }} catch(e) {{
+      // cross-origin fallback — just show in iframe
+      console.log('parent inject failed, using iframe fallback');
+    }}
+  }}
+
+  // Run on load
+  window.addEventListener('load', injectIntoParent);
+  // Also run immediately in case load already fired
+  injectIntoParent();
 </script>
-""", unsafe_allow_html=True)
+</body>
+</html>
+""", height=0, scrolling=False)
 
 
 # ── App Header ────────────────────────────────────────────────────────────────
