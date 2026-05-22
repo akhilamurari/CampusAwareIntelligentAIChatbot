@@ -6,22 +6,19 @@ Sidebar only. No expander. No mobile detection.
 
 Fix CF1CT-42: Unique thread_id per browser session.
 Fix CF1CT-44: Context window reset handled gracefully.
-Fix CF1CT-49: Avatar logout — components.html, works in all browsers.
+Fix CF1CT-49: delete_session_token on logout.
 
 Author: Tarun, Akhila
 """
 
 import streamlit as st
-import streamlit.components.v1 as components
 from agent import run_agent
 import os
 import sqlite3
 import pandas as pd
 import uuid
 from dotenv import load_dotenv
-from auth import (init_auth_table, login_student, register_student,
-                  validate_student_id, create_session_token,
-                  validate_session_token, delete_session_token)
+from auth import init_auth_table, login_student, register_student, validate_student_id, create_session_token, validate_session_token, delete_session_token
 
 load_dotenv()
 
@@ -34,30 +31,35 @@ st.set_page_config(
 # ── Initialise auth table on startup ──────────────────────────────────────────
 init_auth_table()
 
-# ── Session State Init ─────────────────────────────────────────────────────────
+# ── Session Persistence — 5 minute timeout ────────────────────────────────────
+import time
+
+SESSION_TIMEOUT = 5 * 60  # 5 minutes in seconds
+
+# Initialise session state
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 if "student_id" not in st.session_state:
     st.session_state["student_id"] = ""
 if "full_name" not in st.session_state:
     st.session_state["full_name"] = ""
-if "session_token" not in st.session_state:
-    st.session_state["session_token"] = ""
+if "login_tab" not in st.session_state:
+    st.session_state["login_tab"] = "login"
+if "last_active" not in st.session_state:
+    st.session_state["last_active"] = 0.0
 
-# ── Restore session from URL token on refresh ──────────────────────────────────
-if not st.session_state["authenticated"]:
-    url_token = st.query_params.get("token", "")
-    if url_token:
-        student_id, full_name = validate_session_token(url_token)
-        if student_id:
-            st.session_state["authenticated"] = True
-            st.session_state["student_id"]    = student_id
-            st.session_state["full_name"]      = full_name
-            st.session_state["session_token"]  = url_token
-            if "thread_id" not in st.session_state:
-                st.session_state["thread_id"] = str(uuid.uuid4())
-            if "messages" not in st.session_state:
-                st.session_state["messages"] = []
+# Check if session is still valid (within 5 minutes)
+if st.session_state["authenticated"]:
+    elapsed = time.time() - st.session_state["last_active"]
+    if elapsed > SESSION_TIMEOUT:
+        st.session_state["authenticated"] = False
+        st.session_state["student_id"]    = ""
+        st.session_state["full_name"]      = ""
+        st.session_state["messages"]       = []
+        st.session_state["thread_id"]      = str(uuid.uuid4())
+        st.warning("Your session expired after 5 minutes of inactivity. Please log in again.")
+    else:
+        st.session_state["last_active"] = time.time()
 
 # ── Login / Register Page ──────────────────────────────────────────────────────
 if not st.session_state["authenticated"]:
@@ -65,71 +67,60 @@ if not st.session_state["authenticated"]:
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     * { font-family: 'Inter', sans-serif; }
-    #MainMenu, footer { visibility: hidden; }
-    [data-testid="stHeader"] { background: transparent !important; }
-    [data-testid="stSidebar"] button[aria-label="Close sidebar"] { display: none !important; }
-    [data-testid="collapsedControl"] { display: none !important; }
+    #MainMenu, footer, header { visibility: hidden; }
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown("""
     <div style="text-align:center; padding: 30px 0 10px 0;">
         <h2 style="color:#4B2E83; margin:0;">🎓 CampusAware AI</h2>
-        <p style="color:#6B7280; font-size:0.88rem; margin:6px 0 0 0;">
-            La Trobe Bundoora Campus Assistant
-        </p>
+        <p style="color:#6B7280; font-size:0.88rem; margin:6px 0 0 0;">La Trobe Bundoora Campus Assistant</p>
     </div>
     """, unsafe_allow_html=True)
 
     tab_login, tab_register = st.tabs(["🔑 Login", "📝 Sign Up"])
 
+    # ── LOGIN TAB ──────────────────────────────────────────────────
     with tab_login:
         with st.form("login_form"):
             st.markdown("##### Login with your student credentials")
-            student_id = st.text_input("Student ID", placeholder="e.g. 20012345",
-                                       help="8-digit La Trobe student ID")
-            password   = st.text_input("Password", type="password",
-                                       placeholder="Your password")
-            submitted  = st.form_submit_button("Login", use_container_width=True,
-                                               type="primary")
+            student_id = st.text_input("Student ID", placeholder="e.g. 20012345", help="8-digit La Trobe student ID")
+            password   = st.text_input("Password", type="password", placeholder="Your password")
+            submitted  = st.form_submit_button("Login", use_container_width=True, type="primary")
+
             if submitted:
                 if not student_id or not password:
                     st.error("Please fill in all fields.")
                 else:
                     success, result = login_student(student_id.strip(), password)
                     if success:
-                        token = create_session_token(student_id.strip())
                         st.session_state["authenticated"] = True
                         st.session_state["student_id"]    = student_id.strip()
                         st.session_state["full_name"]      = result
-                        st.session_state["session_token"]  = token
                         st.session_state["thread_id"]      = str(uuid.uuid4())
                         st.session_state["messages"]       = []
-                        st.query_params["token"]           = token
+                        st.session_state["last_active"]    = time.time()
                         st.rerun()
                     else:
                         st.error(result)
 
+    # ── REGISTER TAB ───────────────────────────────────────────────
     with tab_register:
         with st.form("register_form"):
             st.markdown("##### Create your CampusAware account")
-            reg_id       = st.text_input("Student ID", placeholder="e.g. 20012345",
-                                         help="8-digit La Trobe student ID starting with 2")
+            reg_id       = st.text_input("Student ID", placeholder="e.g. 20012345", help="8-digit La Trobe student ID starting with 2")
             reg_name     = st.text_input("Full Name", placeholder="e.g. Akhila Murari")
-            reg_password = st.text_input("Password", type="password",
-                                         placeholder="Min 6 characters")
-            reg_confirm  = st.text_input("Confirm Password", type="password",
-                                         placeholder="Re-enter your password")
-            reg_submit   = st.form_submit_button("Sign Up", use_container_width=True,
-                                                  type="primary")
+            reg_password = st.text_input("Password", type="password", placeholder="Min 6 characters")
+            reg_confirm  = st.text_input("Confirm Password", type="password", placeholder="Re-enter your password")
+            reg_submit   = st.form_submit_button("Sign Up", use_container_width=True, type="primary")
+
             if reg_submit:
                 if not reg_id or not reg_name or not reg_password or not reg_confirm:
                     st.error("Please fill in all fields.")
                 elif reg_password != reg_confirm:
                     st.error("Passwords do not match.")
                 else:
-                    success, msg = register_student(reg_id.strip(), reg_password,
-                                                    reg_name.strip())
+                    success, msg = register_student(reg_id.strip(), reg_password, reg_name.strip())
                     if success:
                         st.success(msg + " Please sign in.")
                     else:
@@ -139,29 +130,12 @@ if not st.session_state["authenticated"]:
     st.stop()
 
 
-# ── Handle logout via query param ─────────────────────────────────────────────
-if st.query_params.get("logout") == "true":
-    delete_session_token(st.session_state.get("session_token", ""))
-    st.query_params.clear()
-    st.session_state["authenticated"] = False
-    st.session_state["student_id"]    = ""
-    st.session_state["full_name"]      = ""
-    st.session_state["session_token"]  = ""
-    st.session_state["messages"]       = []
-    st.session_state["thread_id"]      = str(uuid.uuid4())
-    st.rerun()
-
-
-# ── Main App CSS ───────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 * { font-family: 'Inter', sans-serif; }
-#MainMenu, footer { visibility: hidden; }
-[data-testid="stHeader"] { background: transparent !important; }
-[data-testid="stSidebar"] button[aria-label="Close sidebar"] { display: none !important; }
-[data-testid="collapsedControl"] { display: none !important; }
+#MainMenu, footer, header { visibility: hidden; }
 
 .user-bubble-wrapper { display:flex; justify-content:flex-end; margin:6px 0; }
 .user-bubble {
@@ -169,10 +143,7 @@ st.markdown("""
     border-radius: 20px 20px 4px 20px;
     max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
 }
-.bot-bubble-wrapper {
-    display:flex; justify-content:flex-start;
-    align-items:flex-end; gap:8px; margin:6px 0;
-}
+.bot-bubble-wrapper { display:flex; justify-content:flex-start; align-items:flex-end; gap:8px; margin:6px 0; }
 .bot-avatar {
     width:32px; height:32px; background:#4B2E83;
     border-radius:50%; display:flex; align-items:center;
@@ -190,8 +161,7 @@ st.markdown("""
     padding: 8px 12px !important; margin-bottom: 4px; transition: all 0.15s;
 }
 [data-testid="stSidebar"] .stButton > button:hover {
-    background: #EDE9FE !important; border-color: #4B2E83 !important;
-    color: #4B2E83 !important;
+    background: #EDE9FE !important; border-color: #4B2E83 !important; color: #4B2E83 !important;
 }
 [data-testid="stChatInput"] > div { border-color: #4B2E83 !important; }
 [data-testid="stChatInput"] > div:focus-within {
@@ -216,24 +186,21 @@ button[data-testid="stChatInputSubmitButton"] svg {
 </style>
 """, unsafe_allow_html=True)
 
-
-# ── Avatar — inject into parent page via components.html ──────────────────────
+# ── Fixed top-right avatar ────────────────────────────────────────────────────
 full_name  = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
 student_id = st.session_state.get("student_id", "")
 initials   = "".join([w[0].upper() for w in full_name.split()[:2]]) if full_name else "?"
-token      = st.session_state.get("session_token", "")
 
-# Get current page URL to build logout link
-components.html(f"""
-<!DOCTYPE html>
-<html>
-<head>
+st.markdown(f"""
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-  * {{ margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }}
-  body {{ background: transparent; overflow: visible; }}
-
-  #avatar-btn {{
+.avatar-wrapper {{
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    font-family: Inter, sans-serif;
+}}
+.avatar-circle {{
     width: 38px; height: 38px;
     background: #4B2E83;
     border-radius: 50%;
@@ -242,185 +209,83 @@ components.html(f"""
     box-shadow: 0 2px 8px rgba(75,46,131,0.35);
     cursor: pointer;
     border: 2px solid white;
-    user-select: none;
-    position: absolute;
-    top: 0; right: 0;
-  }}
-
-  #dropdown {{
+    margin-left: auto;
+}}
+.avatar-dropdown {{
     display: none;
     position: absolute;
-    top: 46px;
+    top: 48px;
     right: 0;
     background: white;
     border: 1px solid #E5E7EB;
-    border-radius: 12px;
+    border-radius: 10px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    min-width: 210px;
-    overflow: hidden;
-    z-index: 9999;
-  }}
-
-  .dd-header {{
-    padding: 12px 16px 10px 16px;
-    border-bottom: 1px solid #F3F4F6;
-  }}
-  .dd-name {{
-    font-weight: 700; font-size: 13px; color: #1E293B;
-  }}
-  .dd-id {{
-    font-size: 11px; color: #6B7280; margin-top: 2px;
-  }}
-  .dd-item {{
+    min-width: 200px;
+    padding: 8px 0;
+    z-index: 99999;
+}}
+.avatar-wrapper:hover .avatar-dropdown {{
     display: block;
-    padding: 11px 16px;
+}}
+.dropdown-header {{
+    padding: 10px 16px 8px 16px;
+    border-bottom: 1px solid #F3F4F6;
+}}
+.dropdown-name {{
+    font-weight: 700; font-size: 13px; color: #1E293B;
+}}
+.dropdown-id {{
+    font-size: 11px; color: #6B7280; margin-top: 2px;
+}}
+.dropdown-item {{
+    padding: 10px 16px;
     font-size: 13px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background 0.15s;
-  }}
-  .dd-logout {{
-    color: #EF4444;
-  }}
-  .dd-logout:hover {{
-    background: #FEF2F2;
-  }}
-  .dd-cancel {{
     color: #374151;
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+}}
+.dropdown-item:hover {{
+    background: #F3F0FA;
+    color: #4B2E83;
+}}
+.dropdown-logout {{
+    color: #EF4444 !important;
     border-top: 1px solid #F3F4F6;
-  }}
-  .dd-cancel:hover {{
-    background: #F9FAFB;
-  }}
-
-  #wrapper {{
-    position: absolute;
-    top: 8px;
-    right: 16px;
-  }}
+    margin-top: 4px;
+}}
+.dropdown-logout:hover {{
+    background: #FEF2F2 !important;
+    color: #EF4444 !important;
+}}
 </style>
-</head>
-<body>
-<div id="wrapper">
-  <div id="avatar-btn" onclick="toggle()">{initials}</div>
-  <div id="dropdown">
-    <div class="dd-header">
-      <div class="dd-name">{full_name}</div>
-      <div class="dd-id">Student ID: {student_id}</div>
-    </div>
-    <a class="dd-item dd-logout" onclick="doLogout()">🚪 Logout</a>
-    <a class="dd-item dd-cancel" onclick="toggle()">✕ Cancel</a>
-  </div>
-</div>
 
-<script>
-  function toggle() {{
-    var dd = document.getElementById('dropdown');
-    dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
-  }}
-
-  function doLogout() {{
-    // Navigate parent window to logout URL
-    window.parent.location.href = window.parent.location.pathname + '?logout=true';
-  }}
-
-  // Close when clicking outside
-  document.addEventListener('click', function(e) {{
-    var btn = document.getElementById('avatar-btn');
-    var dd  = document.getElementById('dropdown');
-    if (!btn.contains(e.target) && !dd.contains(e.target)) {{
-      dd.style.display = 'none';
-    }}
-  }});
-
-  // Inject avatar into parent page header so it sits top-right correctly
-  // This runs in the iframe context — use parent postMessage to move it up
-  function injectIntoParent() {{
-    try {{
-      var parentDoc = window.parent.document;
-
-      // Remove old avatar if exists
-      var old = parentDoc.getElementById('campus-avatar-injected');
-      if (old) old.remove();
-
-      // Create avatar container in parent
-      var container = parentDoc.createElement('div');
-      container.id = 'campus-avatar-injected';
-      container.style.cssText = 'position:fixed;top:14px;right:20px;z-index:99999;font-family:Inter,sans-serif;';
-
-      container.innerHTML = `
-        <style>
-          #cai-btn {{
-            width:38px;height:38px;background:#4B2E83;border-radius:50%;
-            display:flex;align-items:center;justify-content:center;
-            color:white;font-weight:700;font-size:13px;
-            box-shadow:0 2px 8px rgba(75,46,131,0.35);cursor:pointer;
-            border:2px solid white;user-select:none;
-          }}
-          #cai-dd {{
-            display:none;position:absolute;top:46px;right:0;
-            background:white;border:1px solid #E5E7EB;border-radius:12px;
-            box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:210px;
-            overflow:hidden;z-index:99999;
-          }}
-          .cai-hdr {{padding:12px 16px 10px;border-bottom:1px solid #F3F4F6;}}
-          .cai-name {{font-weight:700;font-size:13px;color:#1E293B;font-family:Inter,sans-serif;}}
-          .cai-id {{font-size:11px;color:#6B7280;margin-top:2px;font-family:Inter,sans-serif;}}
-          .cai-item {{display:block;padding:11px 16px;font-size:13px;
-            text-decoration:none;cursor:pointer;transition:background 0.15s;
-            font-family:Inter,sans-serif;}}
-          .cai-out {{color:#EF4444;}}
-          .cai-out:hover {{background:#FEF2F2;}}
-          .cai-can {{color:#374151;border-top:1px solid #F3F4F6;}}
-          .cai-can:hover {{background:#F9FAFB;}}
-        </style>
-        <div id="cai-btn" onclick="caiToggle()">{initials}</div>
-        <div id="cai-dd">
-          <div class="cai-hdr">
-            <div class="cai-name">{full_name}</div>
-            <div class="cai-id">Student ID: {student_id}</div>
-          </div>
-          <a class="cai-item cai-out" onclick="caiLogout()">🚪 Logout</a>
-          <a class="cai-item cai-can" onclick="caiToggle()">✕ Cancel</a>
+<div class="avatar-wrapper">
+    <div class="avatar-circle">{initials}</div>
+    <div class="avatar-dropdown">
+        <div class="dropdown-header">
+            <div class="dropdown-name">{full_name}</div>
+            <div class="dropdown-id">{student_id}</div>
         </div>
-      `;
+        <a class="dropdown-item dropdown-logout" href="?logout=true">🚪 Logout</a>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-      parentDoc.body.appendChild(container);
-
-      parentDoc.caiToggle = function() {{
-        var dd = parentDoc.getElementById('cai-dd');
-        dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
-      }};
-
-      parentDoc.caiLogout = function() {{
-        parentDoc.location.href = parentDoc.location.pathname + '?logout=true';
-      }};
-
-      parentDoc.addEventListener('click', function(e) {{
-        var btn = parentDoc.getElementById('cai-btn');
-        var dd  = parentDoc.getElementById('cai-dd');
-        if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {{
-          dd.style.display = 'none';
-        }}
-      }});
-
-    }} catch(e) {{
-      // cross-origin fallback — just show in iframe
-      console.log('parent inject failed, using iframe fallback');
-    }}
-  }}
-
-  // Run on load
-  window.addEventListener('load', injectIntoParent);
-  // Also run immediately in case load already fired
-  injectIntoParent();
-</script>
-</body>
-</html>
-""", height=0, scrolling=False)
+# ── Handle logout via query param ─────────────────────────────────────────────
+if st.query_params.get("logout") == "true":
+    delete_session_token(st.session_state.get("session_token", ""))
+    st.query_params.clear()
+    st.session_state["authenticated"] = False
+    st.session_state["student_id"]    = ""
+    st.session_state["full_name"]      = ""
+    st.session_state["session_token"]  = ""
+    st.session_state["messages"]       = []
+    st.session_state["thread_id"]      = str(uuid.uuid4())
+    st.session_state["last_active"]    = 0.0
+    st.rerun()
 
 
-# ── App Header ────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="app-header">
     <h2>🎓 CampusAware AI</h2>
@@ -448,12 +313,9 @@ def get_room_data():
 
 
 # ── Session State ─────────────────────────────────────────────────────────────
-if "thread_id" not in st.session_state:
-    st.session_state["thread_id"] = str(uuid.uuid4())
-if "messages" not in st.session_state:
-    st.session_state["messages"] = []
-if "quick_q" not in st.session_state:
-    st.session_state["quick_q"] = None
+if "thread_id" not in st.session_state: st.session_state["thread_id"] = str(uuid.uuid4())
+if "messages"  not in st.session_state: st.session_state["messages"]  = []
+if "quick_q"   not in st.session_state: st.session_state["quick_q"]   = None
 
 df = get_room_data()
 
@@ -494,49 +356,30 @@ with st.sidebar:
 
         st.markdown(f"""
         <div class="iot-card">
-            <div>
-                <div class="iot-card-label">🏢 Rooms Occupied</div>
-                <div class="iot-card-sub">of {total} total</div>
-            </div>
+            <div><div class="iot-card-label">🏢 Rooms Occupied</div><div class="iot-card-sub">of {total} total</div></div>
             <div class="iot-card-value" style="color:#EF4444">{occupied}</div>
         </div>
         <div class="iot-card">
-            <div>
-                <div class="iot-card-label">✅ Rooms Available</div>
-                <div class="iot-card-sub">vacant now</div>
-            </div>
+            <div><div class="iot-card-label">✅ Rooms Available</div><div class="iot-card-sub">vacant now</div></div>
             <div class="iot-card-value" style="color:#10B981">{vacant}</div>
         </div>
         <div class="iot-card">
-            <div>
-                <div class="iot-card-label">💨 Avg CO₂</div>
-                <div class="iot-card-sub">campus-wide</div>
-            </div>
+            <div><div class="iot-card-label">💨 Avg CO₂</div><div class="iot-card-sub">campus-wide</div></div>
             <div class="iot-card-value" style="color:#F59E0B">{avg_co2} ppm</div>
         </div>
         <div class="iot-card">
-            <div>
-                <div class="iot-card-label">🌡 Avg Temp</div>
-                <div class="iot-card-sub">campus-wide</div>
-            </div>
+            <div><div class="iot-card-label">🌡 Avg Temp</div><div class="iot-card-sub">campus-wide</div></div>
             <div class="iot-card-value" style="color:#3B82F6">{avg_temp}°C</div>
         </div>
         <div class="iot-card">
-            <div>
-                <div class="iot-card-label">🔇 Quietest Room</div>
-                <div class="iot-card-sub">best for studying</div>
-            </div>
+            <div><div class="iot-card-label">🔇 Quietest Room</div><div class="iot-card-sub">best for studying</div></div>
             <div class="iot-card-value" style="color:#4B2E83;font-size:13px">{quietest}</div>
         </div>
         <div class="iot-card">
-            <div>
-                <div class="iot-card-label">⚠️ High CO₂ Room</div>
-                <div class="iot-card-sub">{worst_co2_val} ppm</div>
-            </div>
+            <div><div class="iot-card-label">⚠️ High CO₂ Room</div><div class="iot-card-sub">{worst_co2_val} ppm</div></div>
             <div class="iot-card-value" style="color:#EF4444;font-size:13px">{worst_co2_room}</div>
         </div>
         """, unsafe_allow_html=True)
-
         if st.button("🔄 Refresh stats", use_container_width=True):
             st.cache_data.clear()
             st.rerun()
@@ -589,6 +432,7 @@ if user_input:
     """, unsafe_allow_html=True)
     st.session_state["messages"].append({"role": "user", "content": user_input})
 
+    st.session_state["thinking"] = True
     with st.spinner("Thinking..."):
         try:
             response = run_agent(user_input, st.session_state["thread_id"])
@@ -601,17 +445,12 @@ if user_input:
                 parts = response.split("__", 3)
                 st.session_state["thread_id"] = parts[2]
                 response = parts[3] if len(parts) > 3 else "Please try your question again."
-
         except Exception as e:
             err = str(e)
-            if "401" in err:
-                response = "API key error — check NIM configuration."
-            elif "Connection" in err:
-                response = "Connection error — check SSH tunnel is running."
-            elif "timeout" in err.lower():
-                response = "Request timed out — server may be busy."
-            else:
-                response = f"Something went wrong: {err}"
+            if "401"          in err:        response = "API key error — check NIM configuration."
+            elif "Connection" in err:         response = "Connection error — check SSH tunnel is running."
+            elif "timeout"    in err.lower(): response = "Request timed out — server may be busy."
+            else:                             response = f"Something went wrong: {err}"
 
     content = response.replace('\n', '<br>')
     st.markdown(f"""
@@ -620,5 +459,6 @@ if user_input:
         <div class="bot-bubble">{content}</div>
     </div>
     """, unsafe_allow_html=True)
+    st.session_state["thinking"] = False
     st.session_state["messages"].append({"role": "assistant", "content": response})
     st.rerun()
