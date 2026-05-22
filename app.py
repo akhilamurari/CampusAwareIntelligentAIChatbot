@@ -268,7 +268,7 @@ st.markdown(f"""
             <div class="dropdown-name">{full_name}</div>
             <div class="dropdown-id">{student_id}</div>
         </div>
-        <a class="dropdown-item dropdown-logout" href="?logout=true">🚪 Logout</a>
+        <a class="dropdown-item dropdown-logout" onclick="window.location.href='/?logout=true'" style="cursor:pointer;">🚪 Logout</a>
     </div>
 </div>
 """, unsafe_allow_html=True)
