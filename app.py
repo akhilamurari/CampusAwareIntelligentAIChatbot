@@ -6,7 +6,7 @@ Sidebar only. No expander. No mobile detection.
 
 Fix CF1CT-42: Unique thread_id per browser session.
 Fix CF1CT-44: Context window reset handled gracefully.
-Fix CF1CT-49: Avatar logout button — works on all browsers and mobile.
+Fix CF1CT-49: Avatar click dropdown logout — works on all browsers.
 
 Author: Tarun, Akhila
 """
@@ -82,7 +82,6 @@ if not st.session_state["authenticated"]:
 
     tab_login, tab_register = st.tabs(["🔑 Login", "📝 Sign Up"])
 
-    # ── LOGIN TAB ──────────────────────────────────────────────────
     with tab_login:
         with st.form("login_form"):
             st.markdown("##### Login with your student credentials")
@@ -92,7 +91,6 @@ if not st.session_state["authenticated"]:
                                        placeholder="Your password")
             submitted  = st.form_submit_button("Login", use_container_width=True,
                                                type="primary")
-
             if submitted:
                 if not student_id or not password:
                     st.error("Please fill in all fields.")
@@ -112,7 +110,6 @@ if not st.session_state["authenticated"]:
                     else:
                         st.error(result)
 
-    # ── REGISTER TAB ───────────────────────────────────────────────
     with tab_register:
         with st.form("register_form"):
             st.markdown("##### Create your CampusAware account")
@@ -125,7 +122,6 @@ if not st.session_state["authenticated"]:
                                          placeholder="Re-enter your password")
             reg_submit   = st.form_submit_button("Sign Up", use_container_width=True,
                                                   type="primary")
-
             if reg_submit:
                 if not reg_id or not reg_name or not reg_password or not reg_confirm:
                     st.error("Please fill in all fields.")
@@ -204,79 +200,116 @@ button[data-testid="stChatInputSubmitButton"] svg {
 .iot-card-label { font-size:11px; color:#6b7280; font-weight:500; }
 .iot-card-value { font-size:18px; font-weight:700; font-family:monospace; }
 .iot-card-sub   { font-size:9px; color:#9ca3af; }
-
-/* Avatar button styling */
-div[data-testid="stButton"] button.avatar-btn {
-    background: #4B2E83 !important;
-    color: white !important;
-    border-radius: 50% !important;
-    width: 38px !important;
-    height: 38px !important;
-    padding: 0 !important;
-    font-weight: 700 !important;
-    font-size: 13px !important;
-    border: 2px solid white !important;
-    box-shadow: 0 2px 8px rgba(75,46,131,0.35) !important;
-    min-width: 38px !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
 
-# ── Top-right avatar with logout ──────────────────────────────────────────────
+# ── Avatar — fixed top right, click to toggle logout dropdown ─────────────────
 full_name  = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
 student_id = st.session_state.get("student_id", "")
 initials   = "".join([w[0].upper() for w in full_name.split()[:2]]) if full_name else "?"
 
-# Header row — title left, avatar right
-header_col, avatar_col = st.columns([9, 1])
+st.markdown(f"""
+<style>
+.avatar-fixed {{
+    position: fixed;
+    top: 14px;
+    right: 20px;
+    z-index: 9999;
+    font-family: Inter, sans-serif;
+}}
+.avatar-circle {{
+    width: 38px; height: 38px;
+    background: #4B2E83;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 13px;
+    box-shadow: 0 2px 8px rgba(75,46,131,0.35);
+    cursor: pointer;
+    border: 2px solid white;
+}}
+</style>
+<div class="avatar-fixed">
+    <div class="avatar-circle" onclick="window.location.href='?show_logout=true'">{initials}</div>
+</div>
+""", unsafe_allow_html=True)
 
-with header_col:
-    st.markdown("""
-    <div class="app-header">
-        <h2>🎓 CampusAware AI</h2>
-        <p>La Trobe Bundoora Campus Assistant</p>
-    </div>
-    """, unsafe_allow_html=True)
+# ── Handle avatar click via query param ───────────────────────────────────────
+if st.query_params.get("show_logout") == "true":
+    # Clear the param immediately so refresh doesn't re-trigger
+    st.query_params.clear()
+    if st.session_state.get("session_token"):
+        st.query_params["token"] = st.session_state["session_token"]
+    st.session_state["show_logout"] = True
+    st.rerun()
 
-with avatar_col:
-    if st.button(
-        initials,
-        key="avatar_btn",
-        help=f"{full_name} ({student_id})\nClick to logout",
-        type="primary"
-    ):
-        st.session_state["show_logout"] = not st.session_state["show_logout"]
-
-# ── Logout confirmation ────────────────────────────────────────────────────────
+# ── Logout dropdown ───────────────────────────────────────────────────────────
 if st.session_state.get("show_logout", False):
     st.markdown(f"""
-    <div style="background:#FEF2F2; border:1px solid #FECACA; border-radius:10px;
-                padding:12px 16px; margin-bottom:12px; text-align:center;">
-        <strong style="color:#1a1a1a;">👤 {full_name}</strong>
-        <span style="color:#6B7280; font-size:0.82rem; display:block;">
-            Student ID: {student_id}
-        </span>
+    <div style="
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        background: white;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        min-width: 210px;
+        z-index: 99999;
+        font-family: Inter, sans-serif;
+        overflow: hidden;
+    ">
+        <div style="padding: 12px 16px 10px 16px; border-bottom: 1px solid #F3F4F6;">
+            <div style="font-weight: 700; font-size: 13px; color: #1E293B;">{full_name}</div>
+            <div style="font-size: 11px; color: #6B7280; margin-top: 2px;">Student ID: {student_id}</div>
+        </div>
+        <a href="?logout=true" style="
+            display: block;
+            padding: 11px 16px;
+            font-size: 13px;
+            color: #EF4444;
+            text-decoration: none;
+            font-family: Inter, sans-serif;
+        " onmouseover="this.style.background='#FEF2F2'"
+           onmouseout="this.style.background='white'">
+            🚪 Logout
+        </a>
+        <a href="?token={st.session_state.get('session_token', '')}" style="
+            display: block;
+            padding: 11px 16px;
+            font-size: 13px;
+            color: #374151;
+            text-decoration: none;
+            font-family: Inter, sans-serif;
+            border-top: 1px solid #F3F4F6;
+        " onmouseover="this.style.background='#F9FAFB'"
+           onmouseout="this.style.background='white'">
+            ✕ Cancel
+        </a>
     </div>
     """, unsafe_allow_html=True)
 
-    logout_col1, logout_col2 = st.columns(2)
-    with logout_col1:
-        if st.button("🚪 Logout", key="confirm_logout", use_container_width=True, type="primary"):
-            delete_session_token(st.session_state.get("session_token", ""))
-            st.query_params.clear()
-            st.session_state["authenticated"] = False
-            st.session_state["student_id"]    = ""
-            st.session_state["full_name"]      = ""
-            st.session_state["session_token"]  = ""
-            st.session_state["messages"]       = []
-            st.session_state["thread_id"]      = str(uuid.uuid4())
-            st.session_state["show_logout"]    = False
-            st.rerun()
-    with logout_col2:
-        if st.button("✕ Cancel", key="cancel_logout", use_container_width=True):
-            st.session_state["show_logout"] = False
-            st.rerun()
+# ── Handle logout ─────────────────────────────────────────────────────────────
+if st.query_params.get("logout") == "true":
+    delete_session_token(st.session_state.get("session_token", ""))
+    st.query_params.clear()
+    st.session_state["authenticated"] = False
+    st.session_state["student_id"]    = ""
+    st.session_state["full_name"]      = ""
+    st.session_state["session_token"]  = ""
+    st.session_state["messages"]       = []
+    st.session_state["thread_id"]      = str(uuid.uuid4())
+    st.session_state["show_logout"]    = False
+    st.rerun()
+
+
+# ── App Header ────────────────────────────────────────────────────────────────
+st.markdown("""
+<div class="app-header">
+    <h2>🎓 CampusAware AI</h2>
+    <p>La Trobe Bundoora Campus Assistant</p>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ── Load IoT Data ─────────────────────────────────────────────────────────────
