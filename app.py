@@ -6,7 +6,7 @@ Sidebar only. No expander. No mobile detection.
 
 Fix CF1CT-42: Unique thread_id per browser session.
 Fix CF1CT-44: Context window reset handled gracefully.
-Fix CF1CT-49: Avatar click dropdown logout — works on all browsers.
+Fix CF1CT-49: Avatar click dropdown logout — JS toggle, works everywhere.
 
 Author: Tarun, Akhila
 """
@@ -42,8 +42,6 @@ if "full_name" not in st.session_state:
     st.session_state["full_name"] = ""
 if "session_token" not in st.session_state:
     st.session_state["session_token"] = ""
-if "show_logout" not in st.session_state:
-    st.session_state["show_logout"] = False
 
 # ── Restore session from URL token on refresh ──────────────────────────────────
 if not st.session_state["authenticated"]:
@@ -76,7 +74,9 @@ if not st.session_state["authenticated"]:
     st.markdown("""
     <div style="text-align:center; padding: 30px 0 10px 0;">
         <h2 style="color:#4B2E83; margin:0;">🎓 CampusAware AI</h2>
-        <p style="color:#6B7280; font-size:0.88rem; margin:6px 0 0 0;">La Trobe Bundoora Campus Assistant</p>
+        <p style="color:#6B7280; font-size:0.88rem; margin:6px 0 0 0;">
+            La Trobe Bundoora Campus Assistant
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -104,7 +104,6 @@ if not st.session_state["authenticated"]:
                         st.session_state["session_token"]  = token
                         st.session_state["thread_id"]      = str(uuid.uuid4())
                         st.session_state["messages"]       = []
-                        st.session_state["show_logout"]    = False
                         st.query_params["token"]           = token
                         st.rerun()
                     else:
@@ -139,157 +138,7 @@ if not st.session_state["authenticated"]:
     st.stop()
 
 
-# ── Main App CSS ───────────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-
-* { font-family: 'Inter', sans-serif; }
-#MainMenu, footer { visibility: hidden; }
-[data-testid="stHeader"] { background: transparent !important; }
-[data-testid="stSidebar"] button[aria-label="Close sidebar"] { display: none !important; }
-[data-testid="collapsedControl"] { display: none !important; }
-
-.user-bubble-wrapper { display:flex; justify-content:flex-end; margin:6px 0; }
-.user-bubble {
-    background: #4B2E83; color: #fff; padding: 10px 16px;
-    border-radius: 20px 20px 4px 20px;
-    max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
-}
-.bot-bubble-wrapper {
-    display:flex; justify-content:flex-start;
-    align-items:flex-end; gap:8px; margin:6px 0;
-}
-.bot-avatar {
-    width:32px; height:32px; background:#4B2E83;
-    border-radius:50%; display:flex; align-items:center;
-    justify-content:center; font-size:1rem; flex-shrink:0;
-}
-.bot-bubble {
-    background: #f0f2f6; color: #1a1a1a; padding: 10px 16px;
-    border-radius: 20px 20px 20px 4px;
-    max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
-}
-[data-testid="stSidebar"] .stButton > button {
-    background: #f0f2f6 !important; color: #1a1a1a !important;
-    border: 1px solid #e0e0e0 !important; border-radius: 8px !important;
-    font-size: 0.82rem !important; text-align: left !important;
-    padding: 8px 12px !important; margin-bottom: 4px; transition: all 0.15s;
-}
-[data-testid="stSidebar"] .stButton > button:hover {
-    background: #EDE9FE !important; border-color: #4B2E83 !important;
-    color: #4B2E83 !important;
-}
-[data-testid="stChatInput"] > div { border-color: #4B2E83 !important; }
-[data-testid="stChatInput"] > div:focus-within {
-    border-color: #4B2E83 !important;
-    box-shadow: 0 0 0 2px rgba(75,46,131,0.2) !important;
-}
-[data-testid="stChatInput"] textarea { caret-color: #4B2E83 !important; }
-button[data-testid="stChatInputSubmitButton"] svg {
-    fill: #4B2E83 !important; stroke: #4B2E83 !important;
-}
-.app-header { text-align:center; margin-bottom:1.5rem; }
-.app-header h2 { color:#1a1a1a; font-weight:600; font-size:1.4rem; margin:0; }
-.app-header p  { color:#6b7280; font-size:0.82rem; margin:4px 0 0 0; }
-.iot-card {
-    background:#f8f9fa; border:1px solid #e0e0e0; border-radius:10px;
-    padding:10px 14px; margin-bottom:8px;
-    display:flex; align-items:center; justify-content:space-between;
-}
-.iot-card-label { font-size:11px; color:#6b7280; font-weight:500; }
-.iot-card-value { font-size:18px; font-weight:700; font-family:monospace; }
-.iot-card-sub   { font-size:9px; color:#9ca3af; }
-</style>
-""", unsafe_allow_html=True)
-
-
-# ── Avatar — fixed top right, click to toggle logout dropdown ─────────────────
-full_name  = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
-student_id = st.session_state.get("student_id", "")
-initials   = "".join([w[0].upper() for w in full_name.split()[:2]]) if full_name else "?"
-
-st.markdown(f"""
-<style>
-.avatar-fixed {{
-    position: fixed;
-    top: 14px;
-    right: 20px;
-    z-index: 9999;
-    font-family: Inter, sans-serif;
-}}
-.avatar-circle {{
-    width: 38px; height: 38px;
-    background: #4B2E83;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-weight: 700; font-size: 13px;
-    box-shadow: 0 2px 8px rgba(75,46,131,0.35);
-    cursor: pointer;
-    border: 2px solid white;
-}}
-</style>
-<div class="avatar-fixed">
-    <div class="avatar-circle" onclick="window.location.href='?show_logout=true'">{initials}</div>
-</div>
-""", unsafe_allow_html=True)
-
-# ── Handle avatar click via query param ───────────────────────────────────────
-if st.query_params.get("show_logout") == "true":
-    # Clear the param immediately so refresh doesn't re-trigger
-    st.query_params.clear()
-    if st.session_state.get("session_token"):
-        st.query_params["token"] = st.session_state["session_token"]
-    st.session_state["show_logout"] = True
-    st.rerun()
-
-# ── Logout dropdown ───────────────────────────────────────────────────────────
-if st.session_state.get("show_logout", False):
-    st.markdown(f"""
-    <div style="
-        position: fixed;
-        top: 60px;
-        right: 20px;
-        background: white;
-        border: 1px solid #E5E7EB;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-        min-width: 210px;
-        z-index: 99999;
-        font-family: Inter, sans-serif;
-        overflow: hidden;
-    ">
-        <div style="padding: 12px 16px 10px 16px; border-bottom: 1px solid #F3F4F6;">
-            <div style="font-weight: 700; font-size: 13px; color: #1E293B;">{full_name}</div>
-            <div style="font-size: 11px; color: #6B7280; margin-top: 2px;">Student ID: {student_id}</div>
-        </div>
-        <a href="?logout=true" style="
-            display: block;
-            padding: 11px 16px;
-            font-size: 13px;
-            color: #EF4444;
-            text-decoration: none;
-            font-family: Inter, sans-serif;
-        " onmouseover="this.style.background='#FEF2F2'"
-           onmouseout="this.style.background='white'">
-            🚪 Logout
-        </a>
-        <a href="?token={st.session_state.get('session_token', '')}" style="
-            display: block;
-            padding: 11px 16px;
-            font-size: 13px;
-            color: #374151;
-            text-decoration: none;
-            font-family: Inter, sans-serif;
-            border-top: 1px solid #F3F4F6;
-        " onmouseover="this.style.background='#F9FAFB'"
-           onmouseout="this.style.background='white'">
-            ✕ Cancel
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-
-# ── Handle logout ─────────────────────────────────────────────────────────────
+# ── Handle logout via query param ─────────────────────────────────────────────
 if st.query_params.get("logout") == "true":
     delete_session_token(st.session_state.get("session_token", ""))
     st.query_params.clear()
@@ -299,8 +148,182 @@ if st.query_params.get("logout") == "true":
     st.session_state["session_token"]  = ""
     st.session_state["messages"]       = []
     st.session_state["thread_id"]      = str(uuid.uuid4())
-    st.session_state["show_logout"]    = False
     st.rerun()
+
+
+# ── Main App CSS + Avatar JS ───────────────────────────────────────────────────
+full_name  = st.session_state.get("full_name", st.session_state.get("student_id", "Student"))
+student_id = st.session_state.get("student_id", "")
+initials   = "".join([w[0].upper() for w in full_name.split()[:2]]) if full_name else "?"
+token      = st.session_state.get("session_token", "")
+
+st.markdown(f"""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+* {{ font-family: 'Inter', sans-serif; }}
+#MainMenu, footer {{ visibility: hidden; }}
+[data-testid="stHeader"] {{ background: transparent !important; }}
+[data-testid="stSidebar"] button[aria-label="Close sidebar"] {{ display: none !important; }}
+[data-testid="collapsedControl"] {{ display: none !important; }}
+
+.user-bubble-wrapper {{ display:flex; justify-content:flex-end; margin:6px 0; }}
+.user-bubble {{
+    background: #4B2E83; color: #fff; padding: 10px 16px;
+    border-radius: 20px 20px 4px 20px;
+    max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
+}}
+.bot-bubble-wrapper {{
+    display:flex; justify-content:flex-start;
+    align-items:flex-end; gap:8px; margin:6px 0;
+}}
+.bot-avatar {{
+    width:32px; height:32px; background:#4B2E83;
+    border-radius:50%; display:flex; align-items:center;
+    justify-content:center; font-size:1rem; flex-shrink:0;
+}}
+.bot-bubble {{
+    background: #f0f2f6; color: #1a1a1a; padding: 10px 16px;
+    border-radius: 20px 20px 20px 4px;
+    max-width: 65%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word;
+}}
+[data-testid="stSidebar"] .stButton > button {{
+    background: #f0f2f6 !important; color: #1a1a1a !important;
+    border: 1px solid #e0e0e0 !important; border-radius: 8px !important;
+    font-size: 0.82rem !important; text-align: left !important;
+    padding: 8px 12px !important; margin-bottom: 4px; transition: all 0.15s;
+}}
+[data-testid="stSidebar"] .stButton > button:hover {{
+    background: #EDE9FE !important; border-color: #4B2E83 !important;
+    color: #4B2E83 !important;
+}}
+[data-testid="stChatInput"] > div {{ border-color: #4B2E83 !important; }}
+[data-testid="stChatInput"] > div:focus-within {{
+    border-color: #4B2E83 !important;
+    box-shadow: 0 0 0 2px rgba(75,46,131,0.2) !important;
+}}
+[data-testid="stChatInput"] textarea {{ caret-color: #4B2E83 !important; }}
+button[data-testid="stChatInputSubmitButton"] svg {{
+    fill: #4B2E83 !important; stroke: #4B2E83 !important;
+}}
+.app-header {{ text-align:center; margin-bottom:1.5rem; }}
+.app-header h2 {{ color:#1a1a1a; font-weight:600; font-size:1.4rem; margin:0; }}
+.app-header p  {{ color:#6b7280; font-size:0.82rem; margin:4px 0 0 0; }}
+.iot-card {{
+    background:#f8f9fa; border:1px solid #e0e0e0; border-radius:10px;
+    padding:10px 14px; margin-bottom:8px;
+    display:flex; align-items:center; justify-content:space-between;
+}}
+.iot-card-label {{ font-size:11px; color:#6b7280; font-weight:500; }}
+.iot-card-value {{ font-size:18px; font-weight:700; font-family:monospace; }}
+.iot-card-sub   {{ font-size:9px; color:#9ca3af; }}
+
+/* Avatar */
+#campus-avatar-btn {{
+    position: fixed;
+    top: 14px;
+    right: 20px;
+    z-index: 99999;
+    width: 38px;
+    height: 38px;
+    background: #4B2E83;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: 0 2px 8px rgba(75,46,131,0.35);
+    cursor: pointer;
+    border: 2px solid white;
+    user-select: none;
+}}
+
+/* Dropdown */
+#campus-avatar-dropdown {{
+    display: none;
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    z-index: 99999;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    min-width: 210px;
+    font-family: Inter, sans-serif;
+    overflow: hidden;
+}}
+#campus-avatar-dropdown .dd-header {{
+    padding: 12px 16px 10px 16px;
+    border-bottom: 1px solid #F3F4F6;
+}}
+#campus-avatar-dropdown .dd-name {{
+    font-weight: 700;
+    font-size: 13px;
+    color: #1E293B;
+}}
+#campus-avatar-dropdown .dd-id {{
+    font-size: 11px;
+    color: #6B7280;
+    margin-top: 2px;
+}}
+#campus-avatar-dropdown a {{
+    display: block;
+    padding: 11px 16px;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background 0.15s;
+}}
+#campus-avatar-dropdown a.dd-logout {{
+    color: #EF4444;
+}}
+#campus-avatar-dropdown a.dd-logout:hover {{
+    background: #FEF2F2;
+}}
+#campus-avatar-dropdown a.dd-cancel {{
+    color: #374151;
+    border-top: 1px solid #F3F4F6;
+}}
+#campus-avatar-dropdown a.dd-cancel:hover {{
+    background: #F9FAFB;
+}}
+</style>
+
+<!-- Avatar circle -->
+<div id="campus-avatar-btn" onclick="toggleAvatarDropdown()">{initials}</div>
+
+<!-- Dropdown menu -->
+<div id="campus-avatar-dropdown">
+    <div class="dd-header">
+        <div class="dd-name">{full_name}</div>
+        <div class="dd-id">Student ID: {student_id}</div>
+    </div>
+    <a class="dd-logout" href="?logout=true">🚪 Logout</a>
+    <a class="dd-cancel" href="#" onclick="toggleAvatarDropdown(); return false;">✕ Cancel</a>
+</div>
+
+<script>
+function toggleAvatarDropdown() {{
+    var dd = document.getElementById('campus-avatar-dropdown');
+    if (dd.style.display === 'block') {{
+        dd.style.display = 'none';
+    }} else {{
+        dd.style.display = 'block';
+    }}
+}}
+
+// Close dropdown if user clicks anywhere else
+document.addEventListener('click', function(e) {{
+    var btn = document.getElementById('campus-avatar-btn');
+    var dd  = document.getElementById('campus-avatar-dropdown');
+    if (dd && btn && !btn.contains(e.target) && !dd.contains(e.target)) {{
+        dd.style.display = 'none';
+    }}
+}});
+</script>
+""", unsafe_allow_html=True)
 
 
 # ── App Header ────────────────────────────────────────────────────────────────
