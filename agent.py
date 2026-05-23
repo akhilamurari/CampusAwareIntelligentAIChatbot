@@ -4,12 +4,7 @@ agent.py
 Entry point for running the CampusAware AI agent.
 Provides the run_agent() function used by the Streamlit UI
 to process user queries through the LangGraph workflow.
-
-Fix CF1CT-42: thread_id now passed per session from app.py.
-Fix CF1CT-44: On context limit, automatically retries with
-fresh thread so user gets an answer without seeing an error.
 """
-
 import uuid
 from src.apps import graph
 
@@ -17,7 +12,6 @@ from src.apps import graph
 def run_agent(user_input: str, thread_id: str) -> str:
     """
     Process a user query through the CampusAware LangGraph agent.
-
     On context length exceeded — automatically retries with a new
     thread_id so user gets an answer without manual intervention.
 
@@ -28,7 +22,6 @@ def run_agent(user_input: str, thread_id: str) -> str:
     Returns:
         str: Agent response as plain English text, or error message
     """
-
     def _invoke(tid: str) -> str:
         config = {
             "configurable": {"thread_id": tid},
@@ -40,21 +33,26 @@ def run_agent(user_input: str, thread_id: str) -> str:
         for event in graph.stream(input_state, config, stream_mode="values"):
             if event["messages"]:
                 last_msg = event["messages"][-1]
-                # Only use AIMessage responses — skip ToolMessage and tool call messages
+
+                # Only use AIMessage responses — skip ToolMessage
                 msg_type = type(last_msg).__name__
                 if msg_type == "AIMessage":
                     content = last_msg.content
-                    # Skip if content is empty or is a raw tool call JSON
-                    if (content
-                        and isinstance(content, str)
-                        and not content.strip().startswith('{')
-                        and not content.strip().startswith('[{')):
-                        response = content
+
+                    if content and isinstance(content, str):
+                        stripped = content.strip()
+                        # Skip raw tool call JSON only
+                        # Tool call JSON always starts with {"name" or [{"name"
+                        # Do NOT skip other content — previous filter was too broad
+                        if (stripped
+                                and not stripped.startswith('{"name"')
+                                and not stripped.startswith('[{"name"')):
+                            response = stripped
+
         return response
 
     try:
         response = _invoke(thread_id)
-
     except Exception as e:
         error_msg = str(e)
 
@@ -67,7 +65,6 @@ def run_agent(user_input: str, thread_id: str) -> str:
                 return f"__new_thread__{new_thread}__{response}"
             except Exception:
                 return "context_limit_exceeded"
-
         elif "401" in error_msg:
             return "API key error — check NIM configuration."
         elif "Connection" in error_msg:
