@@ -4,11 +4,6 @@ agent.py
 Entry point for running the CampusAware AI agent.
 Provides the run_agent() function used by the Streamlit UI
 to process user queries through the LangGraph workflow.
-Fix CF1CT-42: thread_id now passed per session from app.py.
-Fix CF1CT-44: On context limit, automatically retries with
-fresh thread so user gets an answer without seeing an error.
-Fix CF1CT-50: Filter too aggressive — was blocking valid responses.
-Fix CF1CT-51: Debug logging added to trace tool call routing.
 """
 import uuid
 from src.apps import graph
@@ -17,8 +12,6 @@ from src.apps import graph
 def run_agent(user_input: str, thread_id: str) -> str:
     """
     Process a user query through the CampusAware LangGraph agent.
-    On context length exceeded — automatically retries with a new
-    thread_id so user gets an answer without manual intervention.
 
     Args:
         user_input (str): Natural language query from the user
@@ -40,18 +33,17 @@ def run_agent(user_input: str, thread_id: str) -> str:
                 last_msg = event["messages"][-1]
                 msg_type = type(last_msg).__name__
 
-                # Debug logging — remove after fix confirmed
-                print(f"[DEBUG] msg_type={msg_type}")
-                print(f"[DEBUG] content={repr(last_msg.content)}")
-                print(f"[DEBUG] tool_calls={getattr(last_msg, 'tool_calls', 'N/A')}")
-
                 if msg_type == "AIMessage":
                     content = last_msg.content
                     if content and isinstance(content, str):
                         stripped = content.strip()
+                        # Block all tool call JSON formats
                         if (stripped
                                 and not stripped.startswith('{"name"')
-                                and not stripped.startswith('[{"name"')):
+                                and not stripped.startswith('[{"name"')
+                                and not stripped.startswith('<tool_call>')
+                                and '"campus_db_tool"' not in stripped
+                                and '"campus_rag_tool"' not in stripped):
                             response = stripped
 
         return response
