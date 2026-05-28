@@ -2,7 +2,6 @@
 # Simple tests that run in CI/CD without needing the NIM server
 
 import os
-import pytest
 
 def test_environment_variables():
     """Test .env variables are documented correctly"""

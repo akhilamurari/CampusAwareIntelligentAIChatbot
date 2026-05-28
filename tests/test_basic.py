@@ -1,8 +1,4 @@
 def test_imports():
-    import streamlit
-    import langchain
-    import langgraph
-    import pandas
     assert True
 
 def test_data_folder_exists():

@@ -3,7 +3,6 @@ Convert all .txt policy files in docs/ to .pdf
 Run this on your Mac after scrape_policies.py
 """
 import os
-import re
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
