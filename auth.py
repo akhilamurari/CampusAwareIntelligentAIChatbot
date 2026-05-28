@@ -14,8 +14,6 @@ import sqlite3
 import hashlib
 import os
 import re
-import secrets
-import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -65,6 +63,25 @@ def validate_student_id(student_id: str) -> bool:
     return bool(re.match(r'^2\d{7}$', student_id.strip()))
 
 
+def validate_password(password: str) -> tuple[bool, str]:
+    """
+    Validate password strength requirements.
+    Must be at least 8 characters, with 1 uppercase, 1 lowercase, 1 digit, and 1 special character.
+    """
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters long."
+    if not re.search(r'[A-Z]', password):
+        return False, "Password must contain at least one uppercase letter."
+    if not re.search(r'[a-z]', password):
+        return False, "Password must contain at least one lowercase letter."
+    if not re.search(r'\d', password):
+        return False, "Password must contain at least one number."
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False, "Password must contain at least one special character."
+    
+    return True, ""
+
+
 def register_student(student_id: str, password: str, full_name: str = "") -> tuple[bool, str]:
     """
     Register a new student.
@@ -80,8 +97,9 @@ def register_student(student_id: str, password: str, full_name: str = "") -> tup
     if not validate_student_id(student_id):
         return False, "Invalid student ID format. Must be 8 digits starting with 2."
 
-    if len(password) < 6:
-        return False, "Password must be at least 6 characters."
+    is_valid_pw, pw_msg = validate_password(password)
+    if not is_valid_pw:
+        return False, pw_msg
 
     conn = get_conn()
     try:
@@ -223,31 +241,4 @@ def delete_session_token(token: str):
     finally:
         conn.close()
 
-
-def change_password(student_id: str, old_password: str, new_password: str) -> tuple[bool, str]:
-    """
-    Change a student's password.
-
-    Returns:
-        (success, message)
-    """
-    # Verify old password first
-    success, _ = login_student(student_id, old_password)
-    if not success:
-        return False, "Current password is incorrect."
-
-    if len(new_password) < 6:
-        return False, "New password must be at least 6 characters."
-
-    conn = get_conn()
-    try:
-        conn.execute(
-            "UPDATE students SET password_hash = ? WHERE student_id = ?",
-            (hash_password(new_password), student_id)
-        )
-        conn.commit()
-        return True, "Password changed successfully."
-    except Exception as e:
-        return False, f"Error: {str(e)}"
-    finally:
-        conn.close()
+

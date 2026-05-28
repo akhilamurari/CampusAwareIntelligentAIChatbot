@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-import random
 
 # ─── Config ────────────────────────────────────────────
 # Expanded from 11 to 17 rooms

@@ -87,3 +87,10 @@ zstandard==0.25.0
 # ── RAGAS Evaluation (Sprint 6) ──
 ragas==0.2.6
 datasets==3.6.0
+# ── Missing Core Dependencies ──
+streamlit==1.56.0
+beautifulsoup4==4.14.3
+reportlab==4.5.1
+langchain-nvidia-ai-endpoints==1.4.0
+langchain-openai==1.2.2
+pytest==9.0.3
